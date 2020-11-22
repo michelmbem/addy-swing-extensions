@@ -40,7 +40,7 @@ public class JCalendar extends JPanel {
 	
 	private Color viewSelectorForeground = Color.WHITE;
 	private Color viewSelectorBackground = new Color(102, 153, 255);
-	private Font viewSelectorFont = new Font("SansSerif", 1, 11);
+	private Font viewSelectorFont = new Font("SansSerif", Font.BOLD, 13);
 	
 	private Color selectedDateColor = Color.RED;
 	private Color activeDateColor = Color.MAGENTA;

@@ -81,7 +81,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 			Date oldDate = this.date;
 			this.date = date;
 			firePropertyChange("date", oldDate, date);
-			getSpinner().setValue(date);
+			spinner.setValue(date);
 			setChecked(true);
 		}
 	}
@@ -122,7 +122,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 			this.checked = checked;
 			firePropertyChange("checked", !checked, checked);
 			checkBox.setSelected(checked);
-			getSpinner().setEnabled(checked);
+			spinner.setEnabled(checked);
 		}
 	}
 
@@ -194,11 +194,13 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 			SwingUtilities.updateComponentTreeUI(popupMenu);
 	}
 
+	@Override
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource() == checkBox)
 			setChecked(checkBox.isSelected());
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		if (e.getSource() == calendar && e.getPropertyName().equals("selectedCalendar")) {
 			hidePopupMenu();

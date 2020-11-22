@@ -23,6 +23,9 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 public class Main {
+	
+	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni" };
+	
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -37,7 +40,7 @@ public class Main {
 		final JPictureBox pictureBox = new JPictureBox();
 		pictureBox.setBackground(Color.WHITE);
 		pictureBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		pictureBox.setImage(loadImage("alicia.jpg"));
+		pictureBox.setImage(loadImage(pictures[0] + ".jpg"));
 		pictureBox.setSizeMode(SizeMode.NORMAL);
 		frame.getContentPane().add(new JScrollPane(pictureBox), BorderLayout.CENTER);
 
@@ -45,22 +48,20 @@ public class Main {
 		panel.setLayout(new FlowLayout(3));
 		frame.getContentPane().add(panel, BorderLayout.PAGE_START);
 
-		JComboBox<String> sizeCombo = new JComboBox<>();
-		sizeCombo.setModel(new DefaultComboBoxModel<>(new String[] {
-				"NORMAL", "AUTO", "CENTER", "STRETCH", "FIT", "FILL" }));
+		JComboBox<SizeMode> sizeCombo = new JComboBox<>();
+		sizeCombo.setModel(new DefaultComboBoxModel<>(SizeMode.values()));
 		sizeCombo.setEditable(false);
 		sizeCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == 1)
-					pictureBox.setSizeMode(SizeMode.valueOf(e.getItem().toString()));
+					pictureBox.setSizeMode((SizeMode) e.getItem());
 			}
 		});
 		panel.add(new JLabel("Size mode: "));
 		panel.add(sizeCombo);
 
 		JComboBox<String> imageCombo = new JComboBox<>();
-		imageCombo.setModel(new DefaultComboBoxModel<>(new String[] {
-				"alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni" }));
+		imageCombo.setModel(new DefaultComboBoxModel<>(pictures));
 		imageCombo.setEditable(false);
 		imageCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
@@ -95,7 +96,9 @@ public class Main {
 	private static JPanel getCalendarComboPanel() {
 		JPanel panel = new JPanel();
 		panel.add(new JLabel("Calendar Combo:"));
-		panel.add(new JCalendarCombo());
+		JCalendarCombo calendarCombo = new JCalendarCombo();
+		calendarCombo.setCheckBoxVisible(true);
+		panel.add(calendarCombo);
 		return panel;
 	}
 }
