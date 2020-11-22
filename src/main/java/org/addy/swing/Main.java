@@ -4,10 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -19,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
@@ -32,7 +30,7 @@ public class Main {
 		} catch (Exception ignore) {
 		}
 		
-		final JFrame frame = new JFrame("JPictureBox Sample");
+		final JFrame frame = new JFrame("Addy Swing Utilities Demo");
 		frame.setSize(600, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -45,44 +43,38 @@ public class Main {
 		frame.getContentPane().add(new JScrollPane(pictureBox), BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
-		panel.setLayout(new FlowLayout(3));
+		panel.setLayout(new FlowLayout(SwingConstants.LEADING));
 		frame.getContentPane().add(panel, BorderLayout.PAGE_START);
 
 		JComboBox<SizeMode> sizeCombo = new JComboBox<>();
 		sizeCombo.setModel(new DefaultComboBoxModel<>(SizeMode.values()));
 		sizeCombo.setEditable(false);
-		sizeCombo.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == 1)
-					pictureBox.setSizeMode((SizeMode) e.getItem());
-			}
+		sizeCombo.addItemListener(e -> {
+			if (e.getStateChange() == ItemEvent.SELECTED)
+				pictureBox.setSizeMode((SizeMode) e.getItem());
 		});
-		panel.add(new JLabel("Size mode: "));
+		panel.add(new JLabel("Sizing mode: "));
 		panel.add(sizeCombo);
 
 		JComboBox<String> imageCombo = new JComboBox<>();
 		imageCombo.setModel(new DefaultComboBoxModel<>(pictures));
 		imageCombo.setEditable(false);
-		imageCombo.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == 1)
-					pictureBox.setImage(loadImage(e.getItem() + ".jpg"));
-			}
+		imageCombo.addItemListener(e -> {
+			if (e.getStateChange() == ItemEvent.SELECTED)
+				pictureBox.setImage(loadImage(e.getItem() + ".jpg"));
 		});
 		panel.add(new JLabel(" Image: "));
 		panel.add(imageCombo);
 
 		JButton calendarButton = new JButton("Calendar");
-		calendarButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JDialog dlg = new JDialog(frame, "Month calendar", true);
-				dlg.setSize(400, 400);
-				dlg.setLocationRelativeTo(frame);
-				dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				dlg.add(getCalendarComboPanel(), BorderLayout.PAGE_START);
-				dlg.add(new JCalendar(), BorderLayout.CENTER);
-				dlg.setVisible(true);
-			}
+		calendarButton.addActionListener(e -> {
+			JDialog dlg = new JDialog(frame, "JCalendar", true);
+			dlg.setSize(400, 400);
+			dlg.setLocationRelativeTo(frame);
+			dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			dlg.add(getCalendarComboPanel(), BorderLayout.PAGE_START);
+			dlg.add(new JCalendar(), BorderLayout.CENTER);
+			dlg.setVisible(true);
 		});
 		panel.add(calendarButton);
 

@@ -8,16 +8,8 @@
 	<version>1.0.0</version>
 	<name>Addy Swing Utilities</name>
 	<description>A set of additionnal swing components by Addy</description>
+	
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -36,6 +28,14 @@
 							<mainClass>org.addy.swing.Main</mainClass>
 						</manifest>
 					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<mainClass>org.addy.swing.Main</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

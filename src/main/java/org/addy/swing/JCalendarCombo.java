@@ -225,7 +225,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		});
 		add(spinner, BorderLayout.CENTER);
 
-		button = new JButton(new ImageIcon(getClass().getResource("resources/calendar.gif")));
+		button = new JButton(new ImageIcon(getClass().getResource("calendar.gif")));
 		button.setOpaque(false);
 		button.setFocusable(false);
 		button.setPreferredSize(new Dimension(20, 20));
