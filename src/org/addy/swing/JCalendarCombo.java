@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -175,9 +177,8 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		calendar.setActiveCalendar(tmpCal);
 		calendar.setActiveView(CalendarView.MONTH);
 
-		int x = button.getWidth() - calendar.getPreferredSize().width;
-		int y = button.getHeight();
-		popupMenu.show(button, x, y);
+		Point pt = getPopupLocation();
+		popupMenu.show(this, pt.x, pt.y);
 		calendar.requestFocus();
 	}
 
@@ -259,5 +260,21 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(getSpinner(), dateFormat);
 		spinner.setEditor(dateEditor);
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
+	}
+
+	private Point getPopupLocation() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension calendarSize = calendar.getPreferredSize();
+		Point pt = new Point(0, getHeight());
+		
+		Point ptScr = (Point) pt.clone();
+		SwingUtilities.convertPointToScreen(ptScr, button);
+		
+		if (ptScr.x + calendarSize.width > screenSize.width)
+			pt.x = getWidth() - calendarSize.width;
+		if (ptScr.y + calendarSize.height > screenSize.height)
+			pt.y = -calendarSize.height;
+		
+		return pt;
 	}
 }
