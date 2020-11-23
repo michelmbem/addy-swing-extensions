@@ -69,7 +69,7 @@ public class Main {
 		JButton calendarButton = new JButton("Calendar");
 		calendarButton.addActionListener(e -> {
 			JDialog dlg = new JDialog(frame, "JCalendar", true);
-			dlg.setSize(400, 400);
+			dlg.setSize(350, 350);
 			dlg.setLocationRelativeTo(frame);
 			dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dlg.add(getCalendarComboPanel(), BorderLayout.PAGE_START);

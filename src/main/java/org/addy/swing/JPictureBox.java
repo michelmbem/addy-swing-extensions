@@ -102,10 +102,10 @@ public class JPictureBox extends JPanel {
 							getHeight() - borderInsets.bottom - borderInsets.top,
 							this);
 					break;
-				case FIT:
+				case CONTAIN:
 					fitImage(g, borderInsets);
 					break;
-				case FILL:
+				case COVER:
 					fillImage(g, borderInsets);
 					break;
 				default:

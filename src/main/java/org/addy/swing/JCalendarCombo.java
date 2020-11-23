@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Calendar;
@@ -218,25 +216,21 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		add(checkBox, BorderLayout.LINE_START);
 
 		spinner = new JSpinner(new SpinnerDateModel());
-		spinner.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				setDate((Date) spinner.getValue());
-			}
+		spinner.addChangeListener(e -> {
+			setDate((Date) spinner.getValue());
 		});
 		add(spinner, BorderLayout.CENTER);
 
-		button = new JButton(new ImageIcon(getClass().getResource("calendar.gif")));
-		button.setOpaque(false);
+		button = new JButton(new ImageIcon(getClass().getResource("arrow.png")));
+		button.setBorder(null);
 		button.setFocusable(false);
-		button.setPreferredSize(new Dimension(20, 20));
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				requestFocusInWindow();
-				if (popupMenu.isVisible())
-					hidePopupMenu();
-				else
-					showPopupMenu();
-			}
+		button.setPreferredSize(new Dimension(22, 22));
+		button.addActionListener(e -> {
+			requestFocusInWindow();
+			if (popupMenu.isVisible())
+				hidePopupMenu();
+			else
+				showPopupMenu();
 		});
 		add(button, BorderLayout.LINE_END);
 
@@ -253,7 +247,6 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		popupMenu.setLightWeightPopupEnabled(true);
 
 		calendar = new JCalendar();
-		calendar.setPreferredSize(new Dimension(320, 240));
 		calendar.addPropertyChangeListener(this);
 		popupMenu.add(calendar);
 	}

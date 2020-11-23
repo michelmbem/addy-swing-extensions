@@ -38,13 +38,13 @@ public class JCalendar extends JPanel {
 	private Calendar activeCalendar = new GregorianCalendar();
 	private Calendar selectedCalendar = null;
 	
-	private Color viewSelectorForeground = new Color(31, 31, 31);
-	private Color viewSelectorBackground = new Color(127, 255, 223);
+	private Color viewSelectorForeground = new Color(0, 7, 31);
+	private Color viewSelectorBackground = new Color(127, 223, 255);
 	private Font viewSelectorFont = new Font("SansSerif", Font.BOLD, 13);
 	
 	private Color selectedDateColor = Color.RED;
 	private Color activeDateColor = Color.BLUE;
-	private Color rolloverDateColor = Color.CYAN;
+	private Color rolloverDateColor = new Color(191, 223, 255);
 	
 	private JPanel topPane;
 	private JPanel middlePane;
@@ -500,6 +500,7 @@ public class JCalendar extends JPanel {
 		setBackground(Color.WHITE);
 		setForeground(Color.BLACK);
 		setFont(new Font("SansSerif", Font.PLAIN, 13));
+		setPreferredSize(new Dimension(240, 240));
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -704,8 +705,8 @@ public class JCalendar extends JPanel {
 	}
 
 	protected static class FlatButtonMouseAdapter extends MouseAdapter {
-
-		private static final String SAVED_FOREGROUND = "JCalendar.savedForeground";
+		private static final String SAVED_BG = "JCalendar.savedBackground";
+		private static final String SAVED_CAF = "JCalendar.savedContentAreaFilled";
 		
 		private final Color highlight;
 
@@ -716,15 +717,24 @@ public class JCalendar extends JPanel {
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			JButton button = (JButton) e.getSource();
-			button.putClientProperty(SAVED_FOREGROUND, button.getForeground());
-			button.setForeground(highlight);
+			button.putClientProperty(SAVED_BG, button.getBackground());
+			button.putClientProperty(SAVED_CAF, button.isContentAreaFilled());
+			button.setBackground(highlight);
+			button.setContentAreaFilled(true);
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
 			JButton button = (JButton) e.getSource();
-			if (button.getForeground() == highlight)
-				button.setForeground((Color) button.getClientProperty(SAVED_FOREGROUND));
+			if (button.isContentAreaFilled() && button.getBackground() == highlight) {
+				button.setBackground((Color) button.getClientProperty(SAVED_BG));
+				button.setContentAreaFilled((boolean) button.getClientProperty(SAVED_CAF));
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			mouseExited(e);
 		}
 	}
 
