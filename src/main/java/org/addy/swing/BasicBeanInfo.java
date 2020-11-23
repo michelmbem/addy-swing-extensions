@@ -11,7 +11,7 @@ public class BasicBeanInfo<T> extends SimpleBeanInfo {
 	private final Class<?> beanClass;
 	
 	public BasicBeanInfo() {
-		this.beanClass = (Class<?>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+		this.beanClass = (Class<?>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
 	@Override
