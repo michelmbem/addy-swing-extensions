@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -347,6 +348,20 @@ public class JCalendar extends JPanel {
 		if (todayButton != null)
 			todayButton.setFont(font);
 	}
+	
+	public void clearHighlight() {
+		clearHighlight(dateButtons[0][0]);
+		clearHighlight(monthButtons[0][0]);
+		clearHighlight(yearButtons[0][0]);
+		clearHighlight(decadeButtons[0][0]);
+	}
+	
+	private void clearHighlight(JButton button) {
+		for (MouseListener listener : button.getMouseListeners()) {
+			if (listener instanceof FlatButtonMouseAdapter)
+				((FlatButtonMouseAdapter) listener).clearHighlight();
+		}
+	}
 
 	private void initGUI() {
 		resources = ResourceBundle.getBundle("org/addy/swing/JCalendar");
@@ -390,8 +405,10 @@ public class JCalendar extends JPanel {
 		centuryPane = new JPanel(new GridLayout(3, 4));
 		centuryPane.setOpaque(false);
 		middlePane.add(centuryPane, CalendarView.CENTURY.toString());
+		
+		MouseListener decadeMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
-		ActionListener decadeButtonListener = e -> {
+		ActionListener decadeActionListener = e -> {
 			requestFocusInWindow();
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
@@ -403,8 +420,8 @@ public class JCalendar extends JPanel {
 		for (int i = 0; i < decadeButtons.length; i++) {
 			for (int j = 0; j < decadeButtons[0].length; j++) {
 				decadeButtons[i][j] = createFlatButton("");
-				decadeButtons[i][j].addMouseListener(new FlatButtonMouseAdapter(rolloverDateColor));
-				decadeButtons[i][j].addActionListener(decadeButtonListener);
+				decadeButtons[i][j].addMouseListener(decadeMouseListener);
+				decadeButtons[i][j].addActionListener(decadeActionListener);
 				centuryPane.add(decadeButtons[i][j]);
 			}
 		}
@@ -412,8 +429,10 @@ public class JCalendar extends JPanel {
 		decadePane = new JPanel(new GridLayout(3, 4));
 		decadePane.setOpaque(false);
 		middlePane.add(decadePane, CalendarView.DECADE.toString());
+		
+		MouseListener yearMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
-		ActionListener yearButtonListener = e -> {
+		ActionListener yearActionListener = e -> {
 			requestFocusInWindow();
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
@@ -425,8 +444,8 @@ public class JCalendar extends JPanel {
 		for (int i = 0; i < yearButtons.length; i++) {
 			for (int j = 0; j < yearButtons[0].length; j++) {
 				yearButtons[i][j] = createFlatButton("");
-				yearButtons[i][j].addMouseListener(new FlatButtonMouseAdapter(rolloverDateColor));
-				yearButtons[i][j].addActionListener(yearButtonListener);
+				yearButtons[i][j].addMouseListener(yearMouseListener);
+				yearButtons[i][j].addActionListener(yearActionListener);
 				decadePane.add(yearButtons[i][j]);
 			}
 		}
@@ -434,8 +453,10 @@ public class JCalendar extends JPanel {
 		yearPane = new JPanel(new GridLayout(3, 4));
 		yearPane.setOpaque(false);
 		middlePane.add(yearPane, CalendarView.YEAR.toString());
+		
+		MouseListener monthMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
-		ActionListener monthButtonListener = e -> {
+		ActionListener monthActionListener = e -> {
 			requestFocusInWindow();
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
@@ -447,8 +468,8 @@ public class JCalendar extends JPanel {
 		for (int i = 0; i < monthButtons.length; i++) {
 			for (int j = 0; j < monthButtons[0].length; j++) {
 				monthButtons[i][j] = createFlatButton("");
-				monthButtons[i][j].addMouseListener(new FlatButtonMouseAdapter(rolloverDateColor));
-				monthButtons[i][j].addActionListener(monthButtonListener);
+				monthButtons[i][j].addMouseListener(monthMouseListener);
+				monthButtons[i][j].addActionListener(monthActionListener);
 				yearPane.add(monthButtons[i][j]);
 			}
 		}
@@ -462,8 +483,10 @@ public class JCalendar extends JPanel {
 			dayOfWeekLabels[i] = getDayOfWeekLabel(i, 0);
 			monthPane.add(dayOfWeekLabels[i]);
 		}
+		
+		MouseListener dateMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
-		ActionListener dateButtonListener = e -> {
+		ActionListener dateActionListener = e -> {
 			requestFocusInWindow();
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
@@ -474,8 +497,8 @@ public class JCalendar extends JPanel {
 		for (int i = 0; i < dateButtons.length; i++) {
 			for (int j = 0; j < dateButtons[0].length; j++) {
 				dateButtons[i][j] = createFlatButton("");
-				dateButtons[i][j].addMouseListener(new FlatButtonMouseAdapter(rolloverDateColor));
-				dateButtons[i][j].addActionListener(dateButtonListener);
+				dateButtons[i][j].addMouseListener(dateMouseListener);
+				dateButtons[i][j].addActionListener(dateActionListener);
 				monthPane.add(dateButtons[i][j]);
 			}
 		}
@@ -677,11 +700,11 @@ public class JCalendar extends JPanel {
 	}
 
 	private void fillMonthCalendar() {
-		int y_ref = activeCalendar.get(Calendar.WEEK_OF_MONTH) - 1;
-		int x_ref = (activeCalendar.get(Calendar.DAY_OF_WEEK) - activeCalendar.getFirstDayOfWeek() + 7) % 7;
+		int yRef = activeCalendar.get(Calendar.WEEK_OF_MONTH) - 1;
+		int xRef = (activeCalendar.get(Calendar.DAY_OF_WEEK) - activeCalendar.getFirstDayOfWeek() + 7) % 7;
 
 		Calendar clone = (Calendar) activeCalendar.clone();
-		clone.add(Calendar.DATE, -(7 * y_ref + x_ref));
+		clone.add(Calendar.DATE, -(7 * yRef + xRef));
 
 		for (int y = 0; y < dateButtons.length; y++)
 			for (int x = 0; x < dateButtons[0].length; x++) {
@@ -708,33 +731,44 @@ public class JCalendar extends JPanel {
 		private static final String SAVED_BG = "JCalendar.savedBackground";
 		private static final String SAVED_CAF = "JCalendar.savedContentAreaFilled";
 		
-		private final Color highlight;
+		private final Color highlightColor;
+		
+		private JButton highlightedButton = null;
 
-		public FlatButtonMouseAdapter(Color highlight) {
-			this.highlight = highlight;
+		public FlatButtonMouseAdapter(Color highlightColor) {
+			this.highlightColor = highlightColor;
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			JButton button = (JButton) e.getSource();
-			button.putClientProperty(SAVED_BG, button.getBackground());
-			button.putClientProperty(SAVED_CAF, button.isContentAreaFilled());
-			button.setBackground(highlight);
-			button.setContentAreaFilled(true);
+			highlightedButton = (JButton) e.getSource();
+			highlight(highlightedButton);
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			JButton button = (JButton) e.getSource();
-			if (button.isContentAreaFilled() && button.getBackground() == highlight) {
+			unHighlight((JButton) e.getSource());
+		}
+		
+		public void clearHighlight() {
+			if (highlightedButton != null) {
+				unHighlight(highlightedButton);
+				highlightedButton = null;
+			}
+		}
+		
+		private void highlight(JButton button) {
+			button.putClientProperty(SAVED_BG, button.getBackground());
+			button.putClientProperty(SAVED_CAF, button.isContentAreaFilled());
+			button.setBackground(highlightColor);
+			button.setContentAreaFilled(true);
+		}
+		
+		private void unHighlight(JButton button) {
+			if (button.isContentAreaFilled() && button.getBackground() == highlightColor) {
 				button.setBackground((Color) button.getClientProperty(SAVED_BG));
 				button.setContentAreaFilled((boolean) button.getClientProperty(SAVED_CAF));
 			}
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			mouseExited(e);
 		}
 	}
 

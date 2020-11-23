@@ -170,9 +170,9 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		setChecked(true);
 		allowPopupHide = false;
 
-		Calendar tmpCal = new GregorianCalendar();
-		tmpCal.setTime(date);
-		calendar.setActiveCalendar(tmpCal);
+		Calendar timestamp = new GregorianCalendar();
+		timestamp.setTime(date);
+		calendar.setActiveCalendar(timestamp);
 		calendar.setActiveView(CalendarView.MONTH);
 
 		Point pt = getPopupLocation();
@@ -183,6 +183,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	public void hidePopupMenu() {
 		allowPopupHide = true;
 		popupMenu.setVisible(false);
+		calendar.clearHighlight();
 	}
 
 	@Override
@@ -224,6 +225,10 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		button = new JButton(new ImageIcon(getClass().getResource("arrow.png")));
 		button.setBorder(null);
 		button.setFocusable(false);
+		button.setContentAreaFilled(false);
+		button.setRolloverEnabled(true);
+		button.setRolloverIcon(new ImageIcon(getClass().getResource("arrow_hot.png")));
+		button.setPressedIcon(new ImageIcon(getClass().getResource("arrow_pressed.png")));
 		button.setPreferredSize(new Dimension(22, 22));
 		button.addActionListener(e -> {
 			requestFocusInWindow();

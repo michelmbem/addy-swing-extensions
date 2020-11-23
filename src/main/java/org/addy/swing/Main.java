@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -68,12 +70,15 @@ public class Main {
 
 		JButton calendarButton = new JButton("Calendar");
 		calendarButton.addActionListener(e -> {
+			JCalendar calendar = new JCalendar();
 			JDialog dlg = new JDialog(frame, "JCalendar", true);
 			dlg.setSize(350, 350);
 			dlg.setLocationRelativeTo(frame);
 			dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			dlg.add(getCalendarComboPanel(), BorderLayout.PAGE_START);
-			dlg.add(new JCalendar(), BorderLayout.CENTER);
+			dlg.add(getCalendarComboPanel(e1 -> {
+				calendar.setDate((Date) e1.getNewValue());
+			}), BorderLayout.PAGE_START);
+			dlg.add(calendar, BorderLayout.CENTER);
 			dlg.setVisible(true);
 		});
 		panel.add(calendarButton);
@@ -85,11 +90,12 @@ public class Main {
 		return new ImageIcon(Main.class.getClassLoader().getResource(path)).getImage();
 	}
 
-	private static JPanel getCalendarComboPanel() {
+	private static JPanel getCalendarComboPanel(PropertyChangeListener listener) {
 		JPanel panel = new JPanel();
 		panel.add(new JLabel("Calendar Combo:"));
 		JCalendarCombo calendarCombo = new JCalendarCombo();
 		calendarCombo.setCheckBoxVisible(true);
+		calendarCombo.addPropertyChangeListener("date", listener);
 		panel.add(calendarCombo);
 		return panel;
 	}
