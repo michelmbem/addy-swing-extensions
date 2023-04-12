@@ -1,19 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>org.addy.swing</groupId>
 	<artifactId>AddySwingUtilities</artifactId>
 	<version>1.0.0</version>
 	<name>Addy Swing Utilities</name>
-	<description>A set of additionnal swing components by Addy</description>
+	<description>A set of additional swing components by Addy</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<version>5.7.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

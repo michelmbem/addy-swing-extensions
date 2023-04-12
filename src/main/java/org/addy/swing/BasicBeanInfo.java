@@ -7,7 +7,6 @@ import java.beans.SimpleBeanInfo;
 import java.lang.reflect.ParameterizedType;
 
 public class BasicBeanInfo<T> extends SimpleBeanInfo {
-	
 	private final Class<?> beanClass;
 	
 	public BasicBeanInfo() {
@@ -17,6 +16,7 @@ public class BasicBeanInfo<T> extends SimpleBeanInfo {
 	@Override
 	public Image getIcon(int iconKind) {
 		String beanClassName = beanClass.getSimpleName();
+
 		switch (iconKind) {
 			case BeanInfo.ICON_COLOR_16x16:
 				return loadImage(beanClassName + "Color16.gif");

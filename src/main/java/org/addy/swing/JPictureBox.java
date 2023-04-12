@@ -4,12 +4,13 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
+import java.util.Objects;
 
 import javax.swing.JPanel;
 
 public class JPictureBox extends JPanel {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Image image;
 	private SizeMode sizeMode;
 
@@ -34,9 +35,9 @@ public class JPictureBox extends JPanel {
 		if (image != this.image) {
 			Image oldImage = this.image;
 			this.image = image;
-			firePropertyChange("image", oldImage, image);
 			setSize(getPreferredSize());
 			repaint();
+			firePropertyChange("image", oldImage, image);
 		}
 	}
 
@@ -45,16 +46,12 @@ public class JPictureBox extends JPanel {
 	}
 
 	public void setSizeMode(SizeMode sizeMode) {
-		if (sizeMode == null) {
-			throw new IllegalArgumentException("sizeMode can't be null");
-		}
-
-		if (!sizeMode.equals(this.sizeMode)) {
+		if (!Objects.equals(this.sizeMode, sizeMode)) {
 			SizeMode oldSizeMode = this.sizeMode;
-			this.sizeMode = sizeMode;
-			firePropertyChange("sizeMode", oldSizeMode, sizeMode);
+			this.sizeMode = Objects.requireNonNull(sizeMode);
 			setSize(getPreferredSize());
 			repaint();
+			firePropertyChange("sizeMode", oldSizeMode, sizeMode);
 		}
 	}
 
@@ -62,7 +59,7 @@ public class JPictureBox extends JPanel {
 	public Dimension getPreferredSize() {
 		if (image == null || !sizeMode.equals(SizeMode.AUTO))
 			return super.getPreferredSize();
-		
+
 		Insets borderInsets = getBorderInsets();
 		return new Dimension(
 				image.getWidth(this) + borderInsets.left + borderInsets.right,
@@ -71,42 +68,46 @@ public class JPictureBox extends JPanel {
 
 	@Override
 	public Dimension getMinimumSize() {
-		if (sizeMode.equals(SizeMode.AUTO))
-			return getPreferredSize();
+		if (sizeMode.equals(SizeMode.AUTO)) return getPreferredSize();
+
 		return super.getMinimumSize();
 	}
 
 	@Override
 	public Dimension getMaximumSize() {
-		if (sizeMode.equals(SizeMode.AUTO))
-			return getPreferredSize();
+		if (sizeMode.equals(SizeMode.AUTO)) return getPreferredSize();
+
 		return super.getMaximumSize();
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		if (image != null) {
 			Insets borderInsets = getBorderInsets();
+
 			switch (sizeMode) {
 				case AUTO:
 					g.drawImage(image, borderInsets.left, borderInsets.top, this);
 					break;
 				case CENTER:
-					centerImage(g, borderInsets);
+					paintCenteredImage(g, borderInsets);
 					break;
 				case STRETCH:
-					g.drawImage(image, borderInsets.left, borderInsets.top,
+					g.drawImage(
+							image,
+							borderInsets.left,
+							borderInsets.top,
 							getWidth() - borderInsets.right - borderInsets.left,
 							getHeight() - borderInsets.bottom - borderInsets.top,
 							this);
 					break;
 				case CONTAIN:
-					fitImage(g, borderInsets);
+					paintContainedImage(g, borderInsets);
 					break;
 				case COVER:
-					fillImage(g, borderInsets);
+					paintConverImage(g, borderInsets);
 					break;
 				default:
 					paintImage(g, borderInsets);
@@ -117,9 +118,7 @@ public class JPictureBox extends JPanel {
 
 	protected final Insets getBorderInsets() {
 		Insets insets = new Insets(0, 0, 0, 0);
-		if (getBorder() != null) {
-			insets = getBorder().getBorderInsets(this);
-		}
+		if (getBorder() != null) insets = getBorder().getBorderInsets(this);
 		return insets;
 	}
 
@@ -129,7 +128,7 @@ public class JPictureBox extends JPanel {
 		g.drawImage(image, borderInsets.left, borderInsets.top, borderInsets.left + width, borderInsets.top + height, 0, 0, width, height, this);
 	}
 
-	protected final void centerImage(Graphics g, Insets borderInsets) {
+	protected final void paintCenteredImage(Graphics g, Insets borderInsets) {
 		int left = borderInsets.left;
 		int top = borderInsets.top;
 		int width = getWidth() - borderInsets.left - borderInsets.right;
@@ -160,13 +159,13 @@ public class JPictureBox extends JPanel {
 		g.drawImage(image, left, top, left + w, top + h, x, y, x + w, y + h, this);
 	}
 
-	protected final void fitImage(Graphics g, Insets borderInsets) {
+	protected final void paintContainedImage(Graphics g, Insets borderInsets) {
 		int width = getWidth() - borderInsets.left - borderInsets.right;
 		int height = getHeight() - borderInsets.top - borderInsets.bottom;
 		double wRatio = (double) image.getWidth(this) / width;
 		double hRatio = (double) image.getHeight(this) / height;
 		double ratio = (double) image.getWidth(this) / image.getHeight(this);
-		
+
 		int h;
 		int w;
 		if (wRatio > hRatio) {
@@ -180,7 +179,7 @@ public class JPictureBox extends JPanel {
 		g.drawImage(image, borderInsets.left + (width - w) / 2, borderInsets.top + (height - h) / 2, w, h, this);
 	}
 
-	protected final void fillImage(Graphics g, Insets borderInsets) {
+	protected final void paintConverImage(Graphics g, Insets borderInsets) {
 		int width = getWidth() - borderInsets.left - borderInsets.right;
 		int height = getHeight() - borderInsets.top - borderInsets.bottom;
 		double wRatio = (double) image.getWidth(this) / width;
@@ -188,7 +187,7 @@ public class JPictureBox extends JPanel {
 		double ratio = (double) image.getWidth(this) / image.getHeight(this);
 		int x = 0;
 		int y = 0;
-		
+
 		int h;
 		int w;
 		if (wRatio > hRatio) {

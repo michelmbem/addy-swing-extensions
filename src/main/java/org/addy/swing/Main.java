@@ -23,7 +23,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 public class Main {
-	
 	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni" };
 	
 	public static void main(String[] args) {

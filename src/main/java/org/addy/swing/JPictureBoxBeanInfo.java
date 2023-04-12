@@ -3,7 +3,6 @@ package org.addy.swing;
 import java.beans.BeanDescriptor;
 
 public class JPictureBoxBeanInfo extends BasicBeanInfo<JCalendar> {
-	
 	@Override
 	public BeanDescriptor getBeanDescriptor() {
 		BeanDescriptor beanDescriptor = super.getBeanDescriptor();

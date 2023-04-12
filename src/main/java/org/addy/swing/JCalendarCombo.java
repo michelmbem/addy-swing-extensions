@@ -25,7 +25,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class JCalendarCombo extends JPanel implements ChangeListener, PropertyChangeListener {
-	
 	private static final long serialVersionUID = 1L;
 	
 	private static final String POPUP_MENU_CANCEL_PROPERTY = "JPopupMenu.firePopupMenuCanceled";

@@ -1,5 +1,8 @@
 package org.addy.swing;
 
 public enum CalendarView {
-	MONTH, YEAR, DECADE, CENTURY;
+	MONTH,
+	YEAR,
+	DECADE,
+	CENTURY;
 }
