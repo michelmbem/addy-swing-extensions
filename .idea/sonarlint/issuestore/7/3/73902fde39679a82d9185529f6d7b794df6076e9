@@ -1,0 +1,21 @@
+
+o
+java:S14508"YRemove the "bottomPane" field and declare it as a local variable in the relevant methods.(“ıËí
+p
+java:S14504"ZRemove the "centuryPane" field and declare it as a local variable in the relevant methods.(ˆÜ´œ
+t
+java:S14505"YRemove the "decadePane" field and declare it as a local variable in the relevant methods.(‡Âä•ùÿÿÿÿ
+s
+java:S14507"XRemove the "monthPane" field and declare it as a local variable in the relevant methods.( »ç…şÿÿÿÿ
+u
+java:S1450;"_Remove the "nextPeriodButton" field and declare it as a local variable in the relevant methods.(Ò”Œ†
+y
+java:S1450:"cRemove the "previousPeriodButton" field and declare it as a local variable in the relevant methods.(Û¦àğ
+r
+java:S14506"WRemove the "yearPane" field and declare it as a local variable in the relevant methods.(¡”—úÿÿÿÿ
+A
+java:S1948E"+Make "resources" transient or serializable.(ÅÂÀò
+n
+java:S3776ø"RRefactor this method to reduce its Cognitive Complexity from 45 to the 15 allowed.(óéŠíúÿÿÿÿ
+n
+java:S3776²"RRefactor this method to reduce its Cognitive Complexity from 28 to the 15 allowed.(áÕ¾·ùÿÿÿÿ

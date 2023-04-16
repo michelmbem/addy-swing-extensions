@@ -1,4 +1,5 @@
-# Addy Swing Utilities
+# Addy Swing
+
 A small set of additionnal swing components by Addy.
 
 These include:

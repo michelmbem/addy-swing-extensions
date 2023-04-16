@@ -1,28 +1,13 @@
 package org.addy.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
+import java.util.Objects;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-
-public class Main {
+public class Demo {
 	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni" };
 	
 	public static void main(String[] args) {
@@ -31,7 +16,7 @@ public class Main {
 		} catch (Exception ignore) {
 		}
 		
-		final JFrame frame = new JFrame("Addy Swing Utilities Demo");
+		final JFrame frame = new JFrame("Addy Swing Demo");
 		frame.setSize(600, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -44,28 +29,38 @@ public class Main {
 		frame.getContentPane().add(new JScrollPane(pictureBox), BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
-		panel.setLayout(new FlowLayout(SwingConstants.LEADING));
+		panel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		frame.getContentPane().add(panel, BorderLayout.PAGE_START);
 
 		JComboBox<SizeMode> sizeCombo = new JComboBox<>();
 		sizeCombo.setModel(new DefaultComboBoxModel<>(SizeMode.values()));
 		sizeCombo.setEditable(false);
+		sizeCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
 		sizeCombo.addItemListener(e -> {
 			if (e.getStateChange() == ItemEvent.SELECTED)
 				pictureBox.setSizeMode((SizeMode) e.getItem());
 		});
-		panel.add(new JLabel("Sizing mode: "));
+		panel.add(new JLabel("Sizing mode:"));
+		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 		panel.add(sizeCombo);
+
+		panel.add(Box.createRigidArea(new Dimension(20, 0)));
 
 		JComboBox<String> imageCombo = new JComboBox<>();
 		imageCombo.setModel(new DefaultComboBoxModel<>(pictures));
 		imageCombo.setEditable(false);
+		imageCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
 		imageCombo.addItemListener(e -> {
 			if (e.getStateChange() == ItemEvent.SELECTED)
 				pictureBox.setImage(loadImage(e.getItem() + ".jpg"));
 		});
-		panel.add(new JLabel(" Image: "));
+		panel.add(new JLabel(" Image:"));
+		panel.add(Box.createRigidArea(new Dimension(5, 0)));
+		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 		panel.add(imageCombo);
+
+		panel.add(Box.createHorizontalGlue());
 
 		JButton calendarButton = new JButton("Calendar");
 		calendarButton.addActionListener(e -> {
@@ -74,9 +69,7 @@ public class Main {
 			dlg.setSize(350, 350);
 			dlg.setLocationRelativeTo(frame);
 			dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			dlg.add(getCalendarComboPanel(e1 -> {
-				calendar.setDate((Date) e1.getNewValue());
-			}), BorderLayout.PAGE_START);
+			dlg.add(getCalendarComboPanel(e1 -> calendar.setDate((Date) e1.getNewValue())), BorderLayout.PAGE_START);
 			dlg.add(calendar, BorderLayout.CENTER);
 			dlg.setVisible(true);
 		});
@@ -86,7 +79,7 @@ public class Main {
 	}
 	
 	private static Image loadImage(String path) {
-		return new ImageIcon(Main.class.getClassLoader().getResource(path)).getImage();
+		return new ImageIcon(Objects.requireNonNull(Demo.class.getClassLoader().getResource(path))).getImage();
 	}
 
 	private static JPanel getCalendarComboPanel(PropertyChangeListener listener) {
