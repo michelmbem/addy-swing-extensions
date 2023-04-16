@@ -10,8 +10,6 @@ e
 5src/main/java/org/addy/swing/JPictureBoxBeanInfo.java,b\2\b2ee2bd6d65ab5ef8fdb7ee143ce83bec167b0dc
 ^
 .src/main/java/org/addy/swing/CalendarView.java,b\c\bc73110e43934e51cbaf79d3d5974994e8a945eb
-[
-+src/main/java/org/addy/swing/JCalendar.java,7\3\73902fde39679a82d9185529f6d7b794df6076e9
 c
 3src/main/java/org/addy/swing/JCalendarBeanInfo.java,d\3\d30bfe8e3862eddf7cdaa2f0dfdf6dfc40d0af6b
 `
@@ -32,3 +30,7 @@ k
 ;src/main/java/org/addy/swing/filechooser/ImageFileView.java,4\0\40588d1acca2fda22eafe4a325cd46add53c26e7
 i
 9src/main/java/org/addy/swing/filechooser/ImageFilter.java,8\5\85b3d638f5468f1f4e569e4431e95b5986834a9d
+7
+pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
+9
+	Readme.md,0\c\0c1945d7443c2e154bd3e421c0d438bd4086d8c3
