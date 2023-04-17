@@ -12,8 +12,6 @@ e
 .src/main/java/org/addy/swing/CalendarView.java,b\c\bc73110e43934e51cbaf79d3d5974994e8a945eb
 c
 3src/main/java/org/addy/swing/JCalendarBeanInfo.java,d\3\d30bfe8e3862eddf7cdaa2f0dfdf6dfc40d0af6b
-`
-0src/main/java/org/addy/swing/JCalendarCombo.java,f\3\f33275c575ad2c58bd7163c9c9604b22ae83b69f
 h
 8src/main/java/org/addy/swing/JCalendarComboBeanInfo.java,3\3\338020bfc25881c78e4340cd810f65c4264558a2
 ]
@@ -34,3 +32,7 @@ i
 pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
 9
 	Readme.md,0\c\0c1945d7443c2e154bd3e421c0d438bd4086d8c3
+V
+&src/main/java/org/addy/swing/Demo.java,7\5\751e78454a04a08f00d407775416542b54b51f18
+e
+5src/main/java/org/addy/swing/SimpleComboBoxModel.java,4\8\48cad9e01fc835c46b6fa3f35237fefe65e391f3
