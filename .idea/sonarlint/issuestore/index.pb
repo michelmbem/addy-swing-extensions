@@ -32,7 +32,5 @@ n
 pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
 9
 	Readme.md,0\c\0c1945d7443c2e154bd3e421c0d438bd4086d8c3
-V
-&src/main/java/org/addy/swing/Demo.java,7\5\751e78454a04a08f00d407775416542b54b51f18
 e
 5src/main/java/org/addy/swing/SimpleComboBoxModel.java,4\8\48cad9e01fc835c46b6fa3f35237fefe65e391f3

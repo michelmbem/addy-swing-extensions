@@ -1,28 +1,17 @@
 package org.addy.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Toolkit;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicArrowButton;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class JCalendarCombo extends JPanel implements ChangeListener, PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
@@ -61,8 +50,6 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		setDate(date);
 		setDateFormat(dateFormat);
 		setCheckBoxVisible(checkBoxVisible);
-		setChecked(true);
-		setOpaque(false);
 	}
 
 	public Date getDate() {
@@ -215,20 +202,15 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		checkBox.addChangeListener(this);
 		add(checkBox, BorderLayout.LINE_START);
 
+		Border emptyBorder = new EmptyBorder(0, 0, 0, 0);
 		spinner = new JSpinner(new SpinnerDateModel());
-		spinner.addChangeListener(e -> {
-			setDate((Date) spinner.getValue());
-		});
+		spinner.setBorder(emptyBorder);
+		spinner.getEditor().setBorder(emptyBorder);
+		spinner.addChangeListener(e -> setDate((Date) spinner.getValue()));
 		add(spinner, BorderLayout.CENTER);
 
-		button = new JButton(new ImageIcon(getClass().getResource("arrow.png")));
-		button.setBorder(null);
+		button = new BasicArrowButton(SwingConstants.SOUTH);
 		button.setFocusable(false);
-		button.setContentAreaFilled(false);
-		button.setRolloverEnabled(true);
-		button.setRolloverIcon(new ImageIcon(getClass().getResource("arrow_hot.png")));
-		button.setPressedIcon(new ImageIcon(getClass().getResource("arrow_pressed.png")));
-		button.setPreferredSize(new Dimension(22, 22));
 		button.addActionListener(e -> {
 			requestFocusInWindow();
 			if (popupMenu.isVisible())
@@ -244,7 +226,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 			@Override
 			public void setVisible(boolean visible) {
 				Boolean popupCancelled = (Boolean) getClientProperty(POPUP_MENU_CANCEL_PROPERTY);
-				if (visible || allowPopupHide || (popupCancelled != null && popupCancelled.booleanValue()))
+				if (visible || allowPopupHide || (popupCancelled != null && popupCancelled))
 					super.setVisible(visible);
 			}
 		};
@@ -253,10 +235,14 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		calendar = new JCalendar();
 		calendar.addPropertyChangeListener(this);
 		popupMenu.add(calendar);
+
+		setBackground(UIManager.getColor("ComboBox.background"));
+		setBorder(UIManager.getBorder("ComboBox.border"));
+		setChecked(true);
 	}
 
 	private void updateDateEditor() {
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(getSpinner(), dateFormat);
+		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateFormat);
 		spinner.setEditor(dateEditor);
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
 	}
@@ -267,7 +253,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		Point pt = new Point(0, getHeight());
 		
 		Point ptScr = (Point) pt.clone();
-		SwingUtilities.convertPointToScreen(ptScr, button);
+		SwingUtilities.convertPointToScreen(ptScr, this);
 		
 		if (ptScr.x + calendarSize.width > screenSize.width)
 			pt.x = getWidth() - calendarSize.width;
