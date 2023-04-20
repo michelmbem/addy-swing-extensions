@@ -1,52 +1,36 @@
 package org.addy.swing;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-
 public class JCalendar extends JPanel {
-	private static final long serialVersionUID = 1L;
-	
-	private Calendar activeCalendar = new GregorianCalendar();
-	private Calendar selectedCalendar = null;
-	
-	private Color viewSelectorForeground = new Color(0, 7, 31);
-	private Color viewSelectorBackground = new Color(127, 223, 255);
+	public static final Dimension BUTTON_SIZE = new Dimension(16, 16);
+
+	private LocalDateTime activeDateTime = LocalDateTime.now();
+	private LocalDateTime selectedDateTime = null;
+
+	private Color viewSelectorForeground = KnownColor.DARK_SLATE;
+	private Color viewSelectorBackground = KnownColor.LIGHTSKYBLUE;
 	private Font viewSelectorFont = new Font("SansSerif", Font.BOLD, 13);
-	
-	private Color selectedDateColor = Color.RED;
-	private Color activeDateColor = Color.BLUE;
-	private Color rolloverDateColor = new Color(191, 223, 255);
-	
+
+	private Color selectedDateColor = KnownColor.RED;
+	private Color activeDateColor = KnownColor.MEDIUMBLUE;
+	private Color inactiveDateColor = KnownColor.METALLIC_SILVER;
+	private Color rolloverDateColor = KnownColor.WHITE_BLUE;
+
 	private JPanel topPane;
 	private JPanel middlePane;
 	private JPanel centuryPane;
@@ -65,7 +49,7 @@ public class JCalendar extends JPanel {
 	private JButton selectedDateButton;
 	private JButton activeDateButton;
 	private JButton todayButton;
-	
+
 	private ResourceBundle resources;
 	private CalendarView activeView;
 
@@ -80,65 +64,47 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setActiveView(CalendarView activeView) {
-		if (activeView == null) {
-			throw new IllegalArgumentException("activeView can't be null");
-		}
-
-		if (!activeView.equals(this.activeView)) {
+		if (!Objects.equals(activeView, this.activeView)) {
 			CalendarView oldView = this.activeView;
-			this.activeView = activeView;
+			this.activeView = Objects.requireNonNull(activeView);
 			firePropertyChange("activeView", oldView, activeView);
 			fillCalendar();
 			((CardLayout) middlePane.getLayout()).show(middlePane, activeView.toString());
 		}
 	}
 
-	public Calendar getActiveCalendar() {
-		return activeCalendar;
+	public LocalDateTime getActiveDateTime() {
+		return activeDateTime;
 	}
 
-	public void setActiveCalendar(Calendar activeCalendar) {
-		if (activeCalendar == null) {
-			throw new IllegalArgumentException("activeCalendar can't be null");
-		}
-
-		if (!activeCalendar.equals(this.activeCalendar)) {
-			Calendar oldActiveCalendar = this.activeCalendar;
-			this.activeCalendar = activeCalendar;
-			firePropertyChange("activeCalendar", oldActiveCalendar, activeCalendar);
+	public void setActiveDateTime(LocalDateTime activeDateTime) {
+		if (!Objects.equals(activeDateTime, this.activeDateTime)) {
+			LocalDateTime oldActiveCalendar = this.activeDateTime;
+			this.activeDateTime = Objects.requireNonNull(activeDateTime);
+			firePropertyChange("activeDateTime", oldActiveCalendar, activeDateTime);
 			fillCalendar();
 		}
 	}
 
-	public Calendar getSelectedCalendar() {
-		return selectedCalendar;
+	public LocalDateTime getSelectedDateTime() {
+		return selectedDateTime;
 	}
 
-	public void setSelectedCalendar(Calendar selectedCalendar) {
-		if ((selectedCalendar == null && this.selectedCalendar != null) ||
-				(selectedCalendar != null && !selectedCalendar.equals(this.selectedCalendar))) {
-			
-			Calendar oldSelectedCalendar = this.selectedCalendar;
-			this.selectedCalendar = selectedCalendar;
-			firePropertyChange("selectedCalendar", oldSelectedCalendar, selectedCalendar);
-			setActiveCalendar(selectedCalendar != null ? selectedCalendar : new GregorianCalendar());
+	public void setSelectedDateTime(LocalDateTime selectedDateTime) {
+		if (!Objects.equals(selectedDateTime, this.selectedDateTime)) {
+			LocalDateTime oldSelectedCalendar = this.selectedDateTime;
+			this.selectedDateTime = selectedDateTime;
+			firePropertyChange("selectedDateTime", oldSelectedCalendar, selectedDateTime);
+			setActiveDateTime(selectedDateTime != null ? selectedDateTime : LocalDateTime.now());
 		}
 	}
 
-	public Date getDate() {
-		if (selectedCalendar != null)
-			return selectedCalendar.getTime();
-		return null;
+	public LocalDate getSelectedDate() {
+		return selectedDateTime != null ? selectedDateTime.toLocalDate() : null;
 	}
 
-	public void setDate(Date date) {
-		if (date == null) {
-			setSelectedCalendar(null);
-		} else {
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTime(date);
-			setSelectedCalendar(calendar);
-		}
+	public void setSelectedDate(LocalDate selectedDate) {
+		setSelectedDateTime(selectedDate != null ? selectedDate.atStartOfDay() : null);
 	}
 
 	public Color getViewSelectorBackground() {
@@ -146,13 +112,9 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setViewSelectorBackground(Color viewSelectorBackground) {
-		if (viewSelectorBackground == null) {
-			throw new IllegalArgumentException("viewSelectorBackground can't be null");
-		}
-
-		if (!viewSelectorBackground.equals(this.viewSelectorBackground)) {
+		if (!Objects.equals(viewSelectorBackground, this.viewSelectorBackground)) {
 			Color oldViewSelectorBackground = this.viewSelectorBackground;
-			this.viewSelectorBackground = viewSelectorBackground;
+			this.viewSelectorBackground = Objects.requireNonNull(viewSelectorBackground);
 			firePropertyChange("viewSelectorBackground", oldViewSelectorBackground, viewSelectorBackground);
 			topPane.setBackground(viewSelectorBackground);
 		}
@@ -163,13 +125,9 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setViewSelectorForeground(Color viewSelectorForeground) {
-		if (viewSelectorForeground == null) {
-			throw new IllegalArgumentException("viewSelectorForeground can't be null");
-		}
-
-		if (!viewSelectorForeground.equals(this.viewSelectorForeground)) {
+		if (!Objects.equals(viewSelectorForeground, this.viewSelectorForeground)) {
 			Color oldViewSelectorForeground = this.viewSelectorForeground;
-			this.viewSelectorForeground = viewSelectorForeground;
+			this.viewSelectorForeground = Objects.requireNonNull(viewSelectorForeground);
 			firePropertyChange("viewSelectorForeground", oldViewSelectorForeground, viewSelectorForeground);
 			selectViewButton.setForeground(viewSelectorForeground);
 		}
@@ -180,13 +138,9 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setViewSelectorFont(Font viewSelectorFont) {
-		if (viewSelectorFont == null) {
-			throw new IllegalArgumentException("viewSelectorFont can't be null");
-		}
-
-		if (!viewSelectorFont.equals(this.viewSelectorFont)) {
+		if (!Objects.equals(viewSelectorFont, this.viewSelectorFont)) {
 			Font oldViewSelectorFont = this.viewSelectorFont;
-			this.viewSelectorFont = viewSelectorFont;
+			this.viewSelectorFont = Objects.requireNonNull(viewSelectorFont);
 			firePropertyChange("viewSelectorFont", oldViewSelectorFont, viewSelectorFont);
 			selectViewButton.setFont(viewSelectorFont);
 		}
@@ -197,16 +151,11 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setSelectedDateColor(Color selectedDateColor) {
-		if (selectedDateColor == null) {
-			throw new IllegalArgumentException("selectedDateColor can't be null");
-		}
-
-		if (!selectedDateColor.equals(this.selectedDateColor)) {
+		if (!Objects.equals(selectedDateColor, this.selectedDateColor)) {
 			Color oldMonthYearBackground = this.selectedDateColor;
-			this.selectedDateColor = selectedDateColor;
+			this.selectedDateColor = Objects.requireNonNull(selectedDateColor);
 			firePropertyChange("selectedDateColor", oldMonthYearBackground, selectedDateColor);
-			if (selectedDateButton != null)
-				selectedDateButton.setForeground(selectedDateColor);
+			if (selectedDateButton != null) selectedDateButton.setForeground(selectedDateColor);
 		}
 	}
 
@@ -215,16 +164,11 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setActiveDateColor(Color activeDateColor) {
-		if (activeDateColor == null) {
-			throw new IllegalArgumentException("activeDateColor can't be null");
-		}
-
-		if (!activeDateColor.equals(this.activeDateColor)) {
+		if (!Objects.equals(activeDateColor, this.activeDateColor)) {
 			Color oldMonthYearBackground = this.activeDateColor;
-			this.activeDateColor = activeDateColor;
+			this.activeDateColor = Objects.requireNonNull(activeDateColor);
 			firePropertyChange("activeDateColor", oldMonthYearBackground, activeDateColor);
-			if (activeDateButton != null)
-				activeDateButton.setForeground(activeDateColor);
+			if (activeDateButton != null) activeDateButton.setForeground(activeDateColor);
 		}
 	}
 
@@ -233,13 +177,9 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setRolloverDateColor(Color rolloverDateColor) {
-		if (rolloverDateColor == null) {
-			throw new IllegalArgumentException("rolloverDateColor can't be null");
-		}
-
-		if (!rolloverDateColor.equals(this.rolloverDateColor)) {
+		if (!Objects.equals(rolloverDateColor, this.rolloverDateColor)) {
 			Color oldMonthYearBackground = this.rolloverDateColor;
-			this.rolloverDateColor = rolloverDateColor;
+			this.rolloverDateColor = Objects.requireNonNull(rolloverDateColor);
 			firePropertyChange("rolloverDateColor", oldMonthYearBackground, rolloverDateColor);
 		}
 	}
@@ -307,7 +247,7 @@ public class JCalendar extends JPanel {
 		super.setFont(font);
 
 		if (dayOfWeekLabels != null) {
-			Font dayOfWeekFont = new Font(font.getFamily(), 1, font.getSize());
+			Font dayOfWeekFont = new Font(font.getFamily(), Font.BOLD, font.getSize());
 			for (JLabel dayOfWeekLabel : dayOfWeekLabels) {
 				dayOfWeekLabel.setFont(dayOfWeekFont);
 			}
@@ -348,14 +288,14 @@ public class JCalendar extends JPanel {
 		if (todayButton != null)
 			todayButton.setFont(font);
 	}
-	
+
 	public void clearHighlight() {
 		clearHighlight(dateButtons[0][0]);
 		clearHighlight(monthButtons[0][0]);
 		clearHighlight(yearButtons[0][0]);
 		clearHighlight(decadeButtons[0][0]);
 	}
-	
+
 	private void clearHighlight(JButton button) {
 		for (MouseListener listener : button.getMouseListeners()) {
 			if (listener instanceof FlatButtonMouseAdapter)
@@ -374,13 +314,13 @@ public class JCalendar extends JPanel {
 		gbc.insets = new Insets(2, 2, 2, 2);
 
 		previousPeriodButton = createGraphicButton("previous.png", "previous_hot.png", "previous_pressed.png");
-		previousPeriodButton.setPreferredSize(new Dimension(16, 16));
+		previousPeriodButton.setPreferredSize(BUTTON_SIZE);
 		previousPeriodButton.addActionListener(new DateTranslation(this, 0, -1));
 		topPane.add(previousPeriodButton, gbc);
 
 		gbc.gridx = 2;
 		nextPeriodButton = createGraphicButton("next.png", "next_hot.png", "next_pressed.png");
-		nextPeriodButton.setPreferredSize(new Dimension(16, 16));
+		nextPeriodButton.setPreferredSize(BUTTON_SIZE);
 		nextPeriodButton.addActionListener(new DateTranslation(this, 0, 1));
 		topPane.add(nextPeriodButton, gbc);
 
@@ -389,7 +329,7 @@ public class JCalendar extends JPanel {
 		selectViewButton = createFlatButton("");
 		selectViewButton.setFont(viewSelectorFont);
 		selectViewButton.setForeground(viewSelectorForeground);
-		selectViewButton.setCursor(Cursor.getPredefinedCursor(12));
+		selectViewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		selectViewButton.addActionListener(e -> {
 			requestFocusInWindow();
 			JCalendar.this.switchActiveView();
@@ -405,20 +345,18 @@ public class JCalendar extends JPanel {
 		centuryPane = new JPanel(new GridLayout(3, 4));
 		centuryPane.setOpaque(false);
 		middlePane.add(centuryPane, CalendarView.CENTURY.toString());
-		
+
 		MouseListener decadeMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
 		ActionListener decadeActionListener = e -> {
 			requestFocusInWindow();
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
-			setActiveCalendar(calendar);
+			setActiveDateTime(LocalDateTime.parse(e.getActionCommand()));
 			setActiveView(CalendarView.DECADE);
 		};
-		
+
 		decadeButtons = new JButton[3][4];
-		for (int i = 0; i < decadeButtons.length; i++) {
-			for (int j = 0; j < decadeButtons[0].length; j++) {
+		for (int i = 0; i < decadeButtons.length; ++i) {
+			for (int j = 0; j < decadeButtons[i].length; ++j) {
 				decadeButtons[i][j] = createFlatButton("");
 				decadeButtons[i][j].addMouseListener(decadeMouseListener);
 				decadeButtons[i][j].addActionListener(decadeActionListener);
@@ -429,20 +367,18 @@ public class JCalendar extends JPanel {
 		decadePane = new JPanel(new GridLayout(3, 4));
 		decadePane.setOpaque(false);
 		middlePane.add(decadePane, CalendarView.DECADE.toString());
-		
+
 		MouseListener yearMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
 		ActionListener yearActionListener = e -> {
 			requestFocusInWindow();
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
-			setActiveCalendar(calendar);
+			setActiveDateTime(LocalDateTime.parse(e.getActionCommand()));
 			setActiveView(CalendarView.YEAR);
 		};
-		
+
 		yearButtons = new JButton[3][4];
-		for (int i = 0; i < yearButtons.length; i++) {
-			for (int j = 0; j < yearButtons[0].length; j++) {
+		for (int i = 0; i < yearButtons.length; ++i) {
+			for (int j = 0; j < yearButtons[0].length; ++j) {
 				yearButtons[i][j] = createFlatButton("");
 				yearButtons[i][j].addMouseListener(yearMouseListener);
 				yearButtons[i][j].addActionListener(yearActionListener);
@@ -453,20 +389,18 @@ public class JCalendar extends JPanel {
 		yearPane = new JPanel(new GridLayout(3, 4));
 		yearPane.setOpaque(false);
 		middlePane.add(yearPane, CalendarView.YEAR.toString());
-		
+
 		MouseListener monthMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
 		ActionListener monthActionListener = e -> {
 			requestFocusInWindow();
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
-			setActiveCalendar(calendar);
+			setActiveDateTime(LocalDateTime.parse(e.getActionCommand()));
 			setActiveView(CalendarView.MONTH);
 		};
-		
+
 		monthButtons = new JButton[3][4];
-		for (int i = 0; i < monthButtons.length; i++) {
-			for (int j = 0; j < monthButtons[0].length; j++) {
+		for (int i = 0; i < monthButtons.length; ++i) {
+			for (int j = 0; j < monthButtons[0].length; ++j) {
 				monthButtons[i][j] = createFlatButton("");
 				monthButtons[i][j].addMouseListener(monthMouseListener);
 				monthButtons[i][j].addActionListener(monthActionListener);
@@ -479,23 +413,21 @@ public class JCalendar extends JPanel {
 		middlePane.add(monthPane, CalendarView.MONTH.toString());
 
 		dayOfWeekLabels = new JLabel[7];
-		for (int i = 0; i < dayOfWeekLabels.length; i++) {
-			dayOfWeekLabels[i] = getDayOfWeekLabel(i, 0);
+		for (int i = 0; i < dayOfWeekLabels.length; ++i) {
+			dayOfWeekLabels[i] = getDayOfWeekLabel(i + 1);
 			monthPane.add(dayOfWeekLabels[i]);
 		}
-		
+
 		MouseListener dateMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
 		ActionListener dateActionListener = e -> {
 			requestFocusInWindow();
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTimeInMillis(Long.parseLong(e.getActionCommand()));
-			setSelectedCalendar(calendar);
+			setSelectedDateTime(LocalDateTime.parse(e.getActionCommand()));
 		};
-		
+
 		dateButtons = new JButton[6][7];
-		for (int i = 0; i < dateButtons.length; i++) {
-			for (int j = 0; j < dateButtons[0].length; j++) {
+		for (int i = 0; i < dateButtons.length; ++i) {
+			for (int j = 0; j < dateButtons[0].length; ++j) {
 				dateButtons[i][j] = createFlatButton("");
 				dateButtons[i][j].addMouseListener(dateMouseListener);
 				dateButtons[i][j].addActionListener(dateActionListener);
@@ -505,24 +437,24 @@ public class JCalendar extends JPanel {
 
 		bottomPane = new JPanel();
 		bottomPane.setOpaque(false);
-		add(bottomPane, "Last");
+		add(bottomPane, BorderLayout.PAGE_END);
 
 		todayButton = createFlatButton(String.format(
 				resources.getString("todayFormat"),
-				DateFormat.getDateInstance().format(new Date())));
+				DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDate.now())));
 
-		todayButton.setCursor(Cursor.getPredefinedCursor(12));
+		todayButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		todayButton.addActionListener(e -> {
 			requestFocusInWindow();
 			setActiveView(CalendarView.MONTH);
-			setSelectedCalendar(new GregorianCalendar());
+			setSelectedDateTime(LocalDateTime.now());
 		});
 		bottomPane.add(todayButton);
 
 		setFocusable(true);
-		setBackground(Color.WHITE);
-		setForeground(Color.BLACK);
-		setFont(new Font("SansSerif", Font.PLAIN, 13));
+		setBackground(UIManager.getColor("Table.background"));
+		setForeground(UIManager.getColor("Table.foreground"));
+		setFont(UIManager.getFont("MenuItem.font"));
 		setPreferredSize(new Dimension(240, 240));
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -530,7 +462,7 @@ public class JCalendar extends JPanel {
 				requestFocusInWindow();
 			}
 		});
-		
+
 		InputMap inputMap = getInputMap();
 		inputMap.put(KeyStroke.getKeyStroke("pressed LEFT"), "left");
 		inputMap.put(KeyStroke.getKeyStroke("pressed RIGHT"), "right");
@@ -562,21 +494,18 @@ public class JCalendar extends JPanel {
 		}
 	}
 
-	private JLabel getDayOfWeekLabel(int dayOfWeek, int alignment) {
-		Calendar calendar = new GregorianCalendar();
-		calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek + calendar.getFirstDayOfWeek());
-		String text = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, getDefaultLocale());
+	private JLabel getDayOfWeekLabel(long dayOfWeek) {
+		LocalDateTime dateTime = LocalDateTime.now().with(ChronoField.DAY_OF_WEEK, dayOfWeek);
+		String text = dateTime.getDayOfWeek().getDisplayName(TextStyle.SHORT, getDefaultLocale());
 
-		JLabel label = new JLabel(text, alignment) {
-			private static final long serialVersionUID = 1L;
-
+		JLabel label = new JLabel(text, SwingConstants.CENTER) {
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				g.fillRect(0, getHeight() - 1, getWidth(), 1);	// Trait noir en dessous
+				g.fillRect(0, getHeight() - 1, getWidth(), 1);    // Trait noir en dessous
 			}
 		};
-		
+
 		label.setFont(new Font(getFont().getFamily(), Font.BOLD, getFont().getSize()));
 		label.setForeground(getForeground());
 		return label;
@@ -602,137 +531,144 @@ public class JCalendar extends JPanel {
 	}
 
 	private void fillCalendar() {
-		SimpleDateFormat dateFormat = null;
+		DateTimeFormatter formatter = null;
 		int year0 = 0;
 		int year9 = 9;
 
 		switch (activeView) {
 			case CENTURY:
 				fillCenturyCalendar();
-				year0 = 100 * (activeCalendar.get(Calendar.YEAR) / 100);
+				year0 = 100 * (activeDateTime.getYear() / 100);
 				year9 = year0 + 99;
 				break;
 			case DECADE:
 				fillDecadeCalendar();
-				year0 = 10 * (activeCalendar.get(Calendar.YEAR) / 10);
+				year0 = 10 * (activeDateTime.getYear() / 10);
 				year9 = year0 + 9;
 				break;
 			case YEAR:
 				fillYearCalendar();
-				dateFormat = new SimpleDateFormat("yyyy");
+				formatter = DateTimeFormatter.ofPattern("yyyy");
 				break;
 			default:
 				fillMonthCalendar();
-				dateFormat = new SimpleDateFormat(resources.getString("monthYearPattern"));
+				formatter = DateTimeFormatter.ofPattern(resources.getString("monthYearPattern"));
 				break;
 		}
 
-		if (dateFormat != null)
-			selectViewButton.setText(dateFormat.format(activeCalendar.getTime()));
+		if (formatter != null)
+			selectViewButton.setText(formatter.format(activeDateTime));
 		else
 			selectViewButton.setText(year0 + "-" + year9);
 	}
 
 	private void fillCenturyCalendar() {
-		Calendar clone = (Calendar) activeCalendar.clone();
-		clone.set(Calendar.YEAR, 100 * (clone.get(Calendar.YEAR) / 100) - 10);
+		LocalDateTime clone = activeDateTime.withYear(100 * (activeDateTime.getYear() / 100) - 10);
 
 		for (int y = 0; y < decadeButtons.length; y++)
 			for (int x = 0; x < decadeButtons[0].length; x++) {
-				int year0 = clone.get(Calendar.YEAR);
+				int year0 = clone.getYear();
 				int year9 = year0 + 9;
 				decadeButtons[y][x].setText("<html>" + year0 + "<br>" + year9 + "</html>");
-				decadeButtons[y][x].setActionCommand("" + clone.getTimeInMillis());
+				decadeButtons[y][x].setActionCommand(clone.toString());
 
-				if (clone.get(1) / 10 == activeCalendar.get(1) / 10) {
+				if (clone.getYear() / 10 == activeDateTime.getYear() / 10) {
 					activeDateButton = decadeButtons[y][x];
 					activeDateButton.setForeground(activeDateColor);
 				} else if ((y == 0 && x == 0) || (y == 2 && x == 3)) {
-					decadeButtons[y][x].setForeground(Color.GRAY);
+					decadeButtons[y][x].setForeground(inactiveDateColor);
 				} else {
 					decadeButtons[y][x].setForeground(getForeground());
 				}
 
-				clone.add(Calendar.YEAR, 10);
+				clone = clone.plusYears(10);
 			}
 	}
 
 	private void fillDecadeCalendar() {
-		Calendar clone = (Calendar) activeCalendar.clone();
-		clone.set(Calendar.YEAR, 10 * (clone.get(Calendar.YEAR) / 10) - 1);
+		LocalDateTime clone = activeDateTime.withYear(10 * (activeDateTime.getYear() / 10) - 1);
 
 		for (int y = 0; y < yearButtons.length; y++)
 			for (int x = 0; x < yearButtons[0].length; x++) {
-				yearButtons[y][x].setText("" + clone.get(Calendar.YEAR));
-				yearButtons[y][x].setActionCommand("" + clone.getTimeInMillis());
+				yearButtons[y][x].setText(String.valueOf(clone.getYear()));
+				yearButtons[y][x].setActionCommand(clone.toString());
 
-				if (clone.get(1) == activeCalendar.get(1)) {
+				if (clone.getYear() == activeDateTime.getYear()) {
 					activeDateButton = yearButtons[y][x];
 					activeDateButton.setForeground(activeDateColor);
 				} else if ((y == 0 && x == 0) || (y == 2 && x == 3)) {
-					yearButtons[y][x].setForeground(Color.GRAY);
+					yearButtons[y][x].setForeground(inactiveDateColor);
 				} else {
 					yearButtons[y][x].setForeground(getForeground());
 				}
 
-				clone.add(Calendar.YEAR, 1);
+				clone = clone.plusYears(1);
 			}
 	}
 
 	private void fillYearCalendar() {
-		Calendar clone = (Calendar) activeCalendar.clone();
-		clone.set(Calendar.MONTH, 0);
+		LocalDateTime clone = activeDateTime.withMonth(1);
 
-		for (int y = 0; y < monthButtons.length; y++)
-			for (int x = 0; x < monthButtons[0].length; x++) {
-				monthButtons[y][x].setText(clone.getDisplayName(Calendar.MONTH, Calendar.SHORT, getDefaultLocale()));
-				monthButtons[y][x].setActionCommand("" + clone.getTimeInMillis());
+		for (int y = 0; y < monthButtons.length; ++y) {
+			for (int x = 0; x < monthButtons[y].length; ++x) {
+				monthButtons[y][x].setText(clone.getMonth().getDisplayName(TextStyle.SHORT, getDefaultLocale()));
+				monthButtons[y][x].setActionCommand(clone.toString());
 
-				if (clone.equals(activeCalendar)) {
+				if (clone.equals(activeDateTime)) {
 					activeDateButton = monthButtons[y][x];
 					activeDateButton.setForeground(activeDateColor);
 				} else {
 					monthButtons[y][x].setForeground(getForeground());
 				}
 
-				clone.add(Calendar.MONTH, 1);
+				clone = clone.plusMonths(1L);
 			}
+		}
 	}
 
 	private void fillMonthCalendar() {
-		int yRef = activeCalendar.get(Calendar.WEEK_OF_MONTH) - 1;
-		int xRef = (activeCalendar.get(Calendar.DAY_OF_WEEK) - activeCalendar.getFirstDayOfWeek() + 7) % 7;
+		int yRef = activeDateRowIndex();
+		int xRef = activeDateTime.get(ChronoField.DAY_OF_WEEK) - 1;
 
-		Calendar clone = (Calendar) activeCalendar.clone();
-		clone.add(Calendar.DATE, -(7 * yRef + xRef));
+		LocalDateTime clone = activeDateTime.plusDays(-7L * yRef - xRef);
 
-		for (int y = 0; y < dateButtons.length; y++)
-			for (int x = 0; x < dateButtons[0].length; x++) {
-				dateButtons[y][x].setText("" + clone.get(Calendar.DATE));
-				dateButtons[y][x].setActionCommand("" + clone.getTimeInMillis());
+		for (int y = 0; y < dateButtons.length; ++y)
+			for (int x = 0; x < dateButtons[y].length; ++x) {
+				dateButtons[y][x].setText(String.valueOf(clone.getDayOfMonth()));
+				dateButtons[y][x].setActionCommand(clone.toString());
 
-				if (clone.equals(selectedCalendar)) {
+				if (clone.equals(selectedDateTime)) {
 					selectedDateButton = dateButtons[y][x];
 					selectedDateButton.setForeground(selectedDateColor);
-				} else if (clone.equals(activeCalendar)) {
+				} else if (clone.equals(activeDateTime)) {
 					activeDateButton = dateButtons[y][x];
 					activeDateButton.setForeground(activeDateColor);
-				} else if (clone.get(Calendar.MONTH) == activeCalendar.get(Calendar.MONTH)) {
+				} else if (clone.getMonth().equals(activeDateTime.getMonth())) {
 					dateButtons[y][x].setForeground(getForeground());
 				} else {
-					dateButtons[y][x].setForeground(Color.GRAY);
+					dateButtons[y][x].setForeground(inactiveDateColor);
 				}
 
-				clone.add(Calendar.DATE, 1);
+				clone = clone.plusDays(1L);
 			}
 	}
+
+	private int activeDateRowIndex() {
+		LocalDateTime nextSunday = activeDateTime.with(ChronoField.DAY_OF_WEEK, 7);
+		int nextSundayDays = nextSunday.getDayOfMonth();
+
+		if (!nextSunday.getMonth().equals(activeDateTime.getMonth()))
+			nextSundayDays += activeDateTime.getMonth().length(activeDateTime.toLocalDate().isLeapYear());
+
+		return (nextSundayDays - 1) / 7;
+	}
+
 
 	protected static class FlatButtonMouseAdapter extends MouseAdapter {
 		private static final String SAVED_BG = "JCalendar.savedBackground";
 		private static final String SAVED_CAF = "JCalendar.savedContentAreaFilled";
-		
+
 		private final Color highlightColor;
-		
 		private JButton highlightedButton = null;
 
 		public FlatButtonMouseAdapter(Color highlightColor) {
@@ -749,21 +685,21 @@ public class JCalendar extends JPanel {
 		public void mouseExited(MouseEvent e) {
 			unHighlight((JButton) e.getSource());
 		}
-		
+
 		public void clearHighlight() {
 			if (highlightedButton != null) {
 				unHighlight(highlightedButton);
 				highlightedButton = null;
 			}
 		}
-		
+
 		private void highlight(JButton button) {
 			button.putClientProperty(SAVED_BG, button.getBackground());
 			button.putClientProperty(SAVED_CAF, button.isContentAreaFilled());
 			button.setBackground(highlightColor);
 			button.setContentAreaFilled(true);
 		}
-		
+
 		private void unHighlight(JButton button) {
 			if (button.isContentAreaFilled() && button.getBackground() == highlightColor) {
 				button.setBackground((Color) button.getClientProperty(SAVED_BG));
@@ -773,8 +709,6 @@ public class JCalendar extends JPanel {
 	}
 
 	protected static class ActiveDateSelection extends AbstractAction {
-		private static final long serialVersionUID = 1L;
-		
 		private JCalendar monthCalendar;
 
 		public ActiveDateSelection(JCalendar monthCalendar) {
@@ -794,17 +728,15 @@ public class JCalendar extends JPanel {
 					monthCalendar.setActiveView(CalendarView.MONTH);
 					break;
 				default:
-					monthCalendar.setSelectedCalendar(monthCalendar.activeCalendar);
+					monthCalendar.setSelectedDateTime(monthCalendar.activeDateTime);
 					monthCalendar.fillCalendar();
 			}
 		}
 	}
 
 	protected static class DateTranslation extends AbstractAction {
-		private static final long serialVersionUID = 1L;
-		
 		private JCalendar monthCalendar;
-		private int field;
+		private int field; // 0: PAGE; 1: COLUMN; 2: ROW
 		private int amount;
 
 		public DateTranslation(JCalendar monthCalendar, int field, int amount) {
@@ -815,39 +747,54 @@ public class JCalendar extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 			monthCalendar.requestFocusInWindow();
-			Calendar clone = (Calendar) monthCalendar.activeCalendar.clone();
+			LocalDateTime clone = monthCalendar.activeDateTime;
 
 			switch (field) {
 				case 0:
+					switch (monthCalendar.activeView) {
+						case MONTH:
+							clone = clone.plusMonths(amount);
+							break;
+						case YEAR:
+							clone = clone.plusYears(amount);
+							break;
+						case DECADE:
+							clone = clone.plusYears(10L * amount);
+							break;
+						default:
+							clone = clone.plusYears(100L * amount);
+							break;
+					}
+					break;
 				case 1:
 					switch (monthCalendar.activeView) {
 						case MONTH:
-							clone.add(Calendar.MONTH, amount);
+							clone = clone.plusDays(amount);
 							break;
 						case YEAR:
-							clone.add(Calendar.YEAR, amount);
+							clone = clone.plusMonths(amount);
 							break;
 						case DECADE:
-							clone.add(Calendar.YEAR, amount);
+							clone = clone.plusYears(amount);
 							break;
 						default:
-							clone.add(Calendar.YEAR, 10 * amount);
+							clone = clone.plusYears(10L * amount);
 							break;
-						}
+					}
 					break;
 				case 2:
 					switch (monthCalendar.activeView) {
 						case MONTH:
-							clone.add(Calendar.WEEK_OF_MONTH, amount);
+							clone = clone.plusWeeks(amount);
 							break;
 						case YEAR:
-							clone.add(Calendar.MONTH, 4 * amount);
+							clone = clone.plusMonths(4L * amount);
 							break;
 						case DECADE:
-							clone.add(Calendar.YEAR, 4 * amount);
+							clone = clone.plusYears(4L * amount);
 							break;
 						default:
-							clone.add(Calendar.YEAR, 40 * amount);
+							clone = clone.plusYears(40L * amount);
 							break;
 					}
 					break;
@@ -856,7 +803,7 @@ public class JCalendar extends JPanel {
 					return;
 			}
 
-			monthCalendar.setActiveCalendar(clone);
+			monthCalendar.setActiveDateTime(clone);
 		}
 	}
 }

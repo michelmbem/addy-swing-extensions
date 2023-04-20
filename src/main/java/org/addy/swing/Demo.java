@@ -4,18 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Demo {
 	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni" };
-	
+
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ignore) {
 		}
-		
+
 		final JFrame frame = new JFrame("Addy Swing Demo");
 		frame.setSize(600, 600);
 		frame.setLocationRelativeTo(null);
@@ -69,7 +69,7 @@ public class Demo {
 			dlg.setSize(350, 350);
 			dlg.setLocationRelativeTo(frame);
 			dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			dlg.add(getCalendarComboPanel(e1 -> calendar.setDate((Date) e1.getNewValue())), BorderLayout.PAGE_START);
+			dlg.add(getCalendarComboPanel(e1 -> calendar.setSelectedDateTime((LocalDateTime) e1.getNewValue())), BorderLayout.PAGE_START);
 			dlg.add(calendar, BorderLayout.CENTER);
 			dlg.setVisible(true);
 		});
@@ -77,7 +77,7 @@ public class Demo {
 
 		frame.setVisible(true);
 	}
-	
+
 	private static Image loadImage(String path) {
 		return new ImageIcon(Objects.requireNonNull(Demo.class.getClassLoader().getResource(path))).getImage();
 	}
@@ -86,8 +86,7 @@ public class Demo {
 		JPanel panel = new JPanel();
 		panel.add(new JLabel("Calendar Combo:"));
 		JCalendarCombo calendarCombo = new JCalendarCombo();
-		calendarCombo.setCheckBoxVisible(true);
-		calendarCombo.addPropertyChangeListener("date", listener);
+		calendarCombo.addPropertyChangeListener("dateTime", listener);
 		panel.add(calendarCombo);
 		return panel;
 	}

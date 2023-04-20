@@ -1,112 +1,84 @@
 package org.addy.swing;
 
+import org.addy.util.TypeConverter;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
-public class JCalendarCombo extends JPanel implements ChangeListener, PropertyChangeListener {
-	private static final long serialVersionUID = 1L;
-	
+;
+
+public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 	private static final String POPUP_MENU_CANCEL_PROPERTY = "JPopupMenu.firePopupMenuCanceled";
-	private static final String DEFAULT_DATE_FORMAT = "d MMMM yyyy";
-	
-	private Date date;
-	private String dateFormat;
-	private boolean checkBoxVisible;
-	private boolean checked;
-	
-	private JCheckBox checkBox;
+	private static final String DEFAULT_DATE_TIME_FORMAT = "d MMMM yyyy";
+
+	private LocalDateTime dateTime;
+	private String dateTimeFormat;
+
 	private JSpinner spinner;
 	private JButton button;
 	private JPopupMenu popupMenu;
 	private JCalendar calendar;
-	
+
 	private boolean allowPopupHide;
 
 	public JCalendarCombo() {
-		this(new Date(), DEFAULT_DATE_FORMAT, false);
+		this(LocalDateTime.now(), DEFAULT_DATE_TIME_FORMAT, false);
 	}
 
-	public JCalendarCombo(Date date) {
-		this(date, DEFAULT_DATE_FORMAT, false);
+	public JCalendarCombo(LocalDateTime dateTime) {
+		this(dateTime, DEFAULT_DATE_TIME_FORMAT, false);
 	}
 
-	public JCalendarCombo(Date date, String dateFormat) {
-		this(date, dateFormat, false);
+	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat) {
+		this(dateTime, dateTimeFormat, false);
 	}
 
-	public JCalendarCombo(Date date, String dateFormat, boolean checkBoxVisible) {
+	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat, boolean checkBoxVisible) {
 		super(new BorderLayout());
 		initGUI();
-		setDate(date);
-		setDateFormat(dateFormat);
-		setCheckBoxVisible(checkBoxVisible);
+		setDateTime(dateTime);
+		setDateTimeFormat(dateTimeFormat);
 	}
 
-	public Date getDate() {
-		return date;
+	public LocalDateTime getDateTime() {
+		return dateTime;
 	}
 
-	public void setDate(Date date) {
-		if (date == null) {
-			throw new IllegalArgumentException("date can't be null");
-		}
-
-		if (!date.equals(this.date)) {
-			Date oldDate = this.date;
-			this.date = date;
-			firePropertyChange("date", oldDate, date);
-			spinner.setValue(date);
-			setChecked(true);
+	public void setDateTime(LocalDateTime dateTime) {
+		if (!Objects.equals(dateTime, this.dateTime)) {
+			LocalDateTime oldDate = this.dateTime;
+			this.dateTime = dateTime;
+			firePropertyChange("dateTime", oldDate, dateTime);
+			spinner.setValue(TypeConverter.toDate(dateTime));
 		}
 	}
 
-	public String getDateFormat() {
-		return dateFormat;
+	public LocalDate getDate() {
+		return dateTime != null ? dateTime.toLocalDate() : null;
 	}
 
-	public void setDateFormat(String dateFormat) {
-		if ((dateFormat == null && this.dateFormat != null) ||
-				(dateFormat != null && !dateFormat.equals(this.dateFormat))) {
-			
-			String oldDateFormat = this.dateFormat;
-			this.dateFormat = dateFormat;
-			firePropertyChange("dateFormat", oldDateFormat, dateFormat);
+	public void setDate(LocalDate date) {
+		setDateTime(date != null ? date.atStartOfDay() : null);
+	}
+
+	public String getDateTimeFormat() {
+		return dateTimeFormat;
+	}
+
+	public void setDateTimeFormat(String dateTimeFormat) {
+		if (!Objects.equals(dateTimeFormat, this.dateTimeFormat)) {
+			String oldDateFormat = this.dateTimeFormat;
+			this.dateTimeFormat = Objects.requireNonNull(dateTimeFormat);
+			firePropertyChange("dateTimeFormat", oldDateFormat, dateTimeFormat);
 			updateDateEditor();
-		}
-	}
-
-	public boolean isCheckBoxVisible() {
-		return checkBoxVisible;
-	}
-
-	public void setCheckBoxVisible(boolean checkBoxVisible) {
-		if (checkBoxVisible != this.checkBoxVisible) {
-			this.checkBoxVisible = checkBoxVisible;
-			firePropertyChange("checkBoxVisible", !checkBoxVisible, checkBoxVisible);
-			checkBox.setVisible(checkBoxVisible);
-		}
-	}
-
-	public boolean isChecked() {
-		return checked;
-	}
-
-	public void setChecked(boolean checked) {
-		if (checked != this.checked) {
-			this.checked = checked;
-			firePropertyChange("checked", !checked, checked);
-			checkBox.setSelected(checked);
-			spinner.setEnabled(checked);
 		}
 	}
 
@@ -153,12 +125,8 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	}
 
 	public void showPopupMenu() {
-		setChecked(true);
 		allowPopupHide = false;
-
-		Calendar timestamp = new GregorianCalendar();
-		timestamp.setTime(date);
-		calendar.setActiveCalendar(timestamp);
+		calendar.setActiveDateTime(dateTime != null ? dateTime : LocalDateTime.now());
 		calendar.setActiveView(CalendarView.MONTH);
 
 		Point pt = getPopupLocation();
@@ -180,33 +148,19 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	}
 
 	@Override
-	public void stateChanged(ChangeEvent e) {
-		if (e.getSource() == checkBox)
-			setChecked(checkBox.isSelected());
-	}
-
-	@Override
 	public void propertyChange(PropertyChangeEvent e) {
-		if (e.getSource() == calendar && e.getPropertyName().equals("selectedCalendar")) {
+		if (e.getSource() == calendar && e.getPropertyName().equals("selectedDateTime")) {
 			hidePopupMenu();
-			setDate(calendar.getDate());
+			setDateTime(calendar.getSelectedDateTime());
 		}
 	}
 
 	private void initGUI() {
-		checkBox = new JCheckBox();
-		checkBox.setVisible(false);
-		checkBox.setFocusable(false);
-		checkBox.setBorderPainted(false);
-		checkBox.setContentAreaFilled(false);
-		checkBox.addChangeListener(this);
-		add(checkBox, BorderLayout.LINE_START);
-
 		Border emptyBorder = new EmptyBorder(0, 0, 0, 0);
 		spinner = new JSpinner(new SpinnerDateModel());
 		spinner.setBorder(emptyBorder);
 		spinner.getEditor().setBorder(emptyBorder);
-		spinner.addChangeListener(e -> setDate((Date) spinner.getValue()));
+		spinner.addChangeListener(e -> setDateTime(TypeConverter.toLocalDateTime(spinner.getValue())));
 		add(spinner, BorderLayout.CENTER);
 
 		button = new BasicArrowButton(SwingConstants.SOUTH);
@@ -238,11 +192,10 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 
 		setBackground(UIManager.getColor("ComboBox.background"));
 		setBorder(UIManager.getBorder("ComboBox.border"));
-		setChecked(true);
 	}
 
 	private void updateDateEditor() {
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateFormat);
+		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateTimeFormat);
 		spinner.setEditor(dateEditor);
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
 	}
@@ -251,15 +204,15 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension calendarSize = calendar.getPreferredSize();
 		Point pt = new Point(0, getHeight());
-		
+
 		Point ptScr = (Point) pt.clone();
 		SwingUtilities.convertPointToScreen(ptScr, this);
-		
+
 		if (ptScr.x + calendarSize.width > screenSize.width)
 			pt.x = getWidth() - calendarSize.width;
 		if (ptScr.y + calendarSize.height > screenSize.height)
 			pt.y = -calendarSize.height;
-		
+
 		return pt;
 	}
 }

@@ -34,3 +34,5 @@ i
 	Readme.md,0\c\0c1945d7443c2e154bd3e421c0d438bd4086d8c3
 e
 5src/main/java/org/addy/swing/SimpleComboBoxModel.java,4\8\48cad9e01fc835c46b6fa3f35237fefe65e391f3
+\
+,src/main/java/org/addy/swing/KnownColor.java,e\c\ece8a8aa95b43c5a1b93e8bdf0eae6c4bd8481af
