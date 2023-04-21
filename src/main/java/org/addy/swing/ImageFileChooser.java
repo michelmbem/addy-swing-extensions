@@ -1,10 +1,13 @@
-package org.addy.swing.filechooser;
+package org.addy.swing;
 
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
+import org.addy.swing.filechooser.ImageFileView;
+import org.addy.swing.filechooser.ImageFilter;
+import org.addy.swing.filechooser.ImagePreview;
 import org.addy.util.FileUtil;
 
 public class ImageFileChooser extends JFileChooser {

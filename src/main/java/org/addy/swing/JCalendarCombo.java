@@ -1,7 +1,6 @@
 package org.addy.swing;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -9,78 +8,79 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.Objects;
 
 public class JCalendarCombo extends JPanel implements ChangeListener, PropertyChangeListener {
-	private static final long serialVersionUID = 1L;
-	
 	private static final String POPUP_MENU_CANCEL_PROPERTY = "JPopupMenu.firePopupMenuCanceled";
-	private static final String DEFAULT_DATE_FORMAT = "d MMMM yyyy";
-	
-	private Date date;
-	private String dateFormat;
+	private static final String DEFAULT_DATE_TIME_FORMAT = "d MMMM yyyy";
+
+	private LocalDateTime dateTime;
+	private String dateTimeFormat;
 	private boolean checkBoxVisible;
 	private boolean checked;
-	
+
 	private JCheckBox checkBox;
 	private JSpinner spinner;
 	private JButton button;
 	private JPopupMenu popupMenu;
 	private JCalendar calendar;
-	
+
 	private boolean allowPopupHide;
 
 	public JCalendarCombo() {
-		this(new Date(), DEFAULT_DATE_FORMAT, false);
+		this(LocalDateTime.now(), DEFAULT_DATE_TIME_FORMAT, false);
 	}
 
-	public JCalendarCombo(Date date) {
-		this(date, DEFAULT_DATE_FORMAT, false);
+	public JCalendarCombo(LocalDateTime dateTime) {
+		this(dateTime, DEFAULT_DATE_TIME_FORMAT, false);
 	}
 
-	public JCalendarCombo(Date date, String dateFormat) {
-		this(date, dateFormat, false);
+	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat) {
+		this(dateTime, dateTimeFormat, false);
 	}
 
-	public JCalendarCombo(Date date, String dateFormat, boolean checkBoxVisible) {
-		super(new BorderLayout());
+	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat, boolean checkBoxVisible) {
+		super(new GridBagLayout());
 		initGUI();
-		setDate(date);
-		setDateFormat(dateFormat);
-		setCheckBoxVisible(checkBoxVisible);
+		setDateTime(dateTime);
+		setDateTimeFormat(dateTimeFormat);
 	}
 
-	public Date getDate() {
-		return date;
+	public LocalDateTime getDateTime() {
+		return dateTime;
 	}
 
-	public void setDate(Date date) {
-		if (date == null) {
-			throw new IllegalArgumentException("date can't be null");
-		}
-
-		if (!date.equals(this.date)) {
-			Date oldDate = this.date;
-			this.date = date;
-			firePropertyChange("date", oldDate, date);
-			spinner.setValue(date);
+	public void setDateTime(LocalDateTime dateTime) {
+		if (!Objects.equals(dateTime, this.dateTime)) {
+			LocalDateTime oldDate = this.dateTime;
+			this.dateTime = dateTime;
+			firePropertyChange("dateTime", oldDate, dateTime);
+			spinner.setValue(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()));
 			setChecked(true);
 		}
 	}
 
-	public String getDateFormat() {
-		return dateFormat;
+	public LocalDate getDate() {
+		return dateTime != null ? dateTime.toLocalDate() : null;
 	}
 
-	public void setDateFormat(String dateFormat) {
-		if ((dateFormat == null && this.dateFormat != null) ||
-				(dateFormat != null && !dateFormat.equals(this.dateFormat))) {
-			
-			String oldDateFormat = this.dateFormat;
-			this.dateFormat = dateFormat;
-			firePropertyChange("dateFormat", oldDateFormat, dateFormat);
+	public void setDate(LocalDate date) {
+		setDateTime(date != null ? date.atStartOfDay() : null);
+	}
+
+	public String getDateTimeFormat() {
+		return dateTimeFormat;
+	}
+
+	public void setDateTimeFormat(String dateTimeFormat) {
+		if (!Objects.equals(dateTimeFormat, this.dateTimeFormat)) {
+			String oldDateFormat = this.dateTimeFormat;
+			this.dateTimeFormat = Objects.requireNonNull(dateTimeFormat);
+			firePropertyChange("dateTimeFormat", oldDateFormat, dateTimeFormat);
 			updateDateEditor();
 		}
 	}
@@ -121,6 +121,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
+		checkBox.setEnabled(enabled);
 		spinner.setEnabled(enabled);
 		button.setEnabled(enabled);
 	}
@@ -128,37 +129,26 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	@Override
 	public void setBackground(Color bg) {
 		super.setBackground(bg);
-		if (calendar != null)
-			calendar.setBackground(bg);
+		if (calendar != null) calendar.setBackground(bg);
 	}
 
 	@Override
 	public void setForeground(Color fg) {
 		super.setForeground(fg);
-		if (spinner != null) {
-			spinner.getEditor().setForeground(fg);
-		}
-		if (calendar != null)
-			calendar.setForeground(fg);
+		if (spinner != null) spinner.getEditor().setForeground(fg);
+		if (calendar != null) calendar.setForeground(fg);
 	}
 
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
-		if (spinner != null) {
-			spinner.getEditor().setFont(font);
-		}
-		if (calendar != null)
-			calendar.setFont(font);
+		if (spinner != null) spinner.getEditor().setFont(font);
+		if (calendar != null) calendar.setFont(font);
 	}
 
 	public void showPopupMenu() {
-		setChecked(true);
 		allowPopupHide = false;
-
-		Calendar timestamp = new GregorianCalendar();
-		timestamp.setTime(date);
-		calendar.setActiveCalendar(timestamp);
+		calendar.setActiveDateTime(dateTime != null ? dateTime : LocalDateTime.now());
 		calendar.setActiveView(CalendarView.MONTH);
 
 		Point pt = getPopupLocation();
@@ -187,30 +177,29 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 
 	@Override
 	public void propertyChange(PropertyChangeEvent e) {
-		if (e.getSource() == calendar && e.getPropertyName().equals("selectedCalendar")) {
+		if (e.getSource() == calendar && e.getPropertyName().equals("selectedDateTime")) {
 			hidePopupMenu();
-			setDate(calendar.getDate());
+			setDateTime(calendar.getSelectedDateTime());
 		}
 	}
 
 	private void initGUI() {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets = new Insets(0, 0, 0, 0);
+
 		checkBox = new JCheckBox();
 		checkBox.setVisible(false);
 		checkBox.setFocusable(false);
 		checkBox.setBorderPainted(false);
 		checkBox.setContentAreaFilled(false);
 		checkBox.addChangeListener(this);
-		add(checkBox, BorderLayout.LINE_START);
+		add(checkBox, gbc);
 
-		Border emptyBorder = new EmptyBorder(0, 0, 0, 0);
-		spinner = new JSpinner(new SpinnerDateModel());
-		spinner.setBorder(emptyBorder);
-		spinner.getEditor().setBorder(emptyBorder);
-		spinner.addChangeListener(e -> setDate((Date) spinner.getValue()));
-		add(spinner, BorderLayout.CENTER);
-
+		gbc.gridx = 2;
 		button = new BasicArrowButton(SwingConstants.SOUTH);
 		button.setFocusable(false);
+		button.setMinimumSize(JCalendar.BUTTON_SIZE);
 		button.addActionListener(e -> {
 			requestFocusInWindow();
 			if (popupMenu.isVisible())
@@ -218,7 +207,15 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 			else
 				showPopupMenu();
 		});
-		add(button, BorderLayout.LINE_END);
+		add(button, gbc);
+
+		gbc.gridx = 1;
+		gbc.weightx = 1.0;
+		spinner = new JSpinner(new SpinnerDateModel());
+		spinner.setBorder(new EmptyBorder(0, 0, 0, 0));
+		spinner.addChangeListener(e -> setDateTime(
+				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
+		add(spinner, gbc);
 
 		popupMenu = new JPopupMenu() {
 			private static final long serialVersionUID = 1L;
@@ -238,12 +235,12 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 
 		setBackground(UIManager.getColor("ComboBox.background"));
 		setBorder(UIManager.getBorder("ComboBox.border"));
-		setChecked(true);
 	}
 
 	private void updateDateEditor() {
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateFormat);
+		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateTimeFormat);
 		spinner.setEditor(dateEditor);
+		dateEditor.setBorder(new EmptyBorder(0, 2, 0, 2));
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
 	}
 
@@ -251,15 +248,15 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension calendarSize = calendar.getPreferredSize();
 		Point pt = new Point(0, getHeight());
-		
+
 		Point ptScr = (Point) pt.clone();
 		SwingUtilities.convertPointToScreen(ptScr, this);
-		
+
 		if (ptScr.x + calendarSize.width > screenSize.width)
 			pt.x = getWidth() - calendarSize.width;
 		if (ptScr.y + calendarSize.height > screenSize.height)
 			pt.y = -calendarSize.height;
-		
+
 		return pt;
 	}
 }

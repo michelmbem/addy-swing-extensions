@@ -9,8 +9,5 @@
         <module name="addy-swing" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="AddySwingUtilities" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
