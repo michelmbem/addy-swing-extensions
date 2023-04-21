@@ -1,27 +1,29 @@
 package org.addy.swing;
 
-import org.addy.util.TypeConverter;
-
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Objects;
 
-;
-
-public class JCalendarCombo extends JPanel implements PropertyChangeListener {
+public class JCalendarCombo extends JPanel implements ChangeListener, PropertyChangeListener {
 	private static final String POPUP_MENU_CANCEL_PROPERTY = "JPopupMenu.firePopupMenuCanceled";
 	private static final String DEFAULT_DATE_TIME_FORMAT = "d MMMM yyyy";
 
 	private LocalDateTime dateTime;
 	private String dateTimeFormat;
+	private boolean checkBoxVisible;
+	private boolean checked;
 
+	private JCheckBox checkBox;
 	private JSpinner spinner;
 	private JButton button;
 	private JPopupMenu popupMenu;
@@ -57,7 +59,7 @@ public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 			LocalDateTime oldDate = this.dateTime;
 			this.dateTime = dateTime;
 			firePropertyChange("dateTime", oldDate, dateTime);
-			spinner.setValue(TypeConverter.toDate(dateTime));
+			spinner.setValue(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()));
 		}
 	}
 
@@ -82,6 +84,31 @@ public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 		}
 	}
 
+	public boolean isCheckBoxVisible() {
+		return checkBoxVisible;
+	}
+
+	public void setCheckBoxVisible(boolean checkBoxVisible) {
+		if (checkBoxVisible != this.checkBoxVisible) {
+			this.checkBoxVisible = checkBoxVisible;
+			firePropertyChange("checkBoxVisible", !checkBoxVisible, checkBoxVisible);
+			checkBox.setVisible(checkBoxVisible);
+		}
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		if (checked != this.checked) {
+			this.checked = checked;
+			firePropertyChange("checked", !checked, checked);
+			checkBox.setSelected(checked);
+			spinner.setEnabled(checked);
+		}
+	}
+
 	public JSpinner getSpinner() {
 		return spinner;
 	}
@@ -100,28 +127,21 @@ public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 	@Override
 	public void setBackground(Color bg) {
 		super.setBackground(bg);
-		if (calendar != null)
-			calendar.setBackground(bg);
+		if (calendar != null) calendar.setBackground(bg);
 	}
 
 	@Override
 	public void setForeground(Color fg) {
 		super.setForeground(fg);
-		if (spinner != null) {
-			spinner.getEditor().setForeground(fg);
-		}
-		if (calendar != null)
-			calendar.setForeground(fg);
+		if (spinner != null) spinner.getEditor().setForeground(fg);
+		if (calendar != null) calendar.setForeground(fg);
 	}
 
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
-		if (spinner != null) {
-			spinner.getEditor().setFont(font);
-		}
-		if (calendar != null)
-			calendar.setFont(font);
+		if (spinner != null) spinner.getEditor().setFont(font);
+		if (calendar != null) calendar.setFont(font);
 	}
 
 	public void showPopupMenu() {
@@ -148,6 +168,12 @@ public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 	}
 
 	@Override
+	public void stateChanged(ChangeEvent e) {
+		if (e.getSource() == checkBox)
+			setChecked(checkBox.isSelected());
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent e) {
 		if (e.getSource() == calendar && e.getPropertyName().equals("selectedDateTime")) {
 			hidePopupMenu();
@@ -156,11 +182,18 @@ public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 	}
 
 	private void initGUI() {
-		Border emptyBorder = new EmptyBorder(0, 0, 0, 0);
+		checkBox = new JCheckBox();
+		checkBox.setVisible(false);
+		checkBox.setFocusable(false);
+		checkBox.setBorderPainted(false);
+		checkBox.setContentAreaFilled(false);
+		checkBox.addChangeListener(this);
+		add(checkBox, BorderLayout.LINE_START);
+
 		spinner = new JSpinner(new SpinnerDateModel());
-		spinner.setBorder(emptyBorder);
-		spinner.getEditor().setBorder(emptyBorder);
-		spinner.addChangeListener(e -> setDateTime(TypeConverter.toLocalDateTime(spinner.getValue())));
+		spinner.setBorder(new EmptyBorder(0, 0, 0, 0));
+		spinner.addChangeListener(e -> setDateTime(
+				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
 		add(spinner, BorderLayout.CENTER);
 
 		button = new BasicArrowButton(SwingConstants.SOUTH);
@@ -197,6 +230,7 @@ public class JCalendarCombo extends JPanel implements PropertyChangeListener {
 	private void updateDateEditor() {
 		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateTimeFormat);
 		spinner.setEditor(dateEditor);
+		dateEditor.setBorder(new EmptyBorder(0, 2, 0, 2));
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
 	}
 
