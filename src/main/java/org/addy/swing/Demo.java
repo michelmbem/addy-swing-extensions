@@ -86,6 +86,7 @@ public class Demo {
 		JPanel panel = new JPanel();
 		panel.add(new JLabel("Calendar Combo:"));
 		JCalendarCombo calendarCombo = new JCalendarCombo();
+		calendarCombo.setCheckBoxVisible(true);
 		calendarCombo.addPropertyChangeListener("dateTime", listener);
 		panel.add(calendarCombo);
 		return panel;
