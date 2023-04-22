@@ -44,7 +44,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	}
 
 	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat, boolean checkBoxVisible) {
-		super(new GridBagLayout());
+		super(new BorderLayout());
 		initGUI();
 		setDateTime(dateTime);
 		setDateTimeFormat(dateTimeFormat);
@@ -184,22 +184,22 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 	}
 
 	private void initGUI() {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.insets = new Insets(0, 0, 0, 0);
-
 		checkBox = new JCheckBox();
 		checkBox.setVisible(false);
 		checkBox.setFocusable(false);
 		checkBox.setBorderPainted(false);
 		checkBox.setContentAreaFilled(false);
 		checkBox.addChangeListener(this);
-		add(checkBox, gbc);
+		add(checkBox, BorderLayout.LINE_START);
 
-		gbc.gridx = 2;
+		spinner = new JSpinner(new SpinnerDateModel());
+		spinner.setBorder(new EmptyBorder(0, 0, 0, 0));
+		spinner.addChangeListener(e -> setDateTime(
+				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
+		add(spinner, BorderLayout.CENTER);
+
 		button = new BasicArrowButton(SwingConstants.SOUTH);
 		button.setFocusable(false);
-		button.setMinimumSize(JCalendar.BUTTON_SIZE);
 		button.addActionListener(e -> {
 			requestFocusInWindow();
 			if (popupMenu.isVisible())
@@ -207,15 +207,7 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 			else
 				showPopupMenu();
 		});
-		add(button, gbc);
-
-		gbc.gridx = 1;
-		gbc.weightx = 1.0;
-		spinner = new JSpinner(new SpinnerDateModel());
-		spinner.setBorder(new EmptyBorder(0, 0, 0, 0));
-		spinner.addChangeListener(e -> setDateTime(
-				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
-		add(spinner, gbc);
+		add(button, BorderLayout.LINE_END);
 
 		popupMenu = new JPopupMenu() {
 			private static final long serialVersionUID = 1L;
