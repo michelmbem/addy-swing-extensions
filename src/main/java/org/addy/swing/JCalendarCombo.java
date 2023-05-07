@@ -210,8 +210,6 @@ public class JCalendarCombo extends JPanel implements ChangeListener, PropertyCh
 		add(button, BorderLayout.LINE_END);
 
 		popupMenu = new JPopupMenu() {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void setVisible(boolean visible) {
 				Boolean popupCancelled = (Boolean) getClientProperty(POPUP_MENU_CANCEL_PROPERTY);

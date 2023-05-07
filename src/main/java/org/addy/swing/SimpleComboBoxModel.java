@@ -3,7 +3,11 @@ package org.addy.swing;
 import org.addy.util.CollectionUtil;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements ComboBoxModel<E> {
     private List<E> items;
@@ -21,7 +25,7 @@ public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements Comb
         this(Collections.emptyList());
     }
 
-    public Object getItems() {
+    public List<E> getItems() {
         return items;
     }
 
