@@ -13,3 +13,5 @@ Z
 *src/main/java/org/addy/swing/SizeMode.java,7\2\723ee6c5ea416908a6fccc888b5440ed6dc1585f
 `
 0src/main/java/org/addy/swing/JCalendarCombo.java,f\3\f33275c575ad2c58bd7163c9c9604b22ae83b69f
+i
+9src/main/java/org/addy/swing/filechooser/ImageFilter.java,8\5\85b3d638f5468f1f4e569e4431e95b5986834a9d
