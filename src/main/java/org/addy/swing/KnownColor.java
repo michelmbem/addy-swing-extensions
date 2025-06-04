@@ -1,6 +1,6 @@
 package org.addy.swing;
 
-import java.awt.*;
+import java.awt.Color;
 
 public final class KnownColor {
     private KnownColor() {}

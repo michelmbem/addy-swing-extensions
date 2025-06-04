@@ -2,6 +2,7 @@ package org.addy.swing;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
@@ -11,6 +12,7 @@ import org.addy.swing.filechooser.ImagePreview;
 import org.addy.util.FileUtil;
 
 public class ImageFileChooser extends JFileChooser {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public ImageFileChooser() {

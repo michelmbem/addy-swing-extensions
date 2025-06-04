@@ -1,28 +1,25 @@
 package org.addy.swing;
 
-import org.addy.util.CollectionUtil;
-
 import javax.swing.*;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements ComboBoxModel<E> {
     private List<E> items;
-    private E selectedItem = null;
+    private E selectedItem;
 
-    public SimpleComboBoxModel(E[] items) {
-        this.items = Arrays.asList(items);
+    public SimpleComboBoxModel(List<E> items) {
+        setItems(items);
     }
 
-    public SimpleComboBoxModel(Collection<E> items) {
-        this.items = CollectionUtil.toList(items);
+    @SafeVarargs
+    public SimpleComboBoxModel(E... items) {
+        this(List.of(items));
     }
 
-    public SimpleComboBoxModel() {
-        this(Collections.emptyList());
+    public SimpleComboBoxModel(Collection<? extends E> items) {
+        this(List.copyOf(items));
     }
 
     public List<E> getItems() {
@@ -31,6 +28,7 @@ public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements Comb
 
     public void setItems(List<E> items) {
         this.items = Objects.requireNonNull(items);
+        setSelectedItem(items.isEmpty() ? null : items.get(0));
         fireContentsChanged(this, 0, getSize());
     }
 
@@ -50,6 +48,7 @@ public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements Comb
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setSelectedItem(Object anItem) {
         selectedItem = (E) anItem;
     }

@@ -5,6 +5,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -12,6 +13,7 @@ import org.addy.swing.JPictureBox;
 import org.addy.swing.SizeMode;
 
 public class ImagePreview extends JPictureBox implements PropertyChangeListener {
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final int VIEWER_SIZE = 256;
     private static final int BORDER_THICKNESS = 8;
@@ -36,7 +38,7 @@ public class ImagePreview extends JPictureBox implements PropertyChangeListener 
             file = (File) e.getNewValue();
         }
 
-        if (isShowing() && file != null) {
+        if (isShowing() && file != null && file.isFile()) {
             try {
                 setImage(ImageIO.read(file));
             }

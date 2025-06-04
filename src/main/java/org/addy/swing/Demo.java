@@ -1,19 +1,23 @@
 package org.addy.swing;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Demo {
-	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni" };
+	public static final String BROWSE = "<browse...>";
+	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", BROWSE};
 
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ignore) {
+			// Do nothing
 		}
 
 		final JFrame frame = new JFrame("Addy Swing Demo");
@@ -34,7 +38,7 @@ public class Demo {
 		frame.getContentPane().add(panel, BorderLayout.PAGE_START);
 
 		JComboBox<SizeMode> sizeCombo = new JComboBox<>();
-		sizeCombo.setModel(new DefaultComboBoxModel<>(SizeMode.values()));
+		sizeCombo.setModel(new SimpleComboBoxModel<>(SizeMode.values()));
 		sizeCombo.setEditable(false);
 		sizeCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
 		sizeCombo.addItemListener(e -> {
@@ -48,15 +52,17 @@ public class Demo {
 		panel.add(Box.createRigidArea(new Dimension(20, 0)));
 
 		JComboBox<String> imageCombo = new JComboBox<>();
-		imageCombo.setModel(new DefaultComboBoxModel<>(pictures));
+		imageCombo.setModel(new SimpleComboBoxModel<>(pictures));
 		imageCombo.setEditable(false);
 		imageCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
 		imageCombo.addItemListener(e -> {
-			if (e.getStateChange() == ItemEvent.SELECTED)
-				pictureBox.setImage(loadImage(e.getItem() + ".jpg"));
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				pictureBox.setImage(BROWSE.equals(e.getItem())
+						? chooseImage(frame)
+						: loadImage(e.getItem() + ".jpg"));
+			}
 		});
 		panel.add(new JLabel(" Image:"));
-		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 		panel.add(imageCombo);
 
@@ -76,6 +82,21 @@ public class Demo {
 		panel.add(calendarButton);
 
 		frame.setVisible(true);
+	}
+
+	private static Image chooseImage(JFrame frame) {
+		Image chosenImage = null;
+		ImageFileChooser imageChooser = new ImageFileChooser();
+
+		if (imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            try {
+                chosenImage = ImageIO.read(imageChooser.getSelectedFile());
+            } catch (IOException e) {
+				e.printStackTrace();
+            }
+		}
+
+		return chosenImage;
 	}
 
 	private static Image loadImage(String path) {

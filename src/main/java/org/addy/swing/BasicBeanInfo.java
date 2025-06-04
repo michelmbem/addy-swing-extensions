@@ -7,28 +7,24 @@ import java.beans.SimpleBeanInfo;
 import java.lang.reflect.ParameterizedType;
 
 public class BasicBeanInfo<T> extends SimpleBeanInfo {
-	private final Class<?> beanClass;
-	
+	private final Class<T> beanClass;
+
+	@SuppressWarnings("unchecked")
 	public BasicBeanInfo() {
-		this.beanClass = (Class<?>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		beanClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
 	@Override
 	public Image getIcon(int iconKind) {
 		String beanClassName = beanClass.getSimpleName();
 
-		switch (iconKind) {
-			case BeanInfo.ICON_COLOR_16x16:
-				return loadImage(beanClassName + "Color16.gif");
-			case BeanInfo.ICON_COLOR_32x32:
-				return loadImage(beanClassName + "Color32.gif");
-			case BeanInfo.ICON_MONO_16x16:
-				return loadImage(beanClassName + "Mono16.gif");
-			case BeanInfo.ICON_MONO_32x32:
-				return loadImage(beanClassName + "Mono32.gif");
-			default:
-				throw new IllegalArgumentException("Invalid iconKind value");
-		}
+        return switch (iconKind) {
+            case BeanInfo.ICON_COLOR_16x16 -> loadImage(beanClassName + "Color16.gif");
+            case BeanInfo.ICON_COLOR_32x32 -> loadImage(beanClassName + "Color32.gif");
+            case BeanInfo.ICON_MONO_16x16 -> loadImage(beanClassName + "Mono16.gif");
+            case BeanInfo.ICON_MONO_32x32 -> loadImage(beanClassName + "Mono32.gif");
+            default -> throw new IllegalArgumentException("Invalid iconKind value");
+        };
 	}
 	
 	@Override

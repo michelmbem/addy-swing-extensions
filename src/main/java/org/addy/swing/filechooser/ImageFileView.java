@@ -50,23 +50,13 @@ public class ImageFileView extends FileView {
         if (f.isFile()) {
             try {
                 String mimeType = FileUtil.getContentType(f);
-                switch (mimeType) {
-                    case "image/jpeg":
-                        icon = createImageIcon("JPEG.png");
-                        break;
-                    case "image/png":
-                        icon = createImageIcon("GIF.png");
-                        break;
-                    case "image/gif":
-                        icon = createImageIcon("TIF.png");
-                        break;
-                    case "image/tiff":
-                        icon = createImageIcon("PNG.png");
-                        break;
-                    default:
-                        icon = createImageIcon("BMP.png");
-                        break;
-                }
+                icon = switch (mimeType) {
+                    case "image/jpeg" -> createImageIcon("JPEG.png");
+                    case "image/png" -> createImageIcon("GIF.png");
+                    case "image/gif" -> createImageIcon("TIF.png");
+                    case "image/tiff" -> createImageIcon("PNG.png");
+                    default -> createImageIcon("BMP.png");
+                };
             }
             catch (IOException ex) {
                 ex.printStackTrace();

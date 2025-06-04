@@ -194,46 +194,15 @@ public class JCalendar extends JPanel {
 			}
 		}
 
-		if (dateButtons != null) {
-			for (int i = 0; i < dateButtons.length; i++) {
-				for (int j = 0; j < dateButtons[0].length; j++) {
-					JButton dateButton = dateButtons[i][j];
-					if (dateButton != selectedDateButton && dateButton != activeDateButton) {
-						dateButton.setForeground(foreground);
-					}
-				}
-			}
-		}
+		JButton[][][] buttonMatrices = {dateButtons, monthButtons, yearButtons, decadeButtons};
 
-		if (monthButtons != null) {
-			for (int i = 0; i < monthButtons.length; i++) {
-				for (int j = 0; j < monthButtons[0].length; j++) {
-					JButton monthButton = monthButtons[i][j];
-					if (monthButton != activeDateButton) {
-						monthButton.setForeground(foreground);
-					}
-				}
-			}
-		}
+		for (JButton[][] buttonMatrix : buttonMatrices) {
+			if (buttonMatrix == null) continue;
 
-		if (yearButtons != null) {
-			for (int i = 0; i < yearButtons.length; i++) {
-				for (int j = 0; j < yearButtons[0].length; j++) {
-					JButton yearButton = yearButtons[i][j];
-					if (yearButton != activeDateButton) {
-						yearButton.setForeground(foreground);
-					}
-				}
-			}
-		}
-
-		if (decadeButtons != null) {
-			for (int i = 0; i < decadeButtons.length; i++) {
-				for (int j = 0; j < decadeButtons[0].length; j++) {
-					JButton decadeButton = decadeButtons[i][j];
-					if (decadeButton != activeDateButton) {
-						decadeButton.setForeground(foreground);
-					}
+			for (JButton[] buttonRow : buttonMatrix) {
+				for (JButton button : buttonRow) {
+					if (button != selectedDateButton && button != activeDateButton)
+						button.setForeground(foreground);
 				}
 			}
 		}
@@ -253,34 +222,14 @@ public class JCalendar extends JPanel {
 			}
 		}
 
-		if (dateButtons != null) {
-			for (int i = 0; i < dateButtons.length; i++) {
-				for (int j = 0; j < dateButtons[0].length; j++) {
-					dateButtons[i][j].setFont(font);
-				}
-			}
-		}
+		JButton[][][] buttonMatrices = {dateButtons, monthButtons, yearButtons, decadeButtons};
 
-		if (monthButtons != null) {
-			for (int i = 0; i < monthButtons.length; i++) {
-				for (int j = 0; j < monthButtons[0].length; j++) {
-					monthButtons[i][j].setFont(font);
-				}
-			}
-		}
+		for (JButton[][] buttonMatrix : buttonMatrices) {
+			if (buttonMatrix == null) continue;
 
-		if (yearButtons != null) {
-			for (int i = 0; i < yearButtons.length; i++) {
-				for (int j = 0; j < yearButtons[0].length; j++) {
-					yearButtons[i][j].setFont(font);
-				}
-			}
-		}
-
-		if (decadeButtons != null) {
-			for (int i = 0; i < decadeButtons.length; i++) {
-				for (int j = 0; j < decadeButtons[0].length; j++) {
-					decadeButtons[i][j].setFont(font);
+			for (JButton[] buttonRow : buttonMatrix) {
+				for (JButton button : buttonRow) {
+					button.setFont(font);
 				}
 			}
 		}
@@ -414,7 +363,7 @@ public class JCalendar extends JPanel {
 
 		dayOfWeekLabels = new JLabel[7];
 		for (int i = 0; i < dayOfWeekLabels.length; ++i) {
-			dayOfWeekLabels[i] = getDayOfWeekLabel(i + 1);
+			dayOfWeekLabels[i] = getDayOfWeekLabel(i + 1L);
 			monthPane.add(dayOfWeekLabels[i]);
 		}
 
@@ -609,21 +558,21 @@ public class JCalendar extends JPanel {
 	private void fillYearCalendar() {
 		LocalDateTime clone = activeDateTime.withMonth(1);
 
-		for (int y = 0; y < monthButtons.length; ++y) {
-			for (int x = 0; x < monthButtons[y].length; ++x) {
-				monthButtons[y][x].setText(clone.getMonth().getDisplayName(TextStyle.SHORT, getDefaultLocale()));
-				monthButtons[y][x].setActionCommand(clone.toString());
+        for (JButton[] buttonRow : monthButtons) {
+            for (JButton monthButton : buttonRow) {
+                monthButton.setText(clone.getMonth().getDisplayName(TextStyle.SHORT, getDefaultLocale()));
+                monthButton.setActionCommand(clone.toString());
 
-				if (clone.equals(activeDateTime)) {
-					activeDateButton = monthButtons[y][x];
-					activeDateButton.setForeground(activeDateColor);
-				} else {
-					monthButtons[y][x].setForeground(getForeground());
-				}
+                if (clone.equals(activeDateTime)) {
+                    activeDateButton = monthButton;
+                    activeDateButton.setForeground(activeDateColor);
+                } else {
+                    monthButton.setForeground(getForeground());
+                }
 
-				clone = clone.plusMonths(1L);
-			}
-		}
+                clone = clone.plusMonths(1L);
+            }
+        }
 	}
 
 	private void fillMonthCalendar() {
@@ -632,25 +581,25 @@ public class JCalendar extends JPanel {
 
 		LocalDateTime clone = activeDateTime.plusDays(-7L * yRef - xRef);
 
-		for (int y = 0; y < dateButtons.length; ++y)
-			for (int x = 0; x < dateButtons[y].length; ++x) {
-				dateButtons[y][x].setText(String.valueOf(clone.getDayOfMonth()));
-				dateButtons[y][x].setActionCommand(clone.toString());
+        for (JButton[] buttonRow : dateButtons)
+            for (JButton dateButton : buttonRow) {
+                dateButton.setText(String.valueOf(clone.getDayOfMonth()));
+                dateButton.setActionCommand(clone.toString());
 
-				if (clone.equals(selectedDateTime)) {
-					selectedDateButton = dateButtons[y][x];
-					selectedDateButton.setForeground(selectedDateColor);
-				} else if (clone.equals(activeDateTime)) {
-					activeDateButton = dateButtons[y][x];
-					activeDateButton.setForeground(activeDateColor);
-				} else if (clone.getMonth().equals(activeDateTime.getMonth())) {
-					dateButtons[y][x].setForeground(getForeground());
-				} else {
-					dateButtons[y][x].setForeground(inactiveDateColor);
-				}
+                if (clone.equals(selectedDateTime)) {
+                    selectedDateButton = dateButton;
+                    selectedDateButton.setForeground(selectedDateColor);
+                } else if (clone.equals(activeDateTime)) {
+                    activeDateButton = dateButton;
+                    activeDateButton.setForeground(activeDateColor);
+                } else if (clone.getMonth().equals(activeDateTime.getMonth())) {
+                    dateButton.setForeground(getForeground());
+                } else {
+                    dateButton.setForeground(inactiveDateColor);
+                }
 
-				clone = clone.plusDays(1L);
-			}
+                clone = clone.plusDays(1L);
+            }
 	}
 
 	private int activeDateRowIndex() {
@@ -709,7 +658,7 @@ public class JCalendar extends JPanel {
 	}
 
 	protected static class ActiveDateSelection extends AbstractAction {
-		private JCalendar monthCalendar;
+		private final JCalendar monthCalendar;
 
 		public ActiveDateSelection(JCalendar monthCalendar) {
 			this.monthCalendar = monthCalendar;
@@ -717,27 +666,22 @@ public class JCalendar extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			switch (monthCalendar.activeView) {
-				case CENTURY:
-					monthCalendar.setActiveView(CalendarView.DECADE);
-					break;
-				case DECADE:
-					monthCalendar.setActiveView(CalendarView.YEAR);
-					break;
-				case YEAR:
-					monthCalendar.setActiveView(CalendarView.MONTH);
-					break;
-				default:
-					monthCalendar.setSelectedDateTime(monthCalendar.activeDateTime);
-					monthCalendar.fillCalendar();
-			}
+            switch (monthCalendar.activeView) {
+                case CENTURY -> monthCalendar.setActiveView(CalendarView.DECADE);
+                case DECADE -> monthCalendar.setActiveView(CalendarView.YEAR);
+                case YEAR -> monthCalendar.setActiveView(CalendarView.MONTH);
+                default -> {
+                    monthCalendar.setSelectedDateTime(monthCalendar.activeDateTime);
+                    monthCalendar.fillCalendar();
+                }
+            }
 		}
 	}
 
 	protected static class DateTranslation extends AbstractAction {
-		private JCalendar monthCalendar;
-		private int field; // 0: PAGE; 1: COLUMN; 2: ROW
-		private int amount;
+		private final JCalendar monthCalendar;
+		private final int field; // 0: PAGE; 1: COLUMN; 2: ROW
+		private final int amount;
 
 		public DateTranslation(JCalendar monthCalendar, int field, int amount) {
 			this.monthCalendar = monthCalendar;
@@ -749,59 +693,30 @@ public class JCalendar extends JPanel {
 			monthCalendar.requestFocusInWindow();
 			LocalDateTime clone = monthCalendar.activeDateTime;
 
-			switch (field) {
-				case 0:
-					switch (monthCalendar.activeView) {
-						case MONTH:
-							clone = clone.plusMonths(amount);
-							break;
-						case YEAR:
-							clone = clone.plusYears(amount);
-							break;
-						case DECADE:
-							clone = clone.plusYears(10L * amount);
-							break;
-						default:
-							clone = clone.plusYears(100L * amount);
-							break;
-					}
-					break;
-				case 1:
-					switch (monthCalendar.activeView) {
-						case MONTH:
-							clone = clone.plusDays(amount);
-							break;
-						case YEAR:
-							clone = clone.plusMonths(amount);
-							break;
-						case DECADE:
-							clone = clone.plusYears(amount);
-							break;
-						default:
-							clone = clone.plusYears(10L * amount);
-							break;
-					}
-					break;
-				case 2:
-					switch (monthCalendar.activeView) {
-						case MONTH:
-							clone = clone.plusWeeks(amount);
-							break;
-						case YEAR:
-							clone = clone.plusMonths(4L * amount);
-							break;
-						case DECADE:
-							clone = clone.plusYears(4L * amount);
-							break;
-						default:
-							clone = clone.plusYears(40L * amount);
-							break;
-					}
-					break;
-				default:
-					Toolkit.getDefaultToolkit().beep();
-					return;
-			}
+            switch (field) {
+                case 0 -> clone = switch (monthCalendar.activeView) {
+                    case MONTH -> clone.plusMonths(amount);
+                    case YEAR -> clone.plusYears(amount);
+                    case DECADE -> clone.plusYears(10L * amount);
+                    default -> clone.plusYears(100L * amount);
+                };
+                case 1 -> clone = switch (monthCalendar.activeView) {
+                    case MONTH -> clone.plusDays(amount);
+                    case YEAR -> clone.plusMonths(amount);
+                    case DECADE -> clone.plusYears(amount);
+                    default -> clone.plusYears(10L * amount);
+                };
+                case 2 -> clone = switch (monthCalendar.activeView) {
+                    case MONTH -> clone.plusWeeks(amount);
+                    case YEAR -> clone.plusMonths(4L * amount);
+                    case DECADE -> clone.plusYears(4L * amount);
+                    default -> clone.plusYears(40L * amount);
+                };
+                default -> {
+                    Toolkit.getDefaultToolkit().beep();
+                    return;
+                }
+            }
 
 			monthCalendar.setActiveDateTime(clone);
 		}
