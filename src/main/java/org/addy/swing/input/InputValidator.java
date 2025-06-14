@@ -1,0 +1,45 @@
+package org.addy.swing.input;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.util.function.Function;
+
+public class InputValidator<T> extends InputVerifier {
+    private final ValidationRule<T> validationRule;
+    private final Function<JComponent, T> valueExtractor;
+    private Border originalBorder = null;
+    private String originalToolTipText = null;
+
+    public InputValidator(ValidationRule<T> validationRule, Function<JComponent, T> valueExtractor) {
+        this.validationRule = validationRule;
+        this.valueExtractor = valueExtractor;
+    }
+
+    public void save(JComponent input) {
+        if (originalBorder == null)
+            originalBorder = input.getBorder();
+
+        if (originalToolTipText == null)
+            originalToolTipText = input.getToolTipText();
+    }
+
+    public void restore(JComponent input) {
+        input.setBorder(originalBorder);
+        input.setToolTipText(originalToolTipText);
+    }
+
+    @Override
+    public boolean verify(JComponent input) {
+        save(input);
+
+        T value = valueExtractor.apply(input);
+        if (validationRule.test(value)) {
+            restore(input);
+            return true;
+        }
+
+        input.setBorder(BorderFactory.createCompoundBorder(validationRule.border(), originalBorder));
+        input.setToolTipText(validationRule.message());
+        return false;
+    }
+}

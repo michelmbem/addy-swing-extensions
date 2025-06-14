@@ -4,24 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3005d788-7e9e-4bca-9270-50602e337333" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="3005d788-7e9e-4bca-9270-50602e337333" name="Changes" comment="Misc improvements">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/ListItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/UIHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/InputValidator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/PredicateValidationRule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/ValidationPredicates.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/ValidationRule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/Validator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/text/MaxLengthDocumentFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/org/addy/swing/JCalendar_de.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/org/addy/swing/JCalendar_es.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/org/addy/swing/JCalendar_pt.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/BasicBeanInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/BasicBeanInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/Demo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/Demo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/ImageFileChooser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/ImageFileChooser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/JPictureBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/JPictureBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/KnownColor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/KnownColor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendarCombo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendarCombo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/SimpleComboBoxModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/SimpleComboBoxModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/filechooser/ImageFileView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/filechooser/ImageFileView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/filechooser/ImagePreview.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/filechooser/ImagePreview.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Record" />
+        <option value="Class" />
+        <option value="Enum" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -58,6 +71,9 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2Ohwi2e8SgLvfkKagL8d7kiiHfL" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -70,9 +86,10 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/michelmbem/Projects/addy-swing-utilities&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/michelmbem/Projects/addy-swing-utilities/src/main/resources/org/addy/swing&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
@@ -80,8 +97,15 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/org/addy/swing" />
+      <recent name="$PROJECT_DIR$/src/main/java/org/addy/swing" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="org.addy.swing.filechooser" />
+      <recent name="org.addy.swing" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="org.addy.swing" />
     </key>
   </component>
@@ -113,6 +137,15 @@
       <option name="presentableId" value="Default" />
       <updated>1682026247638</updated>
     </task>
+    <task id="LOCAL-00001" summary="Misc improvements">
+      <option name="closed" value="true" />
+      <created>1749069236441</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1749069236441</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,5 +158,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Misc improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Misc improvements" />
   </component>
 </project>

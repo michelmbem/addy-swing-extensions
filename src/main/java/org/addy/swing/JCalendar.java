@@ -64,40 +64,40 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setActiveView(CalendarView activeView) {
-		if (!Objects.equals(activeView, this.activeView)) {
-			CalendarView oldView = this.activeView;
-			this.activeView = Objects.requireNonNull(activeView);
-			firePropertyChange("activeView", oldView, activeView);
-			fillCalendar();
-			((CardLayout) middlePane.getLayout()).show(middlePane, activeView.toString());
-		}
-	}
+        if (activeView == this.activeView) return;
+
+        CalendarView oldActiveView = this.activeView;
+        this.activeView = Objects.requireNonNull(activeView);
+        firePropertyChange("activeView", oldActiveView, activeView);
+        fillCalendar();
+        ((CardLayout) middlePane.getLayout()).show(middlePane, activeView.toString());
+    }
 
 	public LocalDateTime getActiveDateTime() {
 		return activeDateTime;
 	}
 
 	public void setActiveDateTime(LocalDateTime activeDateTime) {
-		if (!Objects.equals(activeDateTime, this.activeDateTime)) {
-			LocalDateTime oldActiveCalendar = this.activeDateTime;
-			this.activeDateTime = Objects.requireNonNull(activeDateTime);
-			firePropertyChange("activeDateTime", oldActiveCalendar, activeDateTime);
-			fillCalendar();
-		}
-	}
+        if (Objects.equals(activeDateTime, this.activeDateTime)) return;
+
+        LocalDateTime oldActiveDateTime = this.activeDateTime;
+        this.activeDateTime = Objects.requireNonNull(activeDateTime);
+        firePropertyChange("activeDateTime", oldActiveDateTime, activeDateTime);
+        fillCalendar();
+    }
 
 	public LocalDateTime getSelectedDateTime() {
 		return selectedDateTime;
 	}
 
 	public void setSelectedDateTime(LocalDateTime selectedDateTime) {
-		if (!Objects.equals(selectedDateTime, this.selectedDateTime)) {
-			LocalDateTime oldSelectedCalendar = this.selectedDateTime;
-			this.selectedDateTime = selectedDateTime;
-			firePropertyChange("selectedDateTime", oldSelectedCalendar, selectedDateTime);
-			setActiveDateTime(selectedDateTime != null ? selectedDateTime : LocalDateTime.now());
-		}
-	}
+        if (Objects.equals(selectedDateTime, this.selectedDateTime)) return;
+
+        LocalDateTime oldSelectedDateTime = this.selectedDateTime;
+        this.selectedDateTime = selectedDateTime;
+        firePropertyChange("selectedDateTime", oldSelectedDateTime, selectedDateTime);
+        setActiveDateTime(selectedDateTime != null ? selectedDateTime : LocalDateTime.now());
+    }
 
 	public LocalDate getSelectedDate() {
 		return selectedDateTime != null ? selectedDateTime.toLocalDate() : null;
@@ -112,77 +112,77 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setViewSelectorBackground(Color viewSelectorBackground) {
-		if (!Objects.equals(viewSelectorBackground, this.viewSelectorBackground)) {
-			Color oldViewSelectorBackground = this.viewSelectorBackground;
-			this.viewSelectorBackground = Objects.requireNonNull(viewSelectorBackground);
-			firePropertyChange("viewSelectorBackground", oldViewSelectorBackground, viewSelectorBackground);
-			topPane.setBackground(viewSelectorBackground);
-		}
-	}
+        if (Objects.equals(viewSelectorBackground, this.viewSelectorBackground)) return;
+
+        Color oldViewSelectorBackground = this.viewSelectorBackground;
+        this.viewSelectorBackground = Objects.requireNonNull(viewSelectorBackground);
+        firePropertyChange("viewSelectorBackground", oldViewSelectorBackground, viewSelectorBackground);
+        topPane.setBackground(viewSelectorBackground);
+    }
 
 	public Color getViewSelectorForeground() {
 		return viewSelectorForeground;
 	}
 
 	public void setViewSelectorForeground(Color viewSelectorForeground) {
-		if (!Objects.equals(viewSelectorForeground, this.viewSelectorForeground)) {
-			Color oldViewSelectorForeground = this.viewSelectorForeground;
-			this.viewSelectorForeground = Objects.requireNonNull(viewSelectorForeground);
-			firePropertyChange("viewSelectorForeground", oldViewSelectorForeground, viewSelectorForeground);
-			selectViewButton.setForeground(viewSelectorForeground);
-		}
-	}
+        if (Objects.equals(viewSelectorForeground, this.viewSelectorForeground)) return;
+
+        Color oldViewSelectorForeground = this.viewSelectorForeground;
+        this.viewSelectorForeground = Objects.requireNonNull(viewSelectorForeground);
+        firePropertyChange("viewSelectorForeground", oldViewSelectorForeground, viewSelectorForeground);
+        selectViewButton.setForeground(viewSelectorForeground);
+    }
 
 	public Font getViewSelectorFont() {
 		return viewSelectorFont;
 	}
 
 	public void setViewSelectorFont(Font viewSelectorFont) {
-		if (!Objects.equals(viewSelectorFont, this.viewSelectorFont)) {
-			Font oldViewSelectorFont = this.viewSelectorFont;
-			this.viewSelectorFont = Objects.requireNonNull(viewSelectorFont);
-			firePropertyChange("viewSelectorFont", oldViewSelectorFont, viewSelectorFont);
-			selectViewButton.setFont(viewSelectorFont);
-		}
-	}
+        if (Objects.equals(viewSelectorFont, this.viewSelectorFont)) return;
+
+        Font oldViewSelectorFont = this.viewSelectorFont;
+        this.viewSelectorFont = Objects.requireNonNull(viewSelectorFont);
+        firePropertyChange("viewSelectorFont", oldViewSelectorFont, viewSelectorFont);
+        selectViewButton.setFont(viewSelectorFont);
+    }
 
 	public Color getSelectedDateColor() {
 		return selectedDateColor;
 	}
 
 	public void setSelectedDateColor(Color selectedDateColor) {
-		if (!Objects.equals(selectedDateColor, this.selectedDateColor)) {
-			Color oldMonthYearBackground = this.selectedDateColor;
-			this.selectedDateColor = Objects.requireNonNull(selectedDateColor);
-			firePropertyChange("selectedDateColor", oldMonthYearBackground, selectedDateColor);
-			if (selectedDateButton != null) selectedDateButton.setForeground(selectedDateColor);
-		}
-	}
+        if (Objects.equals(selectedDateColor, this.selectedDateColor)) return;
+
+        Color oldSelectedDateColor = this.selectedDateColor;
+        this.selectedDateColor = Objects.requireNonNull(selectedDateColor);
+        firePropertyChange("selectedDateColor", oldSelectedDateColor, selectedDateColor);
+        if (selectedDateButton != null) selectedDateButton.setForeground(selectedDateColor);
+    }
 
 	public Color getActiveDateColor() {
 		return activeDateColor;
 	}
 
 	public void setActiveDateColor(Color activeDateColor) {
-		if (!Objects.equals(activeDateColor, this.activeDateColor)) {
-			Color oldMonthYearBackground = this.activeDateColor;
-			this.activeDateColor = Objects.requireNonNull(activeDateColor);
-			firePropertyChange("activeDateColor", oldMonthYearBackground, activeDateColor);
-			if (activeDateButton != null) activeDateButton.setForeground(activeDateColor);
-		}
-	}
+        if (Objects.equals(activeDateColor, this.activeDateColor)) return;
+
+        Color oldActiveDateColor = this.activeDateColor;
+        this.activeDateColor = Objects.requireNonNull(activeDateColor);
+        firePropertyChange("activeDateColor", oldActiveDateColor, activeDateColor);
+        if (activeDateButton != null) activeDateButton.setForeground(activeDateColor);
+    }
 
 	public Color getRolloverDateColor() {
 		return rolloverDateColor;
 	}
 
 	public void setRolloverDateColor(Color rolloverDateColor) {
-		if (!Objects.equals(rolloverDateColor, this.rolloverDateColor)) {
-			Color oldMonthYearBackground = this.rolloverDateColor;
-			this.rolloverDateColor = Objects.requireNonNull(rolloverDateColor);
-			firePropertyChange("rolloverDateColor", oldMonthYearBackground, rolloverDateColor);
-		}
-	}
+        if (Objects.equals(rolloverDateColor, this.rolloverDateColor)) return;
+
+        Color oldRolloverDateColor = this.rolloverDateColor;
+        this.rolloverDateColor = Objects.requireNonNull(rolloverDateColor);
+        firePropertyChange("rolloverDateColor", oldRolloverDateColor, rolloverDateColor);
+    }
 
 	@Override
 	public void setForeground(Color foreground) {
@@ -247,8 +247,8 @@ public class JCalendar extends JPanel {
 
 	private void clearHighlight(JButton button) {
 		for (MouseListener listener : button.getMouseListeners()) {
-			if (listener instanceof FlatButtonMouseAdapter)
-				((FlatButtonMouseAdapter) listener).clearHighlight();
+			if (listener instanceof FlatButtonMouseAdapter flatButtonMouseAdapter)
+				flatButtonMouseAdapter.clearHighlight();
 		}
 	}
 

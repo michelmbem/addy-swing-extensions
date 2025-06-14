@@ -1,11 +1,15 @@
 package org.addy.swing;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements ComboBoxModel<E> {
+public class SimpleComboBoxModel<E>
+        extends AbstractListModel<E>
+        implements ComboBoxModel<E> {
+
     private List<E> items;
     private E selectedItem;
 
@@ -13,13 +17,13 @@ public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements Comb
         setItems(items);
     }
 
+    public SimpleComboBoxModel(Collection<? extends E> items) {
+        this(new ArrayList<>(items));
+    }
+
     @SafeVarargs
     public SimpleComboBoxModel(E... items) {
         this(List.of(items));
-    }
-
-    public SimpleComboBoxModel(Collection<? extends E> items) {
-        this(List.copyOf(items));
     }
 
     public List<E> getItems() {
@@ -69,12 +73,18 @@ public class SimpleComboBoxModel<E> extends AbstractListModel<E> implements Comb
         fireContentsChanged(this, index, index);
     }
 
+    public void removeItem(E anItem) {
+        int index = items.indexOf(anItem);
+        if (items.remove(anItem))
+            fireIntervalRemoved(this, index, index);
+    }
+
     public void removeItemAt(int index) {
         items.remove(index);
         fireIntervalRemoved(this, index, index);
     }
 
-    public void removeAllItems() {
+    public void clearItems() {
         int size = getSize();
         items.clear();
         fireIntervalRemoved(this, 0, size);
