@@ -5,22 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3005d788-7e9e-4bca-9270-50602e337333" name="Changes" comment="Misc improvements">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/ListItem.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/UIHelper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/InputValidator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/PredicateValidationRule.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/ValidationPredicates.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/ValidationRule.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/Validator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/text/MaxLengthDocumentFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/org/addy/swing/JCalendar_de.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/org/addy/swing/JCalendar_es.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/org/addy/swing/JCalendar_pt.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendarCombo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/JCalendarCombo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/SimpleComboBoxModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/SimpleComboBoxModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/InputValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/input/InputValidator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +131,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749069236441</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Misc improvements">
+      <option name="closed" value="true" />
+      <created>1749929794369</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1749929794369</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

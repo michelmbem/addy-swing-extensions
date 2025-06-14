@@ -40,6 +40,8 @@ public class InputValidator<T> extends InputVerifier {
 
         input.setBorder(BorderFactory.createCompoundBorder(validationRule.border(), originalBorder));
         input.setToolTipText(validationRule.message());
+        input.requestFocus();
+
         return false;
     }
 }
