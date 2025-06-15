@@ -2,6 +2,7 @@ package org.addy.swing.input;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.text.JTextComponent;
 import java.util.function.Function;
 
 public class InputValidator<T> extends InputVerifier {
@@ -13,6 +14,10 @@ public class InputValidator<T> extends InputVerifier {
     public InputValidator(ValidationRule<T> validationRule, Function<JComponent, T> valueExtractor) {
         this.validationRule = validationRule;
         this.valueExtractor = valueExtractor;
+    }
+
+    public static InputValidator<String> ofText(ValidationRule<String> validationRule) {
+        return new InputValidator<>(validationRule, c -> ((JTextComponent) c).getText());
     }
 
     public void save(JComponent input) {
@@ -38,7 +43,7 @@ public class InputValidator<T> extends InputVerifier {
             return true;
         }
 
-        input.setBorder(BorderFactory.createCompoundBorder(validationRule.border(), originalBorder));
+        input.setBorder(BorderFactory.createCompoundBorder(originalBorder, validationRule.border()));
         input.setToolTipText(validationRule.message());
         input.requestFocus();
 

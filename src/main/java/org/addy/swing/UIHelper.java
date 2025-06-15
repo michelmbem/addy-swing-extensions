@@ -14,6 +14,13 @@ import java.util.function.Function;
 public final class UIHelper {
     private UIHelper() {}
 
+    public static ImageIcon loadIcon(Class<?> clazz, String filename, int width, int height) {
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(clazz.getResource(filename)));
+        return width > 0 || height > 0
+                ? new ImageIcon(icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH))
+                : icon;
+    }
+
     public static void setFixedSized(Component c, Dimension size) {
         c.setMinimumSize(size);
         c.setMaximumSize(size);
