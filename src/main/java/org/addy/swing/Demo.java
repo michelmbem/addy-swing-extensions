@@ -1,11 +1,9 @@
 package org.addy.swing;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -88,13 +86,8 @@ public class Demo {
 		Image chosenImage = null;
 		ImageFileChooser imageChooser = new ImageFileChooser();
 
-		if (imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-            try {
-                chosenImage = ImageIO.read(imageChooser.getSelectedFile());
-            } catch (IOException e) {
-				e.printStackTrace();
-            }
-		}
+		if (imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
+            chosenImage = imageChooser.getSelectedImage();
 
 		return chosenImage;
 	}

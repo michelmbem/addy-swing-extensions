@@ -7,6 +7,8 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -73,5 +75,27 @@ public final class UIHelper {
         }
 
         comboBox.setSelectedIndex(selectedIndex);
+    }
+    
+    public static LocalDateTime getDateTime(JCalendarCombo calendarCombo) {
+        return calendarCombo.isChecked() ? calendarCombo.getDateTime() : null;
+    }
+
+    public static void setDateTime(JCalendarCombo calendarCombo, LocalDateTime dateTime) {
+        if (dateTime == null)
+            calendarCombo.setChecked(false);
+        else 
+            calendarCombo.setDateTime(dateTime);
+    }
+
+    public static LocalDate getDate(JCalendarCombo calendarCombo) {
+        return calendarCombo.isChecked() ? calendarCombo.getDate() : null;
+    }
+
+    public static void setDate(JCalendarCombo calendarCombo, LocalDate dateTime) {
+        if (dateTime == null)
+            calendarCombo.setChecked(false);
+        else
+            calendarCombo.setDate(dateTime);
     }
 }

@@ -1,15 +1,18 @@
 package org.addy.swing;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serial;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileSystemView;
-
 import org.addy.swing.filechooser.ImageFileView;
 import org.addy.swing.filechooser.ImageFilter;
 import org.addy.swing.filechooser.ImagePreview;
 import org.addy.util.FileUtil;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serial;
+import java.util.Objects;
 
 public class ImageFileChooser extends JFileChooser {
     @Serial
@@ -46,7 +49,7 @@ public class ImageFileChooser extends JFileChooser {
     }
 
     private void init() {
-        ImageFilter filter = new ImageFilter();
+        var filter = new ImageFilter();
         addChoosableFileFilter(filter);
         setFileFilter(filter);
         setAcceptAllFileFilterUsed(false);
@@ -54,21 +57,40 @@ public class ImageFileChooser extends JFileChooser {
         setAccessory(new ImagePreview(this));
     }
 
-    public byte[] readFileBytes() {
+    public Image getSelectedImage() {
+        File selectedFile = getSelectedFile();
+
+        if (selectedFile == null) return null;
+
         try {
-            return FileUtil.readAllBytes(getSelectedFile());
-        }
-        catch (IOException e) {
+            return ImageIO.read(selectedFile);
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void writeFileBytes(byte[] bytes, boolean append) {
+    public byte[] readFileBytes() {
+        File selectedFile = getSelectedFile();
+
+        if (selectedFile == null) return new byte[0];
+
         try {
-            FileUtil.writeAllBytes(getSelectedFile(), bytes, append);
+            return FileUtil.readAllBytes(selectedFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new byte[0];
         }
-        catch (IOException e) {
+    }
+
+    public void writeFileBytes(byte[] bytes, boolean append) {
+        File selectedFile = getSelectedFile();
+
+        if (selectedFile == null) return;
+
+        try {
+            FileUtil.writeAllBytes(getSelectedFile(), Objects.requireNonNull(bytes), append);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
