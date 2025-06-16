@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3005d788-7e9e-4bca-9270-50602e337333" name="Changes" comment="Added IconBorder">
+    <list default="true" id="3005d788-7e9e-4bca-9270-50602e337333" name="Changes" comment="Few improvements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/Demo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/Demo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/ImageFileChooser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/ImageFileChooser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/UIHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/UIHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/addy/swing/filechooser/ImagePreview.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/addy/swing/filechooser/ImagePreview.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +68,7 @@
   &quot;keyToString&quot;: {
     &quot;Application.Demo.executor&quot;: &quot;Run&quot;,
     &quot;Maven.addy-swing [clean,install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.addy-swing [clean,package,-DforkCount=0...].executor&quot;: &quot;Debug&quot;,
     &quot;Maven.addy-swing [clean,package].executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -157,7 +156,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749952536272</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Few improvements">
+      <option name="closed" value="true" />
+      <created>1750017054285</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1750017054285</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -174,6 +181,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Misc improvements" />
     <MESSAGE value="Added IconBorder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added IconBorder" />
+    <MESSAGE value="Few improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Few improvements" />
   </component>
 </project>
