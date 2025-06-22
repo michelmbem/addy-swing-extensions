@@ -6,6 +6,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serial;
@@ -43,7 +44,9 @@ public class JPictureBox extends JPanel {
         Object oldImageSource = this.imageSource;
 
         try {
-            if (imageSource instanceof Image img)
+			if (imageSource == null)
+				setImage(null);
+            else if (imageSource instanceof Image img)
                 setImage(img);
             else if (imageSource instanceof ImageIcon icon)
                 setImage(icon.getImage());
@@ -56,7 +59,7 @@ public class JPictureBox extends JPanel {
             else if (imageSource instanceof byte[] bytes)
                 setImage(ImageIO.read(new ByteArrayInputStream(bytes)));
             else
-                setImage(ImageIO.read(new File(imageSource.toString())));
+                setImage(ImageIO.read(new FileInputStream(imageSource.toString())));
 
             this.imageSource = imageSource;
             firePropertyChange("imageSource", oldImageSource, imageSource);
