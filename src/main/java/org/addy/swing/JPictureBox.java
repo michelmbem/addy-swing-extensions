@@ -1,15 +1,22 @@
 package org.addy.swing;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serial;
+import java.net.URL;
 import java.util.Objects;
 
 public class JPictureBox extends JPanel {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
+	private Object imageSource;
 	private Image image;
 	private SizeMode sizeMode;
 
@@ -26,31 +33,61 @@ public class JPictureBox extends JPanel {
 		setSizeMode(sizeMode);
 	}
 
+	public Object getImageSource() {
+		return imageSource;
+	}
+
+	public void setImageSource(Object imageSource) {
+        if (Objects.equals(imageSource, this.imageSource)) return;
+
+        Object oldImageSource = this.imageSource;
+
+        try {
+            if (imageSource instanceof Image img)
+                setImage(img);
+            else if (imageSource instanceof ImageIcon icon)
+                setImage(icon.getImage());
+            else if (imageSource instanceof InputStream is)
+                setImage(ImageIO.read(is));
+            else if (imageSource instanceof File file)
+                setImage(ImageIO.read(file));
+            else if (imageSource instanceof URL url)
+                setImage(ImageIO.read(url));
+            else if (imageSource instanceof byte[] bytes)
+                setImage(ImageIO.read(new ByteArrayInputStream(bytes)));
+            else
+                setImage(ImageIO.read(new File(imageSource.toString())));
+
+            this.imageSource = imageSource;
+            firePropertyChange("imageSource", oldImageSource, imageSource);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not extract an image from the given source", e);
+        }
+    }
+
 	public Image getImage() {
 		return image;
 	}
 
 	public void setImage(Image image) {
-		if (image != this.image) {
-			Image oldImage = this.image;
-			this.image = image;
-			updateComponent();
-			firePropertyChange("image", oldImage, image);
-		}
-	}
+        if (image == this.image) return;
+        Image oldImage = this.image;
+        this.image = image;
+        updateComponent();
+        firePropertyChange("image", oldImage, image);
+    }
 
 	public SizeMode getSizeMode() {
 		return sizeMode;
 	}
 
 	public void setSizeMode(SizeMode sizeMode) {
-		if (!Objects.equals(this.sizeMode, sizeMode)) {
-			SizeMode oldSizeMode = this.sizeMode;
-			this.sizeMode = Objects.requireNonNull(sizeMode);
-			updateComponent();
-			firePropertyChange("sizeMode", oldSizeMode, sizeMode);
-		}
-	}
+        if (Objects.equals(this.sizeMode, sizeMode)) return;
+        SizeMode oldSizeMode = this.sizeMode;
+        this.sizeMode = Objects.requireNonNull(sizeMode);
+        updateComponent();
+        firePropertyChange("sizeMode", oldSizeMode, sizeMode);
+    }
 
 	@Override
 	public Dimension getPreferredSize() {

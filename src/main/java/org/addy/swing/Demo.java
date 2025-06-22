@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class Demo {
 	public static final String BROWSE = "<browse...>";
@@ -26,7 +26,7 @@ public class Demo {
 		final JPictureBox pictureBox = new JPictureBox();
 		pictureBox.setBackground(Color.WHITE);
 		pictureBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		pictureBox.setImage(loadImage(pictures[0] + ".jpg"));
+		pictureBox.setImageSource(embeddedImage(pictures[0]));
 		pictureBox.setSizeMode(SizeMode.NORMAL);
 		frame.getContentPane().add(new JScrollPane(pictureBox), BorderLayout.CENTER);
 
@@ -55,9 +55,9 @@ public class Demo {
 		imageCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
 		imageCombo.addItemListener(e -> {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				pictureBox.setImage(BROWSE.equals(e.getItem())
+				pictureBox.setImageSource(BROWSE.equals(e.getItem())
 						? chooseImage(frame)
-						: loadImage(e.getItem() + ".jpg"));
+						: embeddedImage(e.getItem()));
 			}
 		});
 		panel.add(new JLabel(" Image:"));
@@ -82,6 +82,10 @@ public class Demo {
 		frame.setVisible(true);
 	}
 
+	private static URL embeddedImage(Object name) {
+		return Demo.class.getClassLoader().getResource(name+ ".jpg");
+	}
+
 	private static Image chooseImage(JFrame frame) {
 		Image chosenImage = null;
 		ImageFileChooser imageChooser = new ImageFileChooser();
@@ -90,10 +94,6 @@ public class Demo {
             chosenImage = imageChooser.getSelectedImage();
 
 		return chosenImage;
-	}
-
-	private static Image loadImage(String path) {
-		return new ImageIcon(Objects.requireNonNull(Demo.class.getClassLoader().getResource(path))).getImage();
 	}
 
 	private static JPanel getCalendarComboPanel(PropertyChangeListener listener) {
