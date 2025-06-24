@@ -8,8 +8,9 @@ import java.util.function.Function;
 public class InputValidator<T> extends InputVerifier {
     private final ValidationRule<T> validationRule;
     private final Function<JComponent, T> valueExtractor;
-    private Border originalBorder = null;
-    private String originalToolTipText = null;
+    private Border originalBorder;
+    private String originalToolTipText;
+    private boolean initialized = false;
 
     public InputValidator(ValidationRule<T> validationRule, Function<JComponent, T> valueExtractor) {
         this.validationRule = validationRule;
@@ -21,11 +22,11 @@ public class InputValidator<T> extends InputVerifier {
     }
 
     public void save(JComponent input) {
-        if (originalBorder == null)
-            originalBorder = input.getBorder();
+        if (initialized) return;
 
-        if (originalToolTipText == null)
-            originalToolTipText = input.getToolTipText();
+        originalBorder = input.getBorder();
+        originalToolTipText = input.getToolTipText();
+        initialized = true;
     }
 
     public void restore(JComponent input) {

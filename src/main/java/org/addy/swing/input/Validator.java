@@ -47,6 +47,17 @@ public final class Validator {
         return true;
     }
 
+    public static void restore(Container container) {
+        for (Component c : container.getComponents()) {
+            if (!isValidatable(c)) continue;
+
+            var jc = (JComponent) c;
+
+            if (jc.getInputVerifier() instanceof InputValidator<?> inputValidator)
+                inputValidator.restore(jc);
+        }
+    }
+
     private static boolean isValidatable(Component c) {
         return VALIDATABLE_COMPONENT_TYPES.stream()
                 .anyMatch(cls -> cls.isAssignableFrom(c.getClass()));

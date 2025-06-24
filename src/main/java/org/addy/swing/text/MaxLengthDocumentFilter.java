@@ -9,24 +9,24 @@ public class MaxLengthDocumentFilter extends DocumentFilter {
 
     public MaxLengthDocumentFilter(int maxLength) {
         if (maxLength <= 0)
-            throw new IllegalArgumentException("maxLength can not be <= 0");
+            throw new IllegalArgumentException("maxLength should be positive");
 
         this.maxLength = maxLength;
     }
 
     @Override
-    public void replace(FilterBypass bypass, int offset, int length, String text, AttributeSet attrs)
-            throws BadLocationException {
+    public void replace(FilterBypass bypass,
+                        int offset,
+                        int deletedTextLength,
+                        String insertedText,
+                        AttributeSet attributes) throws BadLocationException {
 
         int currentLength = bypass.getDocument().getLength();
-        int nextLength = currentLength + text.length() - length;
+        int nextLength = currentLength + insertedText.length() - deletedTextLength;
 
-        if (nextLength > maxLength) {
-            text = text.substring(0, text.length() - nextLength + maxLength);
-        }
+        if (nextLength > maxLength)
+            insertedText = insertedText.substring(0, insertedText.length() - nextLength + maxLength);
 
-        if (!text.isEmpty()) {
-            super.replace(bypass, offset, length, text, attrs);
-        }
+        super.replace(bypass, offset, deletedTextLength, insertedText, attributes);
     }
 }

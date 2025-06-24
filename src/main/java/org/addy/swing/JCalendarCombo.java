@@ -231,8 +231,9 @@ public class JCalendarCombo
 		calendar.addPropertyChangeListener(this);
 		popupMenu.add(calendar);
 
-		setBackground(UIManager.getColor("ComboBox.background"));
-		setBorder(UIManager.getBorder("ComboBox.border"));
+        // this
+		setBackground(UIManager.getColor("TextField.background"));
+		setBorder(UIManager.getBorder("TextField.border"));
 	}
 
 	private void updateDateEditor() {
