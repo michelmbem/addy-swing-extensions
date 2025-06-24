@@ -107,3 +107,9 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,eclipse
+
+#Other IDEs
+.idea/
+.vscode/
+.vs/
+nbproject/
