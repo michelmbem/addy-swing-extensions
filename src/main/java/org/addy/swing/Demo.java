@@ -112,6 +112,10 @@ public class Demo {
 	}
 
 	private static JPanel createValidationPanel() {
+        final int NONE = GridBagConstraints.NONE;
+        final int CENTER = GridBagConstraints.CENTER;
+        final int HORIZONTAL = GridBagConstraints.HORIZONTAL;
+
 		var validationPanel = new JPanel(new GridBagLayout());
         var fieldSize = new Dimension(250, 24);
 
@@ -195,6 +199,7 @@ public class Demo {
                 c -> (JFormattedTextField) c));
 
         var bottomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPane.setBackground(KnownColor.AZURE_BLUE);
 
         var submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> {
@@ -207,7 +212,7 @@ public class Demo {
 
         var resetButton = new JButton("Reset");
         resetButton.addActionListener(e -> {
-            Validator.restore(validationPanel);
+            Validator.clearValidation(validationPanel);
             firstNameField.setText("");
             lastNameField.setText("");
             genderCombo.setSelectedIndex(0);
@@ -220,7 +225,7 @@ public class Demo {
         });
         bottomPane.add(resetButton);
 
-        validationPanel.add(titleLabel, gbc(0, 0, 2, 1, GridBagConstraints.CENTER, 2));
+        validationPanel.add(titleLabel, gbc(0, 0, 2, 1, NONE, CENTER, 2));
 		validationPanel.add(new JLabel("First name:"), gbc(0, 1));
 		validationPanel.add(firstNameField, gbc(0, 2));
 		validationPanel.add(new JLabel("Last name:"), gbc(1, 1));
@@ -237,7 +242,7 @@ public class Demo {
         validationPanel.add(emailField, gbc(0, 8));
         validationPanel.add(new JLabel("Phone number:"), gbc(1, 7));
         validationPanel.add(phoneField, gbc(1, 8));
-        validationPanel.add(bottomPane, gbc(0, 9, 2, 1, GridBagConstraints.CENTER, 2));
+        validationPanel.add(bottomPane, gbc(0, 9, 2, 1, HORIZONTAL, CENTER, 2));
 
 		return validationPanel;
 	}
@@ -277,12 +282,13 @@ public class Demo {
         return formatter;
     }
 
-    private static GridBagConstraints gbc(int x, int y, int w, int h, int a, int i) {
+    private static GridBagConstraints gbc(int x, int y, int w, int h, int f, int a, int i) {
         var gbc = new GridBagConstraints();
         gbc.gridx = x;
         gbc.gridy = y;
         gbc.gridwidth = w;
         gbc.gridheight = h;
+        gbc.fill = f;
         gbc.anchor = a;
         gbc.insets = switch (i) {
             case 0 -> new Insets(2, 10, 1, 5);
@@ -294,6 +300,6 @@ public class Demo {
     }
 
     private static GridBagConstraints gbc(int x, int y) {
-        return gbc(x, y, 1, 1, GridBagConstraints.BASELINE_LEADING, (y - 1) % 2 );
+        return gbc(x, y, 1, 1, GridBagConstraints.NONE, GridBagConstraints.BASELINE_LEADING, (y - 1) % 2 );
     }
 }

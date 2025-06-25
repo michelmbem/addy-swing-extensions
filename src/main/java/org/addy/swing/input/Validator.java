@@ -47,7 +47,7 @@ public final class Validator {
         return true;
     }
 
-    public static void restore(Container container) {
+    public static void clearValidation(Container container) {
         for (Component c : container.getComponents()) {
             if (!isValidatable(c)) continue;
 
