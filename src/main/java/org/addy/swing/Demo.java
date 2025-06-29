@@ -15,8 +15,10 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 
 public class Demo {
-	public static final String BROWSE = "<browse...>";
-	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", BROWSE};
+	public static final String CUSTOM = "<custom>";
+	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
+
+    static Image customPicture = null;
 
 	public static void main(String[] args) {
 		try {
@@ -55,15 +57,28 @@ public class Demo {
 		pictureBox.setSizeMode(SizeMode.NORMAL);
 		pictureBoxPanel.add(new JScrollPane(pictureBox), BorderLayout.CENTER);
 
+        var browseButton = new JButton("Browse...");
+        browseButton.setEnabled(false);
+        browseButton.addActionListener(e -> {
+            Image chosenImage = chooseImage(frame);
+            if (chosenImage == null) return;
+            customPicture = chosenImage;
+            pictureBox.setImage(customPicture);
+        });
+
 		var imageCombo = new JComboBox<String>();
 		imageCombo.setModel(new SimpleComboBoxModel<>(pictures));
 		imageCombo.setEditable(false);
 		imageCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
 		imageCombo.addItemListener(e -> {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				pictureBox.setImageSource(BROWSE.equals(e.getItem())
-						? chooseImage(frame)
-						: embeddedImage(e.getItem()));
+                if (CUSTOM.equals(e.getItem())) {
+                    browseButton.setEnabled(true);
+                    pictureBox.setImage(customPicture);
+                } else {
+                    browseButton.setEnabled(false);
+                    pictureBox.setImageSource(embeddedImage(e.getItem()));
+                }
 			}
 		});
 
@@ -79,6 +94,7 @@ public class Demo {
 		topPane.add(new JLabel(" Image:"));
 		topPane.add(Box.createRigidArea(new Dimension(5, 0)));
 		topPane.add(imageCombo);
+        topPane.add(browseButton);
 		topPane.add(Box.createHorizontalGlue());
 		topPane.add(new JLabel("Sizing mode:"));
 		topPane.add(Box.createRigidArea(new Dimension(5, 0)));

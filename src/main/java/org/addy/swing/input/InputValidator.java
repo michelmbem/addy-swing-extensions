@@ -8,6 +8,7 @@ import java.util.function.Function;
 public class InputValidator<T> extends InputVerifier {
     private final ValidationRule<T> validationRule;
     private final Function<JComponent, T> valueExtractor;
+
     private Border originalBorder;
     private String originalToolTipText;
     private boolean initialized = false;
