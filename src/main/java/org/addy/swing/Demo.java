@@ -63,7 +63,7 @@ public class Demo {
             Image chosenImage = chooseImage(frame);
             if (chosenImage == null) return;
             customPicture = chosenImage;
-            pictureBox.setImage(customPicture);
+            pictureBox.setImageSource(customPicture);
         });
 
 		var imageCombo = new JComboBox<String>();
@@ -74,7 +74,7 @@ public class Demo {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
                 if (CUSTOM.equals(e.getItem())) {
                     browseButton.setEnabled(true);
-                    pictureBox.setImage(customPicture);
+                    pictureBox.setImageSource(customPicture);
                 } else {
                     browseButton.setEnabled(false);
                     pictureBox.setImageSource(embeddedImage(e.getItem()));
