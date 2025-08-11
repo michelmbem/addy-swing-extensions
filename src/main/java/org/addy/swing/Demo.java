@@ -14,6 +14,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 
+import static org.addy.swing.UIHelper.scale;
+
 public class Demo {
 	public static final String CUSTOM = "<custom>";
 	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
@@ -32,7 +34,7 @@ public class Demo {
 
 	private static JFrame createDemoFrame() {
 		var frame = new JFrame("Addy Swing Demo");
-		frame.setSize(600, 600);
+		frame.setSize(scale(300), scale(300));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 

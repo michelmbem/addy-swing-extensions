@@ -126,4 +126,19 @@ public final class UIHelper {
             }
         });
     }
+
+    public static int scale(int coord) {
+        final double scaleFactor = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice() // or cycle your getScreenDevices()
+                .getDefaultConfiguration()
+                .getDefaultTransform()
+                .getScaleX();
+
+        return (int) Math.round(coord * scaleFactor);
+    }
+
+    public static Dimension scale(Dimension dimension) {
+        return new Dimension(scale(dimension.width), scale(dimension.height));
+    }
 }
