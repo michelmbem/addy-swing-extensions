@@ -1,6 +1,6 @@
 package org.addy.swing.input;
 
-import org.apache.commons.lang3.StringUtils;
+import org.addy.util.StringUtil;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -14,11 +14,11 @@ public final class ValidationPredicates {
     }
 
     public static Predicate<String> notEmpty() {
-        return s -> !StringUtils.isEmpty(s);
+        return s -> !StringUtil.isEmpty(s);
     }
 
     public static Predicate<String> notBlank() {
-        return s -> !StringUtils.isBlank(s);
+        return s -> !StringUtil.isBlank(s);
     }
 
     public static Predicate<String> minLength(int length) {
@@ -34,7 +34,7 @@ public final class ValidationPredicates {
     }
 
     public static Predicate<String> number() {
-        return s -> s == null || StringUtils.isNumeric(s);
+        return s -> s == null || StringUtil.isNumeric(s);
     }
 
     public static <T extends Comparable<T>> Predicate<T> range(T min, T max) {
