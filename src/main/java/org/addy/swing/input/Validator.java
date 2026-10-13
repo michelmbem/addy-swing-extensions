@@ -52,7 +52,6 @@ public final class Validator {
             if (!isValidatable(c)) continue;
 
             var jc = (JComponent) c;
-
             if (jc.getInputVerifier() instanceof InputValidator<?> inputValidator)
                 inputValidator.restore(jc);
         }

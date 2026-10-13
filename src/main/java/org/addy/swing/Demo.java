@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 import static org.addy.swing.UIHelper.scale;
 
 public class Demo {
-	public static final String CUSTOM = "<custom>";
-	static final String[] pictures = new String[] { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
+	static final String CUSTOM = "<custom>";
+	static final String[] pictures = { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
 
     static Image customPicture = null;
 
