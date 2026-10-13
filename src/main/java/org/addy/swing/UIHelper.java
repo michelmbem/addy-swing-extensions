@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 import java.net.URL;
 import java.time.LocalDate;
@@ -110,11 +111,11 @@ public final class UIHelper {
         return calendarCombo.isChecked() ? calendarCombo.getDate() : null;
     }
 
-    public static void setDate(JCalendarCombo calendarCombo, LocalDate dateTime) {
-        if (dateTime == null)
+    public static void setDate(JCalendarCombo calendarCombo, LocalDate date) {
+        if (date == null)
             calendarCombo.setChecked(false);
         else
-            calendarCombo.setDate(dateTime);
+            calendarCombo.setDate(date);
     }
 
     public static void addDoubleClickListener(Component component, ActionListener listener) {
@@ -127,18 +128,19 @@ public final class UIHelper {
         });
     }
 
-    public static int scale(int coord) {
-        final double scaleFactor = GraphicsEnvironment
+    public static int scale(int coord, boolean yAxis) {
+        AffineTransform at = GraphicsEnvironment
                 .getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice() // or cycle your getScreenDevices()
                 .getDefaultConfiguration()
-                .getDefaultTransform()
-                .getScaleX();
-
+                .getDefaultTransform();
+        double scaleFactor = yAxis ? at.getScaleY() : at.getScaleX();
         return (int) Math.round(coord * scaleFactor);
     }
 
     public static Dimension scale(Dimension dimension) {
-        return new Dimension(scale(dimension.width), scale(dimension.height));
+        return new Dimension(
+                scale(dimension.width, false),
+                scale(dimension.height, true));
     }
 }

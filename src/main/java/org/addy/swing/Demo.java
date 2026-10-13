@@ -1,10 +1,6 @@
 package org.addy.swing;
 
-import org.addy.swing.input.InputValidator;
-import org.addy.swing.input.PredicateValidationRule;
-import org.addy.swing.input.ValidationBorders;
-import org.addy.swing.input.ValidationPredicates;
-import org.addy.swing.input.Validator;
+import org.addy.swing.input.*;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
@@ -34,7 +30,7 @@ public class Demo {
 
 	private static JFrame createDemoFrame() {
 		var frame = new JFrame("Addy Swing Demo");
-		frame.setSize(scale(300), scale(300));
+		frame.setSize(scale(300, false), scale(300, true));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
