@@ -270,7 +270,7 @@ public class Demo {
 	}
 
 	private static URL embeddedImage(Object name) {
-		return Demo.class.getClassLoader().getResource(name+ ".jpg");
+		return Demo.class.getClassLoader().getResource(name + ".jpg");
 	}
 
 	private static Image chooseImage(JFrame frame) {
