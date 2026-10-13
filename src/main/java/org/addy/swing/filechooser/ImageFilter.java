@@ -1,8 +1,9 @@
 package org.addy.swing.filechooser;
 
-import java.io.File;
-import javax.swing.filechooser.FileFilter;
 import org.addy.util.FileUtil;
+
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 public class ImageFilter extends FileFilter {
     private static final java.io.FileFilter innerFilter = new FileUtil.ContentTypeFilter("image/*");
@@ -14,6 +15,6 @@ public class ImageFilter extends FileFilter {
 
     @Override
     public String getDescription() {
-        return "All image types (*.jpg, *.png, *.gif, *.tiff, *.bmp...)";
+        return "All image types";
     }
 }

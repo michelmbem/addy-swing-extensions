@@ -7,7 +7,6 @@ import org.addy.util.StringUtil;
 import javax.swing.*;
 import javax.swing.filechooser.FileView;
 import java.io.File;
-import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,35 +28,25 @@ public class ImageFileView extends FileView {
 
     @Override
     public String getTypeDescription(File f) {
-        try {
-            return Stream.of(FileUtil.getContentType(f).split("/"))
-                    .map(StringUtil::pascalCase)
-                    .collect(Collectors.joining(" "));
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return Stream.of(FileUtil.getContentType(f.getName()).split("/"))
+                .map(StringUtil::pascalCase)
+                .collect(Collectors.joining(" "));
     }
 
     @Override
     public Icon getIcon(File f) {
         Icon icon = null;
-    
+
         if (f.isFile()) {
-            try {
-                String mimeType = FileUtil.getContentType(f);
-                icon = switch (mimeType) {
-                    case "image/jpeg" -> createImageIcon("JPEG");
-                    case "image/png" -> createImageIcon("PNG");
-                    case "image/gif" -> createImageIcon("GIF");
-                    case "image/tiff" -> createImageIcon("TIF");
-                    default -> createImageIcon("BMP");
-                };
-            }
-            catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            String contentType = FileUtil.getContentType(f.getName());
+            icon = switch (contentType) {
+                case "image/bmp" -> createImageIcon("BMP");
+                case "image/jpeg" -> createImageIcon("JPEG");
+                case "image/png" -> createImageIcon("PNG");
+                case "image/gif" -> createImageIcon("GIF");
+                case "image/tiff" -> createImageIcon("TIF");
+                default -> createImageIcon("ANY");
+            };
         }
 
         return icon;
