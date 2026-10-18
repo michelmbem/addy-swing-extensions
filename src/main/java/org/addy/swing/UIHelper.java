@@ -59,7 +59,7 @@ public final class UIHelper {
     }
 
     public static <V extends Serializable> V getSelectedValue(JComboBox<ListItem<V>> comboBox) {
-        return getSelectedValue(comboBox, ListItem::value);
+        return getSelectedValue(comboBox, ListItem::getValue);
     }
 
     public static <E, V> void setSelectedValue(JComboBox<E> comboBox, V value, Function<E, V> valueExtractor) {
@@ -78,7 +78,7 @@ public final class UIHelper {
     }
 
     public static <V extends Serializable> void setSelectedValue(JComboBox<ListItem<V>> comboBox, V value) {
-        setSelectedValue(comboBox, value, ListItem::value);
+        setSelectedValue(comboBox, value, ListItem::getValue);
     }
 
     public static <E, V> void setSelectedValue(JComboBox<E> comboBox, V value, BiPredicate<E, V> equality) {

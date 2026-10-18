@@ -22,11 +22,11 @@ public class ListItem<T extends Serializable>
         this(value, value != null ? value.toString() : "");
     }
 
-    public T value() {
+    public T getValue() {
         return value;
     }
 
-    public String label() {
+    public String getLabel() {
         return label;
     }
 
