@@ -241,7 +241,7 @@ public class JCalendar extends JPanel {
 	}
 
 	private void initGUI() {
-		resources = ResourceBundle.getBundle("org/addy/swing/JCalendar");
+		resources = ResourceBundle.getBundle(JCalendar.class.getName());
 
 		topPane = new JPanel(new GridBagLayout());
 		topPane.setBackground(viewSelectorBackground);
