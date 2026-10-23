@@ -14,7 +14,6 @@ import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -94,17 +93,6 @@ public final class UIHelper {
         }
 
         comboBox.setSelectedIndex(selectedIndex);
-    }
-    
-    public static LocalDateTime getDateTime(JCalendarCombo calendarCombo) {
-        return calendarCombo.isChecked() ? calendarCombo.getDateTime() : null;
-    }
-
-    public static void setDateTime(JCalendarCombo calendarCombo, LocalDateTime dateTime) {
-        if (dateTime == null)
-            calendarCombo.setChecked(false);
-        else 
-            calendarCombo.setDateTime(dateTime);
     }
 
     public static LocalDate getDate(JCalendarCombo calendarCombo) {

@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.net.URL;
 import java.text.ParseException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.addy.swing.UIHelper.scale;
 
@@ -113,8 +113,8 @@ public class Demo {
 		var calendarCombo = new JCalendarCombo();
 		calendarCombo.setCheckBoxVisible(true);
 		calendarCombo.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
-		calendarCombo.addPropertyChangeListener("dateTime",
-				e -> calendar.setSelectedDateTime((LocalDateTime) e.getNewValue()));
+		calendarCombo.addPropertyChangeListener("date",
+				e -> calendar.setSelectedDate((LocalDate) e.getNewValue()));
 
 		topPane.add(Box.createHorizontalGlue());
 		topPane.add(new JLabel("Calendar Combo:"));

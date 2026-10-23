@@ -9,7 +9,6 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
@@ -19,10 +18,10 @@ public class JCalendarCombo
 		implements ChangeListener, PropertyChangeListener {
 
 	private static final String POPUP_MENU_CANCEL_PROPERTY = "JPopupMenu.firePopupMenuCanceled";
-	private static final String DEFAULT_DATE_TIME_FORMAT = "d MMMM yyyy";
+	private static final String DEFAULT_DATE_FORMAT = "d MMMM yyyy";
 
-	private LocalDateTime dateTime;
-	private String dateTimeFormat;
+	private LocalDate date;
+	private String dateFormat;
 	private boolean checkBoxVisible;
 	private boolean checked;
 	private boolean allowPopupHide;
@@ -34,57 +33,49 @@ public class JCalendarCombo
 	private JCalendar calendar;
 
 	public JCalendarCombo() {
-		this(LocalDateTime.now(), DEFAULT_DATE_TIME_FORMAT, false);
+		this(LocalDate.now(ZoneId.systemDefault()), DEFAULT_DATE_FORMAT, false);
 	}
 
-	public JCalendarCombo(LocalDateTime dateTime) {
-		this(dateTime, DEFAULT_DATE_TIME_FORMAT, false);
+	public JCalendarCombo(LocalDate date) {
+		this(date, DEFAULT_DATE_FORMAT, false);
 	}
 
-	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat) {
-		this(dateTime, dateTimeFormat, false);
+	public JCalendarCombo(LocalDate date, String dateFormat) {
+		this(date, dateFormat, false);
 	}
 
-	public JCalendarCombo(LocalDateTime dateTime, String dateTimeFormat, boolean checkBoxVisible) {
+	public JCalendarCombo(LocalDate date, String dateFormat, boolean checkBoxVisible) {
 		super(new BorderLayout());
 		initGUI();
-		setDateTime(dateTime);
-		setDateTimeFormat(dateTimeFormat);
+		setDate(date);
+		setDateFormat(dateFormat);
 		setCheckBoxVisible(checkBoxVisible);
 	}
 
-	public LocalDateTime getDateTime() {
-		return dateTime;
-	}
-
-	public void setDateTime(LocalDateTime dateTime) {
-        if (Objects.equals(dateTime, this.dateTime)) return;
-
-        LocalDateTime oldDateTime = this.dateTime;
-        this.dateTime = dateTime;
-        firePropertyChange("dateTime", oldDateTime, dateTime);
-        spinner.setValue(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant()));
-        setChecked(true);
-    }
-
 	public LocalDate getDate() {
-		return dateTime != null ? dateTime.toLocalDate() : null;
+		return date;
 	}
 
 	public void setDate(LocalDate date) {
-		setDateTime(date != null ? date.atStartOfDay() : null);
+        if (Objects.equals(date, this.date)) return;
+
+        LocalDate oldDate = this.date;
+        this.date = date;
+        firePropertyChange("date", oldDate, date);
+        spinner.setValue(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+        setChecked(true);
+    }
+
+	public String getDateFormat() {
+		return dateFormat;
 	}
 
-	public String getDateTimeFormat() {
-		return dateTimeFormat;
-	}
+	public void setDateFormat(String dateFormat) {
+        if (Objects.equals(dateFormat, this.dateFormat)) return;
 
-	public void setDateTimeFormat(String dateTimeFormat) {
-        if (Objects.equals(dateTimeFormat, this.dateTimeFormat)) return;
-
-        String oldDateTimeFormat = this.dateTimeFormat;
-        this.dateTimeFormat = Objects.requireNonNull(dateTimeFormat);
-        firePropertyChange("dateTimeFormat", oldDateTimeFormat, dateTimeFormat);
+        String oldDateFormat = this.dateFormat;
+        this.dateFormat = Objects.requireNonNull(dateFormat);
+        firePropertyChange("dateFormat", oldDateFormat, dateFormat);
         updateDateEditor();
     }
 
@@ -151,7 +142,7 @@ public class JCalendarCombo
 
 	public void showPopupMenu() {
 		allowPopupHide = false;
-		calendar.setActiveDateTime(dateTime != null ? dateTime : LocalDateTime.now());
+		calendar.setActiveDate(date != null ? date : LocalDate.now(ZoneId.systemDefault()));
 		calendar.setActiveView(CalendarView.MONTH);
 
 		Point pt = getPopupLocation();
@@ -180,9 +171,9 @@ public class JCalendarCombo
 
 	@Override
 	public void propertyChange(PropertyChangeEvent e) {
-		if (e.getSource() == calendar && e.getPropertyName().equals("selectedDateTime")) {
+		if (e.getSource() == calendar && e.getPropertyName().equals("selectedDate")) {
 			hidePopupMenu();
-			setDateTime(calendar.getSelectedDateTime());
+			setDate(calendar.getSelectedDate());
 		}
 	}
 
@@ -199,8 +190,8 @@ public class JCalendarCombo
 		// spinner
 		spinner = new JSpinner(new SpinnerDateModel());
 		spinner.setBorder(BorderFactory.createEmptyBorder());
-		spinner.addChangeListener(e -> setDateTime(
-				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
+		spinner.addChangeListener(e -> setDate(
+				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
 		add(spinner, BorderLayout.CENTER);
 
 		// button
@@ -237,7 +228,7 @@ public class JCalendarCombo
 	}
 
 	private void updateDateEditor() {
-		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateTimeFormat);
+		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateFormat);
 		spinner.setEditor(dateEditor);
 		dateEditor.setBorder(new EmptyBorder(0, 2, 0, 2));
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
