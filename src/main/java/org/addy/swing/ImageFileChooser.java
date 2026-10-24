@@ -1,7 +1,7 @@
 package org.addy.swing;
 
+import org.addy.swing.filechooser.FileFilters;
 import org.addy.swing.filechooser.ImageFileView;
-import org.addy.swing.filechooser.ImageFilter;
 import org.addy.swing.filechooser.ImagePreview;
 import org.addy.util.FileUtil;
 
@@ -49,7 +49,7 @@ public class ImageFileChooser extends JFileChooser {
     }
 
     private void init() {
-        var filter = new ImageFilter();
+        var filter = FileFilters.ofContentType("image/*", "All image types");
         addChoosableFileFilter(filter);
         setFileFilter(filter);
         setAcceptAllFileFilterUsed(false);
