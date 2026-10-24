@@ -37,14 +37,14 @@ public final class UIHelper {
         return loadIcon(clazz.getResource(name), width, height);
     }
 
-    public static ImageIcon loadIcon(ClassLoader loader, String name, int width, int height) {
-        return loadIcon(loader.getResource(name), width, height);
-    }
-
     public static void setFixedSized(Component c, Dimension size) {
         c.setMinimumSize(size);
         c.setMaximumSize(size);
         c.setPreferredSize(size);
+    }
+
+    public static void setText(JTextComponent textComponent, String text) {
+        textComponent.setText(text == null ? "" : text);
     }
 
     public static void setMaxLength(JTextComponent textComponent, int maxLength) {
@@ -93,6 +93,12 @@ public final class UIHelper {
         }
 
         comboBox.setSelectedIndex(selectedIndex);
+        comboBox.repaint();
+    }
+
+    public static <E> void setSelectedItem(JComboBox<E> comboBox, E selectedItem) {
+        comboBox.setSelectedItem(selectedItem);
+        comboBox.repaint();
     }
 
     public static LocalDate getDate(JCalendarCombo calendarCombo) {
