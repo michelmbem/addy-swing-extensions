@@ -1,5 +1,7 @@
 package org.addy.swing;
 
+import org.addy.util.media.InsetsFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -29,15 +31,15 @@ public class JCalendar extends JPanel {
 
 	private JPanel topPane;
 	private JPanel middlePane;
+	private JPanel bottomPane;
 	private JPanel centuryPane;
 	private JPanel decadePane;
 	private JPanel yearPane;
 	private JPanel monthPane;
-	private JPanel bottomPane;
-	private JLabel[] dayOfWeekLabels;
 	private JButton previousPeriodButton;
 	private JButton nextPeriodButton;
 	private JButton selectViewButton;
+	private JLabel[] dayOfWeekLabels;
 	private JButton[][] decadeButtons;
 	private JButton[][] yearButtons;
 	private JButton[][] monthButtons;
@@ -66,7 +68,7 @@ public class JCalendar extends JPanel {
         this.activeView = Objects.requireNonNull(activeView);
         firePropertyChange("activeView", oldActiveView, activeView);
         fillCalendar();
-        ((CardLayout) middlePane.getLayout()).show(middlePane, activeView.toString());
+        ((CardLayout) middlePane.getLayout()).show(middlePane, activeView.name());
     }
 
 	public LocalDate getActiveDate() {
@@ -92,7 +94,7 @@ public class JCalendar extends JPanel {
         LocalDate oldSelectedDate = this.selectedDate;
         this.selectedDate = selectedDate;
         firePropertyChange("selectedDate", oldSelectedDate, selectedDate);
-        setActiveDate(selectedDate != null ? selectedDate : LocalDate.now());
+        setActiveDate(selectedDate != null ? selectedDate : LocalDate.now(ZoneId.systemDefault()));
     }
 
 	public Color getViewSelectorBackground() {
@@ -104,7 +106,8 @@ public class JCalendar extends JPanel {
 
         Color oldViewSelectorBackground = this.viewSelectorBackground;
         this.viewSelectorBackground = Objects.requireNonNull(viewSelectorBackground);
-        firePropertyChange("viewSelectorBackground", oldViewSelectorBackground, viewSelectorBackground);
+        firePropertyChange("viewSelectorBackground",
+				oldViewSelectorBackground, viewSelectorBackground);
         topPane.setBackground(viewSelectorBackground);
     }
 
@@ -117,7 +120,8 @@ public class JCalendar extends JPanel {
 
         Color oldViewSelectorForeground = this.viewSelectorForeground;
         this.viewSelectorForeground = Objects.requireNonNull(viewSelectorForeground);
-        firePropertyChange("viewSelectorForeground", oldViewSelectorForeground, viewSelectorForeground);
+        firePropertyChange("viewSelectorForeground",
+				oldViewSelectorForeground, viewSelectorForeground);
         selectViewButton.setForeground(viewSelectorForeground);
     }
 
@@ -182,9 +186,7 @@ public class JCalendar extends JPanel {
 			}
 		}
 
-		JButton[][][] buttonMatrices = {dateButtons, monthButtons, yearButtons, decadeButtons};
-
-		for (JButton[][] buttonMatrix : buttonMatrices) {
+		for (JButton[][] buttonMatrix : getButtonMatrices()) {
 			if (buttonMatrix == null) continue;
 
 			for (JButton[] buttonRow : buttonMatrix) {
@@ -210,9 +212,7 @@ public class JCalendar extends JPanel {
 			}
 		}
 
-		JButton[][][] buttonMatrices = {dateButtons, monthButtons, yearButtons, decadeButtons};
-
-		for (JButton[][] buttonMatrix : buttonMatrices) {
+		for (JButton[][] buttonMatrix : getButtonMatrices()) {
 			if (buttonMatrix == null) continue;
 
 			for (JButton[] buttonRow : buttonMatrix) {
@@ -248,17 +248,19 @@ public class JCalendar extends JPanel {
 		add(topPane, BorderLayout.PAGE_START);
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(2, 2, 2, 2);
+		gbc.insets = InsetsFactory.uniform(2);
 
-		previousPeriodButton = createGraphicButton("previous.png", "previous_hot.png", "previous_pressed.png");
+		previousPeriodButton = createGraphicButton("previous");
 		previousPeriodButton.setPreferredSize(BUTTON_SIZE);
-		previousPeriodButton.addActionListener(new DateTranslation(this, 0, -1));
+		previousPeriodButton.addActionListener(
+				new DateTranslation(this, TranslationField.PAGE, -1));
 		topPane.add(previousPeriodButton, gbc);
 
 		gbc.gridx = 2;
-		nextPeriodButton = createGraphicButton("next.png", "next_hot.png", "next_pressed.png");
+		nextPeriodButton = createGraphicButton("next");
 		nextPeriodButton.setPreferredSize(BUTTON_SIZE);
-		nextPeriodButton.addActionListener(new DateTranslation(this, 0, 1));
+		nextPeriodButton.addActionListener(
+				new DateTranslation(this, TranslationField.PAGE, 1));
 		topPane.add(nextPeriodButton, gbc);
 
 		gbc.gridx = 1;
@@ -269,7 +271,7 @@ public class JCalendar extends JPanel {
 		selectViewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		selectViewButton.addActionListener(e -> {
 			requestFocusInWindow();
-			JCalendar.this.switchActiveView();
+			switchActiveView();
 		});
 		topPane.add(selectViewButton, gbc);
 
@@ -281,7 +283,7 @@ public class JCalendar extends JPanel {
 
 		centuryPane = new JPanel(new GridLayout(3, 4));
 		centuryPane.setOpaque(false);
-		middlePane.add(centuryPane, CalendarView.CENTURY.toString());
+		middlePane.add(centuryPane, CalendarView.CENTURY.name());
 
 		MouseListener decadeMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
@@ -303,7 +305,7 @@ public class JCalendar extends JPanel {
 
 		decadePane = new JPanel(new GridLayout(3, 4));
 		decadePane.setOpaque(false);
-		middlePane.add(decadePane, CalendarView.DECADE.toString());
+		middlePane.add(decadePane, CalendarView.DECADE.name());
 
 		MouseListener yearMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
@@ -325,7 +327,7 @@ public class JCalendar extends JPanel {
 
 		yearPane = new JPanel(new GridLayout(3, 4));
 		yearPane.setOpaque(false);
-		middlePane.add(yearPane, CalendarView.YEAR.toString());
+		middlePane.add(yearPane, CalendarView.YEAR.name());
 
 		MouseListener monthMouseListener = new FlatButtonMouseAdapter(rolloverDateColor);
 
@@ -347,7 +349,7 @@ public class JCalendar extends JPanel {
 
 		monthPane = new JPanel(new GridLayout(7, 7));
 		monthPane.setOpaque(false);
-		middlePane.add(monthPane, CalendarView.MONTH.toString());
+		middlePane.add(monthPane, CalendarView.MONTH.name());
 
 		dayOfWeekLabels = new JLabel[7];
 		for (int i = 0; i < dayOfWeekLabels.length; ++i) {
@@ -378,13 +380,14 @@ public class JCalendar extends JPanel {
 
 		todayButton = createFlatButton(String.format(
 				resources.getString("todayFormat"),
-				DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(LocalDate.now())));
+				DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+						.format(LocalDate.now(ZoneId.systemDefault()))));
 
 		todayButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		todayButton.addActionListener(e -> {
 			requestFocusInWindow();
 			setActiveView(CalendarView.MONTH);
-			setSelectedDate(LocalDate.now());
+			setSelectedDate(LocalDate.now(ZoneId.systemDefault()));
 		});
 		bottomPane.add(todayButton);
 
@@ -408,27 +411,24 @@ public class JCalendar extends JPanel {
 		inputMap.put(KeyStroke.getKeyStroke("pressed ENTER"), "enter");
 
 		ActionMap actionMap = getActionMap();
-		actionMap.put("left", new DateTranslation(this, 1, -1));
-		actionMap.put("right", new DateTranslation(this, 1, 1));
-		actionMap.put("up", new DateTranslation(this, 2, -1));
-		actionMap.put("down", new DateTranslation(this, 2, 1));
+		actionMap.put("left",
+				new DateTranslation(this, TranslationField.COLUMN, -1));
+		actionMap.put("right",
+				new DateTranslation(this, TranslationField.COLUMN, 1));
+		actionMap.put("up",
+				new DateTranslation(this, TranslationField.ROW, -1));
+		actionMap.put("down",
+				new DateTranslation(this, TranslationField.ROW, 1));
 		actionMap.put("enter", new ActiveDateSelection(this));
 	}
 
 	private void switchActiveView() {
-		switch (activeView) {
-			case MONTH:
-				setActiveView(CalendarView.YEAR);
-				break;
-			case YEAR:
-				setActiveView(CalendarView.DECADE);
-				break;
-			case DECADE:
-				setActiveView(CalendarView.CENTURY);
-				break;
-			default:
-				getToolkit().beep();
-		}
+        switch (activeView) {
+            case MONTH -> setActiveView(CalendarView.YEAR);
+            case YEAR -> setActiveView(CalendarView.DECADE);
+            case DECADE -> setActiveView(CalendarView.CENTURY);
+            default -> getToolkit().beep();
+        }
 	}
 
 	private JLabel getDayOfWeekLabel(long dayOfWeek) {
@@ -461,12 +461,12 @@ public class JCalendar extends JPanel {
 		return button;
 	}
 
-	private JButton createGraphicButton(String iconPath, String hotIconPath, String pressedIconPath) {
+	private JButton createGraphicButton(String icon) {
 		JButton button = createFlatButton("");
 		button.setRolloverEnabled(true);
-		button.setIcon(new ImageIcon(getClass().getResource(iconPath)));
-		button.setRolloverIcon(new ImageIcon(getClass().getResource(hotIconPath)));
-		button.setPressedIcon(new ImageIcon(getClass().getResource(pressedIconPath)));
+		button.setIcon(new ImageIcon(getClass().getResource(icon + ".png")));
+		button.setRolloverIcon(new ImageIcon(getClass().getResource(icon + "_hot.png")));
+		button.setPressedIcon(new ImageIcon(getClass().getResource(icon + "_pressed.png")));
 		return button;
 	}
 
@@ -477,22 +477,22 @@ public class JCalendar extends JPanel {
 
 		switch (activeView) {
 			case CENTURY:
-				fillCenturyCalendar();
 				year0 = 100 * (activeDate.getYear() / 100);
 				year9 = year0 + 99;
+				fillCenturyCalendar(year0 - 10);
 				break;
 			case DECADE:
-				fillDecadeCalendar();
 				year0 = 10 * (activeDate.getYear() / 10);
 				year9 = year0 + 9;
+				fillDecadeCalendar(year0 - 1);
 				break;
 			case YEAR:
-				fillYearCalendar();
 				formatter = DateTimeFormatter.ofPattern("yyyy");
+				fillYearCalendar();
 				break;
 			default:
-				fillMonthCalendar();
 				formatter = DateTimeFormatter.ofPattern(resources.getString("monthYearPattern"));
+				fillMonthCalendar();
 				break;
 		}
 
@@ -502,14 +502,14 @@ public class JCalendar extends JPanel {
 			selectViewButton.setText(year0 + "-" + year9);
 	}
 
-	private void fillCenturyCalendar() {
-		LocalDate clone = activeDate.withYear(100 * (activeDate.getYear() / 100) - 10);
+	private void fillCenturyCalendar(int startYear) {
+		LocalDate clone = activeDate.withYear(startYear);
 
 		for (int y = 0; y < decadeButtons.length; y++)
 			for (int x = 0; x < decadeButtons[0].length; x++) {
 				int year0 = clone.getYear();
 				int year9 = year0 + 9;
-				decadeButtons[y][x].setText("<html>" + year0 + "<br>" + year9 + "</html>");
+				decadeButtons[y][x].setText("<html>%d<br>%d</html>".formatted(year0, year9));
 				decadeButtons[y][x].setActionCommand(clone.toString());
 
 				if (clone.getYear() / 10 == activeDate.getYear() / 10) {
@@ -525,8 +525,8 @@ public class JCalendar extends JPanel {
 			}
 	}
 
-	private void fillDecadeCalendar() {
-		LocalDate clone = activeDate.withYear(10 * (activeDate.getYear() / 10) - 1);
+	private void fillDecadeCalendar(int startYear) {
+		LocalDate clone = activeDate.withYear(startYear);
 
 		for (int y = 0; y < yearButtons.length; y++)
 			for (int x = 0; x < yearButtons[0].length; x++) {
@@ -551,7 +551,8 @@ public class JCalendar extends JPanel {
 
         for (JButton[] buttonRow : monthButtons) {
             for (JButton monthButton : buttonRow) {
-                monthButton.setText(clone.getMonth().getDisplayName(TextStyle.SHORT, getDefaultLocale()));
+                monthButton.setText(clone.getMonth()
+						.getDisplayName(TextStyle.SHORT, getDefaultLocale()));
                 monthButton.setActionCommand(clone.toString());
 
                 if (clone.equals(activeDate)) {
@@ -603,6 +604,9 @@ public class JCalendar extends JPanel {
 		return (nextSundayDays - 1) / 7;
 	}
 
+	private JButton[][][] getButtonMatrices() {
+		return new JButton[][][] { dateButtons, monthButtons, yearButtons, decadeButtons };
+	}
 
 	protected static class FlatButtonMouseAdapter extends MouseAdapter {
 		private static final String SAVED_BG = "JCalendar.savedBackground";
@@ -649,55 +653,57 @@ public class JCalendar extends JPanel {
 	}
 
 	protected static class ActiveDateSelection extends AbstractAction {
-		private final JCalendar monthCalendar;
+		private final JCalendar calendar;
 
-		public ActiveDateSelection(JCalendar monthCalendar) {
-			this.monthCalendar = monthCalendar;
+		public ActiveDateSelection(JCalendar calendar) {
+			this.calendar = calendar;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            switch (monthCalendar.activeView) {
-                case CENTURY -> monthCalendar.setActiveView(CalendarView.DECADE);
-                case DECADE -> monthCalendar.setActiveView(CalendarView.YEAR);
-                case YEAR -> monthCalendar.setActiveView(CalendarView.MONTH);
+            switch (calendar.activeView) {
+                case CENTURY -> calendar.setActiveView(CalendarView.DECADE);
+                case DECADE -> calendar.setActiveView(CalendarView.YEAR);
+                case YEAR -> calendar.setActiveView(CalendarView.MONTH);
                 default -> {
-                    monthCalendar.setSelectedDate(monthCalendar.activeDate);
-                    monthCalendar.fillCalendar();
+                    calendar.setSelectedDate(calendar.activeDate);
+                    calendar.fillCalendar();
                 }
             }
 		}
 	}
 
+	protected enum TranslationField { PAGE, COLUMN, ROW }
+
 	protected static class DateTranslation extends AbstractAction {
-		private final JCalendar monthCalendar;
-		private final int field; // 0: PAGE; 1: COLUMN; 2: ROW
+		private final JCalendar calendar;
+		private final TranslationField field;
 		private final int amount;
 
-		public DateTranslation(JCalendar monthCalendar, int field, int amount) {
-			this.monthCalendar = monthCalendar;
+		public DateTranslation(JCalendar calendar, TranslationField field, int amount) {
+			this.calendar = calendar;
 			this.field = field;
 			this.amount = amount;
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			monthCalendar.requestFocusInWindow();
-			LocalDate clone = monthCalendar.activeDate;
+			calendar.requestFocusInWindow();
+			LocalDate clone = calendar.activeDate;
 
             switch (field) {
-                case 0 -> clone = switch (monthCalendar.activeView) {
+				case PAGE -> clone = switch (calendar.activeView) {
                     case MONTH -> clone.plusMonths(amount);
                     case YEAR -> clone.plusYears(amount);
                     case DECADE -> clone.plusYears(10L * amount);
                     default -> clone.plusYears(100L * amount);
                 };
-                case 1 -> clone = switch (monthCalendar.activeView) {
+				case COLUMN -> clone = switch (calendar.activeView) {
                     case MONTH -> clone.plusDays(amount);
                     case YEAR -> clone.plusMonths(amount);
                     case DECADE -> clone.plusYears(amount);
                     default -> clone.plusYears(10L * amount);
                 };
-                case 2 -> clone = switch (monthCalendar.activeView) {
+                case ROW -> clone = switch (calendar.activeView) {
                     case MONTH -> clone.plusWeeks(amount);
                     case YEAR -> clone.plusMonths(4L * amount);
                     case DECADE -> clone.plusYears(4L * amount);
@@ -709,7 +715,7 @@ public class JCalendar extends JPanel {
                 }
             }
 
-			monthCalendar.setActiveDate(clone);
+			calendar.setActiveDate(clone);
 		}
 	}
 }

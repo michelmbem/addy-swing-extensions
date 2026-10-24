@@ -1,5 +1,7 @@
 package org.addy.swing;
 
+import org.addy.util.ValueConverter;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -10,7 +12,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.Objects;
 
 public class JCalendarCombo
@@ -62,7 +63,7 @@ public class JCalendarCombo
         LocalDate oldDate = this.date;
         this.date = date;
         firePropertyChange("date", oldDate, date);
-        spinner.setValue(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+        spinner.setValue(ValueConverter.toDate(date));
         setChecked(true);
     }
 
@@ -190,8 +191,7 @@ public class JCalendarCombo
 		// spinner
 		spinner = new JSpinner(new SpinnerDateModel());
 		spinner.setBorder(BorderFactory.createEmptyBorder());
-		spinner.addChangeListener(e -> setDate(
-				((Date) spinner.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+		spinner.addChangeListener(e -> setDate(ValueConverter.toLocalDate(spinner.getValue())));
 		add(spinner, BorderLayout.CENTER);
 
 		// button
