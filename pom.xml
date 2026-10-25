@@ -51,17 +51,17 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>17</maven.compiler.release>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>github</id>
 			<url>https://maven.pkg.github.com/michelmbem/addy-utilitiy-java</url>
 		</repository>
 	</repositories>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.release>17</maven.compiler.release>
+	</properties>
 
 	<dependencies>
 		<dependency>
