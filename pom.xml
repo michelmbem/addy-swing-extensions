@@ -33,30 +33,24 @@
 	</developers>
 
 	<scm>
-		<connection>https://github.com/michelmbem/addy-swing-extensions.git</connection>
-		<tag>HEAD</tag>
+		<connection>scm:git:https://github.com/michelmbem/addy-swing-extensions.git</connection>
+		<developerConnection>scm:git:https://github.com/michelmbem/addy-swing-extensions.git</developerConnection>
 		<url>https://github.com/michelmbem/addy-swing-extensions</url>
+		<tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>
 		<repository>
-			<id>github</id>
-			<name>GitHub Packages</name>
-			<url>https://maven.pkg.github.com/michelmbem/addy-swing-extensions</url>
+			<id>cloudsmith</id>
+			<name>Cloudsmith Releases</name>
+			<url>https://maven.cloudsmith.io/michelmbem/java-libraries/</url>
 		</repository>
 		<snapshotRepository>
-			<id>github</id>
-			<name>GitHub Packages Snapshots</name>
-			<url>https://maven.pkg.github.com/michelmbem/addy-swing-extensions</url>
+			<id>cloudsmith</id>
+			<name>Cloudsmith Snapshots</name>
+			<url>https://maven.cloudsmith.io/michelmbem/java-libraries/</url>
 		</snapshotRepository>
 	</distributionManagement>
-
-	<repositories>
-		<repository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/michelmbem/addy-utilitiy-java</url>
-		</repository>
-	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
