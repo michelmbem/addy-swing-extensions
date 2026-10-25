@@ -56,6 +56,13 @@
 		<maven.compiler.release>17</maven.compiler.release>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/michelmbem/addy-utilitiy-java</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.addy</groupId>
