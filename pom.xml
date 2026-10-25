@@ -40,17 +40,30 @@
 	</scm>
 
 	<distributionManagement>
-		<repository>
-			<id>cloudsmith</id>
-			<name>Cloudsmith Releases</name>
-			<url>https://maven.cloudsmith.io/michelmbem/java-libraries/</url>
-		</repository>
 		<snapshotRepository>
 			<id>cloudsmith</id>
-			<name>Cloudsmith Snapshots</name>
-			<url>https://maven.cloudsmith.io/michelmbem/java-libraries/</url>
+			<url>https://maven.cloudsmith.io/michelmbem/addy-libraries/</url>
 		</snapshotRepository>
+		<repository>
+			<id>cloudsmith</id>
+			<url>https://maven.cloudsmith.io/michelmbem/addy-libraries/</url>
+		</repository>
 	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>michelmbem-addy-libraries</id>
+			<url>https://dl.cloudsmith.io/public/michelmbem/addy-libraries/maven/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
