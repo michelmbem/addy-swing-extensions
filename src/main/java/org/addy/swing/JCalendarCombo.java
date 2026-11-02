@@ -1,9 +1,9 @@
 package org.addy.swing;
 
 import org.addy.util.ValueConverter;
+import org.addy.util.media.InsetsFactory;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
@@ -46,7 +46,7 @@ public class JCalendarCombo
 	}
 
 	public JCalendarCombo(LocalDate date, String dateFormat, boolean checkBoxVisible) {
-		super(new BorderLayout());
+		super();
 		initGUI();
 		setDate(date);
 		setDateFormat(dateFormat);
@@ -183,16 +183,15 @@ public class JCalendarCombo
 		checkBox = new JCheckBox();
 		checkBox.setVisible(false);
 		checkBox.setFocusable(false);
-		checkBox.setBorderPainted(false);
 		checkBox.setContentAreaFilled(false);
+		checkBox.setBorder(BorderFactory.createEmptyBorder());
+		checkBox.setMargin(InsetsFactory.uniform(2));
 		checkBox.addChangeListener(this);
-		add(checkBox, BorderLayout.LINE_START);
 
 		// spinner
 		spinner = new JSpinner(new SpinnerDateModel());
 		spinner.setBorder(BorderFactory.createEmptyBorder());
 		spinner.addChangeListener(e -> setDate(ValueConverter.toLocalDate(spinner.getValue())));
-		add(spinner, BorderLayout.CENTER);
 
 		// button
 		button = new BasicArrowButton(SwingConstants.SOUTH);
@@ -204,7 +203,6 @@ public class JCalendarCombo
 			else
 				showPopupMenu();
 		});
-		add(button, BorderLayout.LINE_END);
 
 		// popupMenu
 		popupMenu = new JPopupMenu() {
@@ -222,15 +220,28 @@ public class JCalendarCombo
 		calendar.addPropertyChangeListener(this);
 		popupMenu.add(calendar);
 
+		// layout
+		var gbl = new GridBagLayout();
+		gbl.columnWeights = new double[] { 0.0, 1.0, 0.0 };
+		gbl.rowWeights = new double[] { 1.0 };
+
+		var gbc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 0, 0,
+				GridBagConstraints.CENTER, GridBagConstraints.BOTH, InsetsFactory.empty(), 0, 0);
+
         // this
 		setBackground(UIManager.getColor("TextField.background"));
 		setBorder(UIManager.getBorder("TextField.border"));
+		setLayout(gbl);
+		add(checkBox, gbc);
+		add(spinner, gbc);
+		add(button, gbc);
 	}
 
 	private void updateDateEditor() {
 		JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spinner, dateFormat);
 		spinner.setEditor(dateEditor);
-		dateEditor.setBorder(new EmptyBorder(0, 2, 0, 2));
+		dateEditor.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+		dateEditor.getTextField().setBorder(BorderFactory.createEmptyBorder());
 		dateEditor.getTextField().setHorizontalAlignment(SwingConstants.LEADING);
 	}
 

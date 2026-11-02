@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class JCalendar extends JPanel {
-	public static final Dimension BUTTON_SIZE = new Dimension(16, 16);
+	public static final Dimension BUTTON_SIZE = new Dimension(24, 24);
 
 	private LocalDate activeDate = LocalDate.now(ZoneId.systemDefault());
 	private LocalDate selectedDate = null;
@@ -243,12 +243,16 @@ public class JCalendar extends JPanel {
 	private void initGUI() {
 		resources = ResourceBundle.getBundle(JCalendar.class.getName());
 
-		topPane = new JPanel(new GridBagLayout());
+		var gbl = new GridBagLayout();
+		gbl.columnWeights = new double[] { 0.0, 1.0, 0.0 };
+		gbl.rowWeights = new double[] { 1.0 };
+
+		topPane = new JPanel(gbl);
 		topPane.setBackground(viewSelectorBackground);
 		add(topPane, BorderLayout.PAGE_START);
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = InsetsFactory.uniform(2);
+		var gbc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 0, 0,
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, InsetsFactory.uniform(2), 0, 0);
 
 		previousPeriodButton = createGraphicButton("previous");
 		previousPeriodButton.setPreferredSize(BUTTON_SIZE);
@@ -256,15 +260,6 @@ public class JCalendar extends JPanel {
 				new DateTranslation(this, TranslationField.PAGE, -1));
 		topPane.add(previousPeriodButton, gbc);
 
-		gbc.gridx = 2;
-		nextPeriodButton = createGraphicButton("next");
-		nextPeriodButton.setPreferredSize(BUTTON_SIZE);
-		nextPeriodButton.addActionListener(
-				new DateTranslation(this, TranslationField.PAGE, 1));
-		topPane.add(nextPeriodButton, gbc);
-
-		gbc.gridx = 1;
-		gbc.weightx = 1.0D;
 		selectViewButton = createFlatButton("");
 		selectViewButton.setFont(viewSelectorFont);
 		selectViewButton.setForeground(viewSelectorForeground);
@@ -274,6 +269,12 @@ public class JCalendar extends JPanel {
 			switchActiveView();
 		});
 		topPane.add(selectViewButton, gbc);
+
+		nextPeriodButton = createGraphicButton("next");
+		nextPeriodButton.setPreferredSize(BUTTON_SIZE);
+		nextPeriodButton.addActionListener(
+				new DateTranslation(this, TranslationField.PAGE, 1));
+		topPane.add(nextPeriodButton, gbc);
 
 		CardLayout cardLayout = new CardLayout();
 
@@ -383,6 +384,7 @@ public class JCalendar extends JPanel {
 				DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
 						.format(LocalDate.now(ZoneId.systemDefault()))));
 
+		todayButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 		todayButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		todayButton.addActionListener(e -> {
 			requestFocusInWindow();
@@ -455,7 +457,7 @@ public class JCalendar extends JPanel {
 		JButton button = new JButton(text);
 		button.setForeground(getForeground());
 		button.setFont(getFont());
-		button.setBorder(null);
+		button.setBorder(BorderFactory.createEmptyBorder());
 		button.setContentAreaFilled(false);
 		button.setFocusable(false);
 		return button;
