@@ -59,7 +59,6 @@ public class ImageFileChooser extends JFileChooser {
 
     public Image getSelectedImage() {
         File selectedFile = getSelectedFile();
-
         if (selectedFile == null) return null;
 
         try {
@@ -72,7 +71,6 @@ public class ImageFileChooser extends JFileChooser {
 
     public byte[] readFileBytes() {
         File selectedFile = getSelectedFile();
-
         if (selectedFile == null) return new byte[0];
 
         try {
@@ -84,12 +82,13 @@ public class ImageFileChooser extends JFileChooser {
     }
 
     public void writeFileBytes(byte[] bytes, boolean append) {
-        File selectedFile = getSelectedFile();
+        Objects.requireNonNull(bytes, "bytes must be non-null");
 
+        File selectedFile = getSelectedFile();
         if (selectedFile == null) return;
 
         try {
-            FileUtil.writeAllBytes(getSelectedFile(), Objects.requireNonNull(bytes), append);
+            FileUtil.writeAllBytes(selectedFile, bytes, append);
         } catch (IOException e) {
             e.printStackTrace();
         }
