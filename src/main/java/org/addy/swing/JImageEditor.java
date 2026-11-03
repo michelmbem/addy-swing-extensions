@@ -144,13 +144,17 @@ public class JImageEditor extends JPanel {
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         tools.add(button("crop", "crop", this::startCropSelection));
-        tools.add(button("rotate90", "rotate_90", this::rotate90));
-        tools.add(button("rotate180", "rotate_180", this::rotate180));
-        tools.add(button("rotate270", "rotate_270", this::rotate270));
+        tools.add(button("border", "border", this::showBorderDialog));
+        tools.addSeparator();
+        tools.add(button("rotate90", "rotate90", this::rotate90));
+        tools.add(button("rotate180", "rotate180", this::rotate180));
+        tools.add(button("rotate270", "rotate270", this::rotate270));
+        tools.addSeparator();
         tools.add(button("flipHorizontal", "flipH", this::flipHorizontal));
         tools.add(button("flipVertical", "flipV", this::flipVertical));
+        tools.addSeparator();
         tools.add(button("grayscale", "grayscale", this::convertToGrayscale));
-        tools.add(button("border", "border", this::showBorderDialog));
+        tools.addSeparator();
         tools.add(button("reset", "reset", this::reset));
         return tools;
     }
@@ -189,8 +193,10 @@ public class JImageEditor extends JPanel {
     }
 
     private JToolBar createCropToolBar() {
-        JToolBar tools = new JToolBar();
-        tools.setFloatable(false);
+        JButton squareButton = new JButton(loadIcon("square"));
+        squareButton.setToolTipText(STRINGS.getString("button.squareCrop"));
+        squareButton.addActionListener(event -> cropOverlay.makeSelectionSquare());
+
         JButton applyButton = new JButton(STRINGS.getString("button.applyCrop"));
         applyButton.setIcon(loadIcon("accept"));
         applyButton.setToolTipText(STRINGS.getString("button.applyCrop"));
@@ -201,6 +207,10 @@ public class JImageEditor extends JPanel {
         cancelButton.setToolTipText(STRINGS.getString("button.cancelCrop"));
         cancelButton.addActionListener(event -> cancelCropSelection());
 
+        JToolBar tools = new JToolBar();
+        tools.setFloatable(false);
+        tools.add(squareButton);
+        tools.addSeparator();
         tools.add(applyButton);
         tools.add(cancelButton);
         return tools;

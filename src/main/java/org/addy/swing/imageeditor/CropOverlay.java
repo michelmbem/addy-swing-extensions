@@ -77,6 +77,18 @@ public final class CropOverlay extends JComponent {
         repaint();
     }
 
+    /** Shrinks the current crop selection to a centered square. */
+    public void makeSelectionSquare() {
+        if (selection == null) return;
+        int side = Math.min(selection.width, selection.height);
+        selection = new Rectangle(
+                selection.x + (selection.width - side) / 2,
+                selection.y + (selection.height - side) / 2,
+                side,
+                side);
+        repaint();
+    }
+
     /** Returns the selected crop rectangle in source-image pixels, or {@code null}. */
     public Rectangle getSelectedCropBounds() {
         Rectangle imageArea = getImageArea();
@@ -103,11 +115,14 @@ public final class CropOverlay extends JComponent {
 
         Graphics2D g = (Graphics2D) graphics.create();
         Rectangle imageArea = getImageArea();
+
         Area shade = new Area(new Rectangle2D.Double(0, 0, getWidth(), getHeight()));
         if (selection != null && selection.width > 0 && selection.height > 0)
             shade.subtract(new Area(selection));
+
         g.setColor(new Color(0, 0, 0, 125));
         g.fill(shade);
+
         if (selection != null && selection.width > 0 && selection.height > 0) {
             g.setColor(Color.BLACK);
             g.setStroke(new BasicStroke(3f));
@@ -120,6 +135,7 @@ public final class CropOverlay extends JComponent {
             g.setColor(new Color(255, 255, 255, 90));
             g.draw(imageArea);
         }
+
         g.dispose();
     }
 
@@ -135,29 +151,40 @@ public final class CropOverlay extends JComponent {
                 {selection.x + selection.width / 2, selection.y + selection.height},
                 {selection.x + selection.width, selection.y + selection.height}
         };
+
         g.setColor(Color.WHITE);
-        for (int[] point : points) g.fillRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
+        for (int[] point : points) {
+            g.fillRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
+        }
+
         g.setColor(new Color(35, 105, 190));
-        for (int[] point : points) g.drawRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
+        for (int[] point : points) {
+            g.drawRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
+        }
     }
 
     private void updateSelection(Point point) {
         if (dragStart == null) return;
+
         Rectangle imageArea = getImageArea();
         Point end = clampToImageArea(point, imageArea);
         int dx = end.x - dragStart.x;
         int dy = end.y - dragStart.y;
+
         switch (dragMode) {
             case NEW -> selection = rectangleBetween(dragStart, end);
             case MOVE -> {
-                int x = Math.max(imageArea.x, Math.min(imageArea.x + imageArea.width - dragBounds.width, dragBounds.x + dx));
-                int y = Math.max(imageArea.y, Math.min(imageArea.y + imageArea.height - dragBounds.height, dragBounds.y + dy));
+                int x = Math.max(imageArea.x,
+                        Math.min(imageArea.x + imageArea.width - dragBounds.width, dragBounds.x + dx));
+                int y = Math.max(imageArea.y,
+                        Math.min(imageArea.y + imageArea.height - dragBounds.height, dragBounds.y + dy));
                 selection = new Rectangle(x, y, dragBounds.width, dragBounds.height);
             }
             case RESIZE_N, RESIZE_S, RESIZE_E, RESIZE_W,
                     RESIZE_NE, RESIZE_NW, RESIZE_SE, RESIZE_SW -> resizeSelection(end, imageArea);
             case NONE -> { }
         }
+
         repaint();
     }
 
@@ -168,10 +195,16 @@ public final class CropOverlay extends JComponent {
         int bottom = dragBounds.y + dragBounds.height;
         int minWidth = Math.min(HANDLE_SIZE * 2, imageArea.width);
         int minHeight = Math.min(HANDLE_SIZE * 2, imageArea.height);
-        if (dragMode.hasWest()) left = Math.max(imageArea.x, Math.min(right - minWidth, point.x));
-        if (dragMode.hasEast()) right = Math.min(imageArea.x + imageArea.width, Math.max(left + minWidth, point.x));
-        if (dragMode.hasNorth()) top = Math.max(imageArea.y, Math.min(bottom - minHeight, point.y));
-        if (dragMode.hasSouth()) bottom = Math.min(imageArea.y + imageArea.height, Math.max(top + minHeight, point.y));
+
+        if (dragMode.hasWest())
+            left = Math.max(imageArea.x, Math.min(right - minWidth, point.x));
+        if (dragMode.hasEast())
+            right = Math.min(imageArea.x + imageArea.width, Math.max(left + minWidth, point.x));
+        if (dragMode.hasNorth())
+            top = Math.max(imageArea.y, Math.min(bottom - minHeight, point.y));
+        if (dragMode.hasSouth())
+            bottom = Math.min(imageArea.y + imageArea.height, Math.max(top + minHeight, point.y));
+
         selection = new Rectangle(left, top, right - left, bottom - top);
     }
 
@@ -189,6 +222,7 @@ public final class CropOverlay extends JComponent {
 
     private DragMode getDragMode(Point point) {
         if (selection == null) return DragMode.NONE;
+
         int tolerance = HANDLE_SIZE;
         boolean nearLeft = Math.abs(point.x - selection.x) <= tolerance;
         boolean nearRight = Math.abs(point.x - (selection.x + selection.width)) <= tolerance;
@@ -196,6 +230,7 @@ public final class CropOverlay extends JComponent {
         boolean nearBottom = Math.abs(point.y - (selection.y + selection.height)) <= tolerance;
         boolean acrossX = point.x >= selection.x - tolerance && point.x <= selection.x + selection.width + tolerance;
         boolean acrossY = point.y >= selection.y - tolerance && point.y <= selection.y + selection.height + tolerance;
+
         if (nearTop && nearLeft) return DragMode.RESIZE_NW;
         if (nearTop && nearRight) return DragMode.RESIZE_NE;
         if (nearBottom && nearLeft) return DragMode.RESIZE_SW;
@@ -205,11 +240,16 @@ public final class CropOverlay extends JComponent {
         if (nearLeft && acrossY) return DragMode.RESIZE_W;
         if (nearRight && acrossY) return DragMode.RESIZE_E;
         if (selection.contains(point)) return DragMode.MOVE;
+
         return DragMode.NONE;
     }
 
     private Rectangle rectangleBetween(Point a, Point b) {
-        return new Rectangle(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(b.x - a.x), Math.abs(b.y - a.y));
+        return new Rectangle(
+                Math.min(a.x, b.x),
+                Math.min(a.y, b.y),
+                Math.abs(b.x - a.x),
+                Math.abs(b.y - a.y));
     }
 
     private Point clampToImageArea(Point point, Rectangle imageArea) {
@@ -221,19 +261,23 @@ public final class CropOverlay extends JComponent {
     private Rectangle getImageArea() {
         Image image = pictureBox.getImage();
         if (image == null) return new Rectangle();
+
         Insets insets = pictureBox.getInsets();
         int availableWidth = pictureBox.getWidth() - insets.left - insets.right;
         int availableHeight = pictureBox.getHeight() - insets.top - insets.bottom;
         int imageWidth = image.getWidth(pictureBox);
         int imageHeight = image.getHeight(pictureBox);
+
         if (availableWidth <= 0 || availableHeight <= 0 || imageWidth <= 0 || imageHeight <= 0)
             return new Rectangle();
 
-        double scale = Math.min(availableWidth / (double) imageWidth, availableHeight / (double) imageHeight);
+        double scale = Math.min(availableWidth / (double) imageWidth,
+                availableHeight / (double) imageHeight);
         int width = (int) Math.round(imageWidth * scale);
         int height = (int) Math.round(imageHeight * scale);
         int x = insets.left + (availableWidth - width) / 2;
         int y = insets.top + (availableHeight - height) / 2;
+
         return new Rectangle(x, y, width, height);
     }
 
