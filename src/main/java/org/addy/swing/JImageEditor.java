@@ -93,8 +93,8 @@ public class JImageEditor extends JPanel {
         apply(ImageHelper.rotate(image, Objects.requireNonNull(angle)));
     }
 
-    public void flipHorizontal() { flip(FlipAxis.X); }
-    public void flipVertical() { flip(FlipAxis.Y); }
+    public void flipHorizontal() { flip(FlipAxis.Y); }
+    public void flipVertical() { flip(FlipAxis.X); }
 
     public void flip(FlipAxis axis) {
         requireImage();
@@ -143,23 +143,21 @@ public class JImageEditor extends JPanel {
     private JToolBar createToolBar() {
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
-        tools.add(button("crop", "image-editor-crop.png", this::startCropSelection));
-        tools.add(button("rotate90", "image-editor-rotate90.png", this::rotate90));
-        tools.add(button("rotate180", "image-editor-rotate180.png", this::rotate180));
-        tools.add(button("rotate270", "image-editor-rotate270.png", this::rotate270));
-        tools.add(button("flipHorizontal", "image-editor-flipH.png", this::flipHorizontal));
-        tools.add(button("flipVertical", "image-editor-flipV.png", this::flipVertical));
-        tools.add(button("grayscale", "image-editor-grayscale.png", this::convertToGrayscale));
-        tools.add(button("border", "image-editor-border.png", this::showBorderDialog));
-        tools.add(button("reset", "image-editor-reset.png", this::reset));
+        tools.add(button("crop", "crop", this::startCropSelection));
+        tools.add(button("rotate90", "rotate_90", this::rotate90));
+        tools.add(button("rotate180", "rotate_180", this::rotate180));
+        tools.add(button("rotate270", "rotate_270", this::rotate270));
+        tools.add(button("flipHorizontal", "flipH", this::flipHorizontal));
+        tools.add(button("flipVertical", "flipV", this::flipVertical));
+        tools.add(button("grayscale", "grayscale", this::convertToGrayscale));
+        tools.add(button("border", "border", this::showBorderDialog));
+        tools.add(button("reset", "reset", this::reset));
         return tools;
     }
 
     private JButton button(String key, String iconName, Runnable action) {
         JButton button = new JButton();
-        button.setIcon(new ImageIcon(Objects.requireNonNull(
-                JImageEditor.class.getResource(iconName),
-                STRINGS.getString("error.missingIcon") + iconName)));
+        button.setIcon(loadIcon(iconName));
         button.setToolTipText(STRINGS.getString("button." + key));
         button.setFocusable(false);
         button.addActionListener(event -> {
@@ -194,14 +192,24 @@ public class JImageEditor extends JPanel {
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         JButton applyButton = new JButton(STRINGS.getString("button.applyCrop"));
+        applyButton.setIcon(loadIcon("accept"));
         applyButton.setToolTipText(STRINGS.getString("button.applyCrop"));
         applyButton.addActionListener(event -> applyCropSelection());
+
         JButton cancelButton = new JButton(STRINGS.getString("button.cancelCrop"));
+        cancelButton.setIcon(loadIcon("cancel"));
         cancelButton.setToolTipText(STRINGS.getString("button.cancelCrop"));
         cancelButton.addActionListener(event -> cancelCropSelection());
+
         tools.add(applyButton);
         tools.add(cancelButton);
         return tools;
+    }
+    
+    private ImageIcon loadIcon(String iconName) {
+        return new ImageIcon(Objects.requireNonNull(
+                getClass().getResource("imageeditor/" + iconName + ".png")),
+                STRINGS.getString("error.missingIcon") + iconName);
     }
 
     private void installCropKeyBindings() {

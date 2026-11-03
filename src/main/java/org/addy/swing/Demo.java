@@ -1,6 +1,7 @@
 package org.addy.swing;
 
 import org.addy.swing.input.*;
+import org.addy.util.media.InsetsFactory;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
@@ -256,7 +257,7 @@ public class Demo {
         });
         bottomPane.add(resetButton);
 
-        validationPanel.add(titleLabel, gbc(0, 0, 2, 1, NONE, CENTER, 2));
+        validationPanel.add(titleLabel, gbc(0, 0, 2, 1, CENTER, NONE, 2));
 		validationPanel.add(new JLabel("First name:"), gbc(0, 1));
 		validationPanel.add(firstNameField, gbc(0, 2));
 		validationPanel.add(new JLabel("Last name:"), gbc(1, 1));
@@ -273,7 +274,7 @@ public class Demo {
         validationPanel.add(emailField, gbc(0, 8));
         validationPanel.add(new JLabel("Phone number:"), gbc(1, 7));
         validationPanel.add(phoneField, gbc(1, 8));
-        validationPanel.add(bottomPane, gbc(0, 9, 2, 1, HORIZONTAL, CENTER, 2));
+        validationPanel.add(bottomPane, gbc(0, 9, 2, 1, CENTER, HORIZONTAL, 2));
 
 		return validationPanel;
 	}
@@ -287,15 +288,16 @@ public class Demo {
 	}
 
 	private static URL embeddedImage(Object name) {
-		return Demo.class.getClassLoader().getResource(name + ".jpg");
+		return Demo.class.getResource("/demo/" + name + ".jpg");
 	}
 
 	private static Image chooseImage(JFrame frame) {
 		Image chosenImage = null;
 		ImageFileChooser imageChooser = new ImageFileChooser();
 
-		if (imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
-            chosenImage = imageChooser.getSelectedImage();
+		if (imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			chosenImage = imageChooser.getSelectedImage();
+		}
 
 		return chosenImage;
 	}
@@ -313,24 +315,17 @@ public class Demo {
         return formatter;
     }
 
-    private static GridBagConstraints gbc(int x, int y, int w, int h, int f, int a, int i) {
-        var gbc = new GridBagConstraints();
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.gridwidth = w;
-        gbc.gridheight = h;
-        gbc.fill = f;
-        gbc.anchor = a;
-        gbc.insets = switch (i) {
-            case 0 -> new Insets(2, 10, 1, 5);
-            case 1 -> new Insets(1, 5, 5, 5);
-            default -> new Insets(5, 5, 5, 5);
-        };
+    private static GridBagConstraints gbc(int x, int y, int w, int h, int a, int f, int i) {
+		Insets insets = switch (i) {
+			case 0 -> new Insets(2, 10, 1, 5);
+			case 1 -> new Insets(1, 5, 5, 5);
+			default -> InsetsFactory.uniform(5);
+		};
 
-        return gbc;
+        return new GridBagConstraints(x, y, w, h, 0, 0, a, f, insets, 0, 0);
     }
 
     private static GridBagConstraints gbc(int x, int y) {
-        return gbc(x, y, 1, 1, GridBagConstraints.NONE, GridBagConstraints.BASELINE_LEADING, (y - 1) % 2 );
+        return gbc(x, y, 1, 1, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.NONE, (y - 1) % 2 );
     }
 }

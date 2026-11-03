@@ -464,11 +464,15 @@ public class JCalendar extends JPanel {
 	}
 
 	private JButton createGraphicButton(String icon) {
+		final String iconPrefix = "calendar/" + icon;
 		JButton button = createFlatButton("");
 		button.setRolloverEnabled(true);
-		button.setIcon(new ImageIcon(getClass().getResource(icon + ".png")));
-		button.setRolloverIcon(new ImageIcon(getClass().getResource(icon + "_hot.png")));
-		button.setPressedIcon(new ImageIcon(getClass().getResource(icon + "_pressed.png")));
+		button.setIcon(new ImageIcon(Objects.requireNonNull(
+				getClass().getResource(iconPrefix + ".png"))));
+		button.setRolloverIcon(new ImageIcon(Objects.requireNonNull(
+				getClass().getResource(iconPrefix + "_hot.png"))));
+		button.setPressedIcon(new ImageIcon(Objects.requireNonNull(
+				getClass().getResource(iconPrefix + "_pressed.png"))));
 		return button;
 	}
 
