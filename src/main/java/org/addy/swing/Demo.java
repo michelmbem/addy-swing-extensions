@@ -35,7 +35,7 @@ public class Demo {
 		var frame = new JFrame("Addy Swing Demo");
 		frame.setSize(scale(300, false), scale(300, true));
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		var tabPane = new JTabbedPane(SwingConstants.TOP);
 		tabPane.addTab("PictureBox", createPictureBoxPanel(frame));
@@ -58,8 +58,8 @@ public class Demo {
 		pictureBox.setImageSource(embeddedImage(pictures[0]));
 		pictureBox.setSizeMode(SizeMode.NORMAL);
 		selectedPicture = pictureBox.getImage();
-		pictureBox.addPropertyChangeListener("image", event -> {
-			selectedPicture = (Image) event.getNewValue();
+		pictureBox.addPropertyChangeListener("image", e -> {
+			selectedPicture = (Image) e.getNewValue();
 			if (imageEditor != null)
 				imageEditor.setImage(selectedPicture);
 		});
@@ -112,11 +112,11 @@ public class Demo {
 	}
 
 	private static JPanel createImageEditorPanel() {
-		var panel = new JPanel(new BorderLayout());
+		var imageEditorPanel = new JPanel(new BorderLayout());
 		imageEditor = new JImageEditor(selectedPicture);
 		imageEditor.getPictureBox().setBackground(Color.WHITE);
-		panel.add(imageEditor, BorderLayout.CENTER);
-		return panel;
+		imageEditorPanel.add(imageEditor, BorderLayout.CENTER);
+		return imageEditorPanel;
 	}
 
 	private static JPanel createCalendarPanel() {
@@ -292,15 +292,12 @@ public class Demo {
 	}
 
 	private static Image chooseImage(JFrame frame) {
-		Image chosenImage = null;
-		ImageFileChooser imageChooser = new ImageFileChooser();
+		var imageChooser = new ImageFileChooser();
+        return imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION
+				? imageChooser.getSelectedImage()
+				: null;
 
-		if (imageChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			chosenImage = imageChooser.getSelectedImage();
-		}
-
-		return chosenImage;
-	}
+    }
 
     private static MaskFormatter createMaskFormatter(String mask) {
         MaskFormatter formatter = null;
@@ -326,6 +323,9 @@ public class Demo {
     }
 
     private static GridBagConstraints gbc(int x, int y) {
-        return gbc(x, y, 1, 1, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.NONE, (y - 1) % 2 );
+        return gbc(x, y, 1, 1,
+				GridBagConstraints.BASELINE_LEADING,
+				GridBagConstraints.NONE,
+				(y - 1) % 2 );
     }
 }

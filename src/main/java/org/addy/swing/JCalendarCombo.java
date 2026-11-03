@@ -12,7 +12,6 @@ import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class JCalendarCombo
 		extends JPanel
@@ -178,14 +177,17 @@ public class JCalendarCombo
 		}
 	}
 
+	private static ArrowIcon createArrowIcon(Color color) {
+		return new ArrowIcon(ArrowDirection.DOWN, color, 10, 10);
+	}
+
 	private void initGUI() {
 		// checkBox
 		checkBox = new JCheckBox();
 		checkBox.setVisible(false);
 		checkBox.setFocusable(false);
 		checkBox.setContentAreaFilled(false);
-		checkBox.setBorder(BorderFactory.createEmptyBorder());
-		checkBox.setMargin(InsetsFactory.uniform(2));
+		checkBox.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		checkBox.addChangeListener(this);
 
 		// spinner
@@ -194,13 +196,16 @@ public class JCalendarCombo
 		spinner.addChangeListener(e -> setDate(ValueConverter.toLocalDate(spinner.getValue())));
 
 		// button
-		Function<Color, Icon> arrow = color -> new ArrowIcon(ArrowDirection.DOWN, color, 14, 14);
-		button = new JButton(arrow.apply(Color.BLACK));
-		button.setRolloverIcon(arrow.apply(Color.GRAY));
-		button.setRolloverEnabled(true);
-		button.setBorderPainted(false);
+		button = new JButton();
+		button.setOpaque(true);
 		button.setFocusable(false);
-		button.setMargin(InsetsFactory.empty());
+		button.setRolloverEnabled(true);
+		button.setBackground(KnownColor.WHITESMOKE);
+		button.setBorder(BorderFactory.createEmptyBorder());
+		button.setPreferredSize(new Dimension(22, 22));
+		button.setIcon(createArrowIcon(Color.BLACK));
+		button.setRolloverIcon(createArrowIcon(Color.GRAY));
+		button.setPressedIcon(createArrowIcon(Color.DARK_GRAY));
 		button.addActionListener(e -> {
 			requestFocusInWindow();
 			if (popupMenu.isVisible())
@@ -233,9 +238,9 @@ public class JCalendarCombo
 		var gbc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 0, 0,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH, InsetsFactory.empty(), 0, 0);
 
-        // this
-		setBackground(UIManager.getColor("TextField.background"));
-		setBorder(UIManager.getBorder("TextField.border"));
+		// this
+		setBackground(Color.WHITE);
+		setBorder(BorderFactory.createLineBorder(KnownColor.SILVER));
 		setLayout(gbl);
 		add(checkBox, gbc);
 		add(spinner, gbc);

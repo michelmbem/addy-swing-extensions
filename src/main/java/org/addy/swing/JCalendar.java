@@ -3,6 +3,7 @@ package org.addy.swing;
 import org.addy.util.media.InsetsFactory;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
@@ -15,7 +16,11 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class JCalendar extends JPanel {
-	public static final Dimension BUTTON_SIZE = new Dimension(24, 24);
+	public static final int ARROW_WIDTH = 14;
+	public static final int ARROW_HEIGHT = 14;
+	public static final Color ARROW_COLOR = Color.BLACK;
+	public static final Color ROLLOVER_ARROW_COLOR = Color.GRAY;
+	public static final Color PRESSED_ARROW_COLOR = Color.DARK_GRAY;
 
 	private LocalDate activeDate = LocalDate.now(ZoneId.systemDefault());
 	private LocalDate selectedDate = null;
@@ -254,8 +259,7 @@ public class JCalendar extends JPanel {
 		var gbc = new GridBagConstraints(GridBagConstraints.RELATIVE, 0, 1, 1, 0, 0,
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, InsetsFactory.uniform(2), 0, 0);
 
-		previousPeriodButton = createGraphicButton("previous");
-		previousPeriodButton.setPreferredSize(BUTTON_SIZE);
+		previousPeriodButton = createArrowButton(ArrowDirection.LEFT);
 		previousPeriodButton.addActionListener(
 				new DateTranslation(this, TranslationField.PAGE, -1));
 		topPane.add(previousPeriodButton, gbc);
@@ -270,8 +274,7 @@ public class JCalendar extends JPanel {
 		});
 		topPane.add(selectViewButton, gbc);
 
-		nextPeriodButton = createGraphicButton("next");
-		nextPeriodButton.setPreferredSize(BUTTON_SIZE);
+		nextPeriodButton = createArrowButton(ArrowDirection.RIGHT);
 		nextPeriodButton.addActionListener(
 				new DateTranslation(this, TranslationField.PAGE, 1));
 		topPane.add(nextPeriodButton, gbc);
@@ -453,26 +456,31 @@ public class JCalendar extends JPanel {
 		return label;
 	}
 
-	private JButton createFlatButton(String text) {
+	private JButton createFlatButton(String text, Insets padding) {
+		Border buttonBorder = padding == null
+				? BorderFactory.createEmptyBorder()
+				: BorderFactory.createEmptyBorder(
+						padding.top, padding.left, padding.bottom, padding.right);
+
 		JButton button = new JButton(text);
 		button.setForeground(getForeground());
 		button.setFont(getFont());
-		button.setBorder(BorderFactory.createEmptyBorder());
+		button.setBorder(buttonBorder);
 		button.setContentAreaFilled(false);
 		button.setFocusable(false);
 		return button;
 	}
 
-	private JButton createGraphicButton(String icon) {
-		final String iconPrefix = "calendar/" + icon;
-		JButton button = createFlatButton("");
+	private JButton createFlatButton(String text) {
+		return createFlatButton(text, null);
+	}
+
+	private JButton createArrowButton(ArrowDirection direction) {
+		JButton button = createFlatButton("", InsetsFactory.uniform(5));
 		button.setRolloverEnabled(true);
-		button.setIcon(new ImageIcon(Objects.requireNonNull(
-				getClass().getResource(iconPrefix + ".png"))));
-		button.setRolloverIcon(new ImageIcon(Objects.requireNonNull(
-				getClass().getResource(iconPrefix + "_hot.png"))));
-		button.setPressedIcon(new ImageIcon(Objects.requireNonNull(
-				getClass().getResource(iconPrefix + "_pressed.png"))));
+		button.setIcon(new ArrowIcon(direction, ARROW_COLOR, ARROW_WIDTH, ARROW_HEIGHT));
+		button.setRolloverIcon(new ArrowIcon(direction, ROLLOVER_ARROW_COLOR, ARROW_WIDTH, ARROW_HEIGHT));
+		button.setPressedIcon(new ArrowIcon(direction, PRESSED_ARROW_COLOR, ARROW_WIDTH, ARROW_HEIGHT));
 		return button;
 	}
 

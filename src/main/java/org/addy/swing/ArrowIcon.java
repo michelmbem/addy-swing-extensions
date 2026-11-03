@@ -20,10 +20,10 @@ public final class ArrowIcon implements Icon {
 
     @Override
     public void paintIcon(Component component, Graphics graphics, int x, int y) {
-        int minX = x + 2;
-        int minY = y + 2;
-        int maxX = x + width - 3;
-        int maxY = y + height - 3;
+        int minX = x;
+        int minY = y;
+        int maxX = x + width - 1;
+        int maxY = y + height - 1;
         int midX = minX + (maxX - minX) / 2;
         int midY = minY + (maxY - minY) / 2;
         int[] xPoints;
