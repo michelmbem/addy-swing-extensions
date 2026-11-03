@@ -6,13 +6,13 @@ import org.addy.util.media.InsetsFactory;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class JCalendarCombo
 		extends JPanel
@@ -194,8 +194,13 @@ public class JCalendarCombo
 		spinner.addChangeListener(e -> setDate(ValueConverter.toLocalDate(spinner.getValue())));
 
 		// button
-		button = new BasicArrowButton(SwingConstants.SOUTH);
+		Function<Color, Icon> arrow = color -> new ArrowIcon(ArrowDirection.DOWN, color, 14, 14);
+		button = new JButton(arrow.apply(Color.BLACK));
+		button.setRolloverIcon(arrow.apply(Color.GRAY));
+		button.setRolloverEnabled(true);
+		button.setBorderPainted(false);
 		button.setFocusable(false);
+		button.setMargin(InsetsFactory.empty());
 		button.addActionListener(e -> {
 			requestFocusInWindow();
 			if (popupMenu.isVisible())
