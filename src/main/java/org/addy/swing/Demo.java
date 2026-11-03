@@ -17,6 +17,8 @@ public class Demo {
 	static final String[] pictures = { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
 
     static Image customPicture = null;
+    static Image selectedPicture;
+    static JImageEditor imageEditor;
 
 	public static void main(String[] args) {
 		try {
@@ -36,6 +38,7 @@ public class Demo {
 
 		var tabPane = new JTabbedPane(SwingConstants.TOP);
 		tabPane.addTab("PictureBox", createPictureBoxPanel(frame));
+		tabPane.addTab("ImageEditor", createImageEditorPanel());
 		tabPane.addTab("Calendar", createCalendarPanel());
 		tabPane.addTab("Validation", createValidationPanel());
 		frame.setContentPane(tabPane);
@@ -53,6 +56,12 @@ public class Demo {
 		pictureBox.setBackground(Color.WHITE);
 		pictureBox.setImageSource(embeddedImage(pictures[0]));
 		pictureBox.setSizeMode(SizeMode.NORMAL);
+		selectedPicture = pictureBox.getImage();
+		pictureBox.addPropertyChangeListener("image", event -> {
+			selectedPicture = (Image) event.getNewValue();
+			if (imageEditor != null)
+				imageEditor.setImage(selectedPicture);
+		});
 		pictureBoxPanel.add(new JScrollPane(pictureBox), BorderLayout.CENTER);
 
         var browseButton = new JButton("Browse...");
@@ -99,6 +108,14 @@ public class Demo {
 		topPane.add(sizeCombo);
 
 		return pictureBoxPanel;
+	}
+
+	private static JPanel createImageEditorPanel() {
+		var panel = new JPanel(new BorderLayout());
+		imageEditor = new JImageEditor(selectedPicture);
+		imageEditor.getPictureBox().setBackground(Color.WHITE);
+		panel.add(imageEditor, BorderLayout.CENTER);
+		return panel;
 	}
 
 	private static JPanel createCalendarPanel() {

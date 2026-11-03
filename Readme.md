@@ -5,6 +5,7 @@ A small set of additionnal swing components by Addy.
 These include:
 
 * **JPictureBox**: A component dedicated to image display with configurable sizing modes.
+* **JImageEditor**: A basic image editor with crop, rotation, flip, grayscale and border tools.
 * **JCalendar**: A component that displays a monthly calendar with support for navigation through months, years, decades and centuries.
 * **JCalendarCombo**: A *JComboBox*-like version of *JCalendar*.
 * **SimpleComboBoxModel**: A simple and enhanced implementation of _ComboBoxModel_ that can easily be initialized with an array or a collection of objects.
