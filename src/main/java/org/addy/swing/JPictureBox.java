@@ -96,16 +96,10 @@ public class JPictureBox extends JPanel {
 
         Insets borderInsets = getBorderInsets();
         switch (sizeMode) {
-            case NORMAL -> paintImage(g, borderInsets);
             case AUTO -> g.drawImage(image, borderInsets.left, borderInsets.top, this);
-            case CENTER -> paintCenteredImage(g, borderInsets);
-            case STRETCH -> g.drawImage(
-                    image,
-                    borderInsets.left,
-                    borderInsets.top,
-                    getWidth() - borderInsets.right - borderInsets.left,
-                    getHeight() - borderInsets.bottom - borderInsets.top,
-                    this);
+			case NORMAL -> paintImage(g, borderInsets);
+			case CENTER -> paintCenteredImage(g, borderInsets);
+            case STRETCH -> paintStretchedImage(g, borderInsets);
             case CONTAIN -> paintContainedImage(g, borderInsets);
             case COVER -> paintCoverImage(g, borderInsets);
         }
@@ -159,6 +153,13 @@ public class JPictureBox extends JPanel {
 		}
 
 		g.drawImage(image, left, top, left + w, top + h, x, y, x + w, y + h, this);
+	}
+
+	protected final void paintStretchedImage(Graphics g, Insets insets) {
+		g.drawImage(image, insets.left, insets.top,
+				getWidth() - insets.right - insets.left,
+				getHeight() - insets.bottom - insets.top,
+				this);
 	}
 
 	protected final void paintContainedImage(Graphics g, Insets insets) {
@@ -236,7 +237,7 @@ public class JPictureBox extends JPanel {
 				return (Image) getImageMethod.invoke(source);
 		} catch (NoSuchMethodException |
 				 IllegalAccessException |
-				 InvocationTargetException ignore) {
+				 InvocationTargetException ignored) {
 		}
 
 		return null;
