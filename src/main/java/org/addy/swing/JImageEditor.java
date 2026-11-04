@@ -294,11 +294,10 @@ public class JImageEditor extends JPanel {
         fields.add(new JLabel(STRINGS.getString("label.borderThickness")));
         fields.add(thickness);
 
-        if (JOptionPane.showConfirmDialog(
-                this,
-                fields,
+        if (JOptionPane.showConfirmDialog(this, fields,
                 STRINGS.getString("dialog.borderTitle"),
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,null
+        ) == JOptionPane.OK_OPTION) {
             int size = (Integer) thickness.getValue();
             addBorder(borderColor[0], new Insets(size, size, size, size));
         }
