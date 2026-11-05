@@ -1,5 +1,7 @@
 package org.addy.swing;
 
+import org.addy.util.media.InsetsFactory;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -94,15 +96,21 @@ public class JPictureBox extends JPanel {
 		super.paintComponent(g);
         if (image == null) return;
 
-        Insets borderInsets = getBorderInsets();
-        switch (sizeMode) {
-            case AUTO -> g.drawImage(image, borderInsets.left, borderInsets.top, this);
-			case NORMAL -> paintImage(g, borderInsets);
-			case CENTER -> paintCenteredImage(g, borderInsets);
-            case STRETCH -> paintStretchedImage(g, borderInsets);
-            case CONTAIN -> paintContainedImage(g, borderInsets);
-            case COVER -> paintCoverImage(g, borderInsets);
+		var g2d = (Graphics2D) g.create();
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+		Insets borderInsets = getBorderInsets();
+		switch (sizeMode) {
+            case AUTO -> g2d.drawImage(image, borderInsets.left, borderInsets.top, this);
+			case NORMAL -> paintImage(g2d, borderInsets);
+			case CENTER -> paintCenteredImage(g2d, borderInsets);
+            case STRETCH -> paintStretchedImage(g2d, borderInsets);
+            case CONTAIN -> paintContainedImage(g2d, borderInsets);
+            case COVER -> paintCoverImage(g2d, borderInsets);
         }
+
+		g2d.dispose();
     }
 
 	protected final void updateComponent() {
@@ -114,17 +122,17 @@ public class JPictureBox extends JPanel {
 		Border border = getBorder();
         return border != null
                 ? border.getBorderInsets(this)
-                : new Insets(0, 0, 0, 0);
+                : InsetsFactory.empty();
 	}
 
-	protected final void paintImage(Graphics g, Insets insets) {
+	protected final void paintImage(Graphics2D g, Insets insets) {
 		int width = Math.min(getWidth() - insets.left - insets.right, image.getWidth(this));
 		int height = Math.min(getHeight() - insets.top - insets.bottom, image.getHeight(this));
 		g.drawImage(image, insets.left, insets.top, insets.left + width, insets.top + height,
 				0, 0, width, height, this);
 	}
 
-	protected final void paintCenteredImage(Graphics g, Insets insets) {
+	protected final void paintCenteredImage(Graphics2D g, Insets insets) {
 		int left = insets.left;
 		int top = insets.top;
 		int width = getWidth() - insets.left - insets.right;
@@ -155,14 +163,14 @@ public class JPictureBox extends JPanel {
 		g.drawImage(image, left, top, left + w, top + h, x, y, x + w, y + h, this);
 	}
 
-	protected final void paintStretchedImage(Graphics g, Insets insets) {
+	protected final void paintStretchedImage(Graphics2D g, Insets insets) {
 		g.drawImage(image, insets.left, insets.top,
 				getWidth() - insets.right - insets.left,
 				getHeight() - insets.bottom - insets.top,
 				this);
 	}
 
-	protected final void paintContainedImage(Graphics g, Insets insets) {
+	protected final void paintContainedImage(Graphics2D g, Insets insets) {
 		int width = getWidth() - insets.left - insets.right;
 		int height = getHeight() - insets.top - insets.bottom;
 		double wRatio = (double) image.getWidth(this) / width;
@@ -182,7 +190,7 @@ public class JPictureBox extends JPanel {
 		g.drawImage(image, insets.left + (width - w) / 2, insets.top + (height - h) / 2, w, h, this);
 	}
 
-	protected final void paintCoverImage(Graphics g, Insets insets) {
+	protected final void paintCoverImage(Graphics2D g, Insets insets) {
 		int width = getWidth() - insets.left - insets.right;
 		int height = getHeight() - insets.top - insets.bottom;
 		double wRatio = (double) image.getWidth(this) / width;
@@ -231,13 +239,13 @@ public class JPictureBox extends JPanel {
 		try {
 			Method getImageMethod = source.getClass().getMethod("getImage");
 			int modifiers = getImageMethod.getModifiers();
-			if (Modifier.isPublic(modifiers) &&
-					!Modifier.isStatic(modifiers) &&
-					Image.class.isAssignableFrom(getImageMethod.getReturnType()))
+			if (Modifier.isPublic(modifiers)
+					&& !Modifier.isStatic(modifiers)
+					&& Image.class.isAssignableFrom(getImageMethod.getReturnType()))
 				return (Image) getImageMethod.invoke(source);
-		} catch (NoSuchMethodException |
-				 IllegalAccessException |
-				 InvocationTargetException ignored) {
+		} catch (NoSuchMethodException
+				 | IllegalAccessException
+				 | InvocationTargetException ignored) {
 		}
 
 		return null;
