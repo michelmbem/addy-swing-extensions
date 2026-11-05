@@ -15,7 +15,8 @@ import static org.addy.swing.UIHelper.scale;
 
 public class Demo {
 	static final String CUSTOM = "<custom>";
-	static final String[] pictures = { "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
+	static final String[] pictures =
+			{ "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
 
     static Image customPicture = null;
     static Image selectedPicture;
@@ -25,7 +26,8 @@ public class Demo {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			System.err.printf("Unable to load the '%s' look-and-feel%n", UIManager.getSystemLookAndFeelClassName());
+			System.err.printf("Unable to load the '%s' look-and-feel%n",
+					UIManager.getSystemLookAndFeelClassName());
 		}
 
 		createDemoFrame().setVisible(true);
