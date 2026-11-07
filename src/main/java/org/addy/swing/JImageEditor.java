@@ -185,24 +185,25 @@ public class JImageEditor extends JPanel {
     private JToolBar createCropToolBar() {
         JButton squareButton = new JButton(loadIcon("square"));
         squareButton.setToolTipText(STRINGS.getString("tooltip.squareCrop"));
-        squareButton.addActionListener(e -> cropOverlay.setSelectionRatio(1, 1));
+        squareButton.addActionListener(e -> cropOverlay.setSelectionRatio(new SizeRatio(1)));
 
-        final int[][] availableRatios = {{5, 7}, {7, 9}, {2, 3}};
-        final int[] selectedRatio = {availableRatios[0][0], availableRatios[0][1]};
+        final SizeRatioOptions ratioOptions = new SizeRatioOptions(
+                new SizeRatio(5, 7),
+                new SizeRatio(7, 9),
+                new SizeRatio(2, 3));
 
         JButton rectangleButton = new JButton(loadIcon("rectangle"));
         rectangleButton.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 2));
         rectangleButton.setToolTipText(STRINGS.getString("tooltip.rectangleCrop"));
         rectangleButton.addActionListener(e ->
-                cropOverlay.setSelectionRatio(selectedRatio[0], selectedRatio[1]));
+                cropOverlay.setSelectionRatio(ratioOptions.getSelectedRatio()));
 
         JPopupMenu rectangleRatioMenu = new JPopupMenu();
-        for (int[] ratio : availableRatios) {
-            JMenuItem ratioItem = new JMenuItem(ratio[0] + ":" + ratio[1]);
+        for (SizeRatio ratio : ratioOptions.getAvailableRatios()) {
+            JMenuItem ratioItem = new JMenuItem(ratio.toString());
             ratioItem.addActionListener(e -> {
-                selectedRatio[0] = ratio[0];
-                selectedRatio[1] = ratio[1];
-                cropOverlay.setSelectionRatio(ratio[0], ratio[1]);
+                ratioOptions.setSelectedRatio(ratio);
+                cropOverlay.setSelectionRatio(ratio);
             });
             rectangleRatioMenu.add(ratioItem);
         }
@@ -399,6 +400,52 @@ public class JImageEditor extends JPanel {
         boolean hasWest() { return this == RESIZE_W || this == RESIZE_NW || this == RESIZE_SW; }
     }
 
+    private record SizeRatio(int width, int height) {
+        public SizeRatio(int side) {
+            this(side, side);
+        }
+
+        public boolean isInvalid() {
+            return width <= 0 || height <= 0;
+        }
+
+        @Override
+        public String toString() {
+            return width + ":" + height;
+        }
+    }
+
+    private static final class SizeRatioOptions {
+        private final SizeRatio[] availableRatios;
+        private int selectedIndex;
+
+        public SizeRatioOptions(SizeRatio... ratios) {
+            availableRatios = Objects.requireNonNull(ratios);
+            selectedIndex = availableRatios.length > 0 ? 0 : -1;
+        }
+
+        public SizeRatio[] getAvailableRatios() {
+            return availableRatios;
+        }
+
+        public SizeRatio getSelectedRatio() {
+            return selectedIndex >= 0 ? availableRatios[selectedIndex] : null;
+        }
+
+        public void setSelectedRatio(SizeRatio ratio) {
+            if (ratio != null) {
+                for (int i = 0; i < availableRatios.length; i++) {
+                    if (Objects.equals(availableRatios[i], ratio)) {
+                        selectedIndex = i;
+                        return;
+                    }
+                }
+            }
+
+            selectedIndex = -1;
+        }
+    }
+
     private final class CropOverlay extends JComponent {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -482,17 +529,17 @@ public class JImageEditor extends JPanel {
 
         /** Shrinks the current crop selection to a centered
          * rectangle with the given width-on-height ratio. */
-        public void setSelectionRatio(int wRatio, int hRatio) {
-            if (wRatio <= 0 || hRatio <= 0)
+        public void setSelectionRatio(SizeRatio ratio) {
+            if (ratio == null || ratio.isInvalid())
                 throw new IllegalArgumentException("Selection ratio values must be positive.");
 
             if (selection == null) return;
 
-            int ratioUnits = Math.min(selection.width / wRatio, selection.height / hRatio);
+            int ratioUnits = Math.min(selection.width / ratio.width, selection.height / ratio.height);
             if (ratioUnits == 0) return;
 
-            int width = wRatio * ratioUnits;
-            int height = hRatio * ratioUnits;
+            int width = ratio.width * ratioUnits;
+            int height = ratio.height * ratioUnits;
             selection = new Rectangle(
                     selection.x + (selection.width - width) / 2,
                     selection.y + (selection.height - height) / 2,
