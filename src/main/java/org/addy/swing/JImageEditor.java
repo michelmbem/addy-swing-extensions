@@ -184,22 +184,57 @@ public class JImageEditor extends JPanel {
 
     private JToolBar createCropToolBar() {
         JButton squareButton = new JButton(loadIcon("square"));
-        squareButton.setToolTipText(STRINGS.getString("button.squareCrop"));
-        squareButton.addActionListener(e -> cropOverlay.makeSelectionSquare());
+        squareButton.setToolTipText(STRINGS.getString("tooltip.squareCrop"));
+        squareButton.addActionListener(e -> cropOverlay.setSelectionRatio(1, 1));
+
+        final int[][] availableRatios = {{5, 7}, {7, 9}, {2, 3}};
+        final int[] selectedRatio = {availableRatios[0][0], availableRatios[0][1]};
+
+        JButton rectangleButton = new JButton(loadIcon("rectangle"));
+        rectangleButton.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 2));
+        rectangleButton.setToolTipText(STRINGS.getString("tooltip.rectangleCrop"));
+        rectangleButton.addActionListener(e ->
+                cropOverlay.setSelectionRatio(selectedRatio[0], selectedRatio[1]));
+
+        JPopupMenu rectangleRatioMenu = new JPopupMenu();
+        for (int[] ratio : availableRatios) {
+            JMenuItem ratioItem = new JMenuItem(ratio[0] + ":" + ratio[1]);
+            ratioItem.addActionListener(e -> {
+                selectedRatio[0] = ratio[0];
+                selectedRatio[1] = ratio[1];
+                cropOverlay.setSelectionRatio(ratio[0], ratio[1]);
+            });
+            rectangleRatioMenu.add(ratioItem);
+        }
+
+        JButton ratioMenuButton = new JButton();
+        ratioMenuButton.setIcon(new ArrowIcon(ArrowDirection.DOWN, Color.BLACK, 8, 8));
+        ratioMenuButton.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 4));
+        ratioMenuButton.setToolTipText(STRINGS.getString("tooltip.rectangleCropOptions"));
+        ratioMenuButton.addActionListener(e -> rectangleRatioMenu.show(
+                rectangleButton, 0, rectangleButton.getHeight()));
+
+        JPanel rectangleSplitButton = new JPanel(new BorderLayout());
+        rectangleSplitButton.add(rectangleButton, BorderLayout.CENTER);
+        rectangleSplitButton.add(ratioMenuButton, BorderLayout.LINE_END);
+        UIHelper.setFixedSized(rectangleSplitButton, new Dimension(
+                rectangleButton.getPreferredSize().width + ratioMenuButton.getPreferredSize().width,
+                rectangleButton.getPreferredSize().height));
 
         JButton applyButton = new JButton(STRINGS.getString("button.applyCrop"));
         applyButton.setIcon(loadIcon("accept"));
-        applyButton.setToolTipText(STRINGS.getString("button.applyCrop"));
+        applyButton.setToolTipText(STRINGS.getString("tooltip.applyCrop"));
         applyButton.addActionListener(e -> applyCropSelection());
 
         JButton cancelButton = new JButton(STRINGS.getString("button.cancelCrop"));
         cancelButton.setIcon(loadIcon("cancel"));
-        cancelButton.setToolTipText(STRINGS.getString("button.cancelCrop"));
+        cancelButton.setToolTipText(STRINGS.getString("tooltip.cancelCrop"));
         cancelButton.addActionListener(e -> cancelCropSelection());
 
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         tools.add(squareButton);
+        tools.add(rectangleSplitButton);
         tools.addSeparator();
         tools.add(applyButton);
         tools.add(cancelButton);
@@ -445,15 +480,24 @@ public class JImageEditor extends JPanel {
             repaint();
         }
 
-        /** Shrinks the current crop selection to a centered square. */
-        public void makeSelectionSquare() {
+        /** Shrinks the current crop selection to a centered
+         * rectangle with the given width-on-height ratio. */
+        public void setSelectionRatio(int wRatio, int hRatio) {
+            if (wRatio <= 0 || hRatio <= 0)
+                throw new IllegalArgumentException("Selection ratio values must be positive.");
+
             if (selection == null) return;
-            int side = Math.min(selection.width, selection.height);
+
+            int ratioUnits = Math.min(selection.width / wRatio, selection.height / hRatio);
+            if (ratioUnits == 0) return;
+
+            int width = wRatio * ratioUnits;
+            int height = hRatio * ratioUnits;
             selection = new Rectangle(
-                    selection.x + (selection.width - side) / 2,
-                    selection.y + (selection.height - side) / 2,
-                    side,
-                    side);
+                    selection.x + (selection.width - width) / 2,
+                    selection.y + (selection.height - height) / 2,
+                    width,
+                    height);
             selectionImageArea = getImageArea();
             repaint();
         }
