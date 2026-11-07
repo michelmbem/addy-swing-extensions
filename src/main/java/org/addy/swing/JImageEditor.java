@@ -101,31 +101,39 @@ public class JImageEditor extends JPanel {
         apply(ImageHelper.flip(image, Objects.requireNonNull(axis)));
     }
 
-    public void crop(int left, int top, int right, int bottom) {
+    public void crop(Rectangle frame) {
         requireImage();
         int imageWidth = image.getWidth(null);
         int imageHeight = image.getHeight(null);
-        if (left < 0 || top < 0 || right < 0 || bottom < 0 ||
-                (long) left + right >= imageWidth || (long) top + bottom >= imageHeight)
+        if (frame.x < 0 || frame.y < 0 || frame.width <= 0 || frame.height <= 0 ||
+                frame.x + frame.width >= imageWidth || frame.y + frame.height >= imageHeight)
             throw new IllegalArgumentException(STRINGS.getString("error.cropBounds"));
 
-        apply(ImageHelper.crop(image, left, top, right, bottom));
+        apply(ImageHelper.crop(image, frame));
     }
 
     public void convertToGrayscale() {
         requireImage();
-        BufferedImage buffered = ImageHelper.buffer(image, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage copy = new BufferedImage(
-                buffered.getColorModel(),
-                buffered.copyData(null),
-                buffered.isAlphaPremultiplied(),
-                null);
+        BufferedImage copy = ImageHelper.copy(
+                ImageHelper.buffer(image, BufferedImage.TYPE_INT_ARGB));
         apply(ImageHelper.grayScale(copy));
+    }
+
+    public void convertToSepia() {
+        requireImage();
+        BufferedImage copy = ImageHelper.copy(
+                ImageHelper.buffer(image, BufferedImage.TYPE_INT_ARGB));
+        apply(ImageHelper.sepia(copy));
     }
 
     public void addBorder(Paint paint, Insets insets) {
         requireImage();
         apply(ImageHelper.addBorder(image, Objects.requireNonNull(paint), Objects.requireNonNull(insets)));
+    }
+
+    public void stripBorder(Color color) {
+        requireImage();
+        apply(ImageHelper.stripBorder(image, Objects.requireNonNull(color)));
     }
 
     private void apply(Image updatedImage) {
@@ -144,7 +152,8 @@ public class JImageEditor extends JPanel {
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         tools.add(button("crop", "crop", this::startCropSelection));
-        tools.add(button("border", "border", this::showBorderDialog));
+        tools.add(button("addBorder", "border", this::showBorderDialog));
+        tools.add(button("stripBorder", "noBorder", this::showColorPicker));
         tools.addSeparator();
         tools.add(button("rotate90", "rotate90", this::rotate90));
         tools.add(button("rotate180", "rotate180", this::rotate180));
@@ -154,6 +163,7 @@ public class JImageEditor extends JPanel {
         tools.add(button("flipVertical", "flipV", this::flipVertical));
         tools.addSeparator();
         tools.add(button("grayscale", "grayscale", this::convertToGrayscale));
+        tools.add(button("sepia", "sepia", this::convertToSepia));
         tools.addSeparator();
         tools.add(button("reset", "reset", this::reset));
         return tools;
@@ -244,13 +254,7 @@ public class JImageEditor extends JPanel {
     private void applyCropSelection() {
         if (!cropMode) return;
         Rectangle cropBounds = cropOverlay.getSelectedCropBounds();
-        if (cropBounds != null) {
-            int imageWidth = image.getWidth(null);
-            int imageHeight = image.getHeight(null);
-            crop(cropBounds.x, cropBounds.y,
-                    imageWidth - cropBounds.x - cropBounds.width,
-                    imageHeight - cropBounds.y - cropBounds.height);
-        }
+        if (cropBounds != null) crop(cropBounds);
         finishCropSelection();
     }
 
@@ -281,6 +285,7 @@ public class JImageEditor extends JPanel {
                     this,
                     STRINGS.getString("dialog.borderColorTitle"),
                     borderColor[0]);
+
             if (selectedColor != null) {
                 borderColor[0] = selectedColor;
                 colorButton.setIcon(new ColorSwatchIcon(selectedColor, iconWidth, iconHeight));
@@ -300,6 +305,18 @@ public class JImageEditor extends JPanel {
         ) == JOptionPane.OK_OPTION) {
             int size = (Integer) thickness.getValue();
             addBorder(borderColor[0], new Insets(size, size, size, size));
+        }
+    }
+
+    private void showColorPicker() {
+        int rgb = ImageHelper.buffer(image, BufferedImage.TYPE_INT_RGB).getRGB(0, 0);
+        Color selectedColor = JColorChooser.showDialog(
+                this,
+                STRINGS.getString("dialog.borderColorTitle"),
+                new Color(rgb));
+
+        if (selectedColor != null) {
+            stripBorder(selectedColor);
         }
     }
 
