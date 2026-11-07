@@ -49,6 +49,7 @@ public class JImageEditor extends JPanel {
         super(new BorderLayout(0, 5));
         setBorder(new EmptyBorder(5, 5, 5, 5));
         pictureBox.setSizeMode(SizeMode.CONTAIN);
+        pictureBox.setOpaque(false);
         cropOverlay = new CropOverlay();
         colorPickerOverlay = new ColorPickerOverlay();
         previewLayer.add(pictureBox, JLayeredPane.DEFAULT_LAYER);
