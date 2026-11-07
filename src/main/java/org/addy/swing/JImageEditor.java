@@ -8,6 +8,9 @@ import org.addy.util.media.RotationAngle;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 import java.util.Objects;
@@ -34,6 +37,7 @@ public class JImageEditor extends JPanel {
     private JToolBar standardToolBar;
     private JToolBar cropToolBar;
     private boolean cropMode;
+    private ColorPickerOverlay colorPickerOverlay;
 
     private Image image;
     private Image originalImage;
@@ -67,6 +71,7 @@ public class JImageEditor extends JPanel {
     /** Sets the image and saves it as the image restored by {@link #reset()}. */
     public void setImage(Image image) {
         if (cropMode) finishCropSelection();
+        if (colorPickerOverlay != null) finishColorPicker();
         Image oldImage = this.image;
         this.image = image;
         this.originalImage = image;
@@ -309,14 +314,135 @@ public class JImageEditor extends JPanel {
     }
 
     private void showColorPicker() {
-        int rgb = ImageHelper.buffer(image, BufferedImage.TYPE_INT_RGB).getRGB(0, 0);
-        Color selectedColor = JColorChooser.showDialog(
-                this,
-                STRINGS.getString("dialog.borderColorTitle"),
-                new Color(rgb));
+        if (image == null || colorPickerOverlay != null || cropMode) return;
+        colorPickerOverlay = new ColorPickerOverlay();
+        previewLayer.add(colorPickerOverlay, JLayeredPane.MODAL_LAYER);
+        previewLayer.setLayer(colorPickerOverlay, JLayeredPane.MODAL_LAYER);
+        colorPickerOverlay.setCursor(createHiddenCursor());
+        previewLayer.doLayout();
+        colorPickerOverlay.requestFocusInWindow();
+        colorPickerOverlay.repaint();
+    }
 
-        if (selectedColor != null) {
-            stripBorder(selectedColor);
+    private void finishColorPicker() {
+        if (colorPickerOverlay == null) return;
+        previewLayer.remove(colorPickerOverlay);
+        colorPickerOverlay = null;
+        previewLayer.setCursor(Cursor.getDefaultCursor());
+        previewLayer.revalidate();
+        previewLayer.repaint();
+    }
+
+    private Cursor createHiddenCursor() {
+        try {
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            Dimension size = toolkit.getBestCursorSize(16, 16);
+            if (size.width == 0 || size.height == 0) return Cursor.getDefaultCursor();
+
+            BufferedImage cursorImage = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+            return toolkit.createCustomCursor(cursorImage, new Point(0, 0), "hidden-color-picker");
+        } catch (HeadlessException | IndexOutOfBoundsException exception) {
+            return Cursor.getDefaultCursor();
+        }
+    }
+
+    private final class ColorPickerOverlay extends JComponent {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        private Point pointer;
+
+        private ColorPickerOverlay() {
+            setOpaque(false);
+            setFocusable(true);
+
+            MouseAdapter mouseHandler = new MouseAdapter() {
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    pointer = e.getPoint();
+                    repaint();
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    mouseMoved(e);
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    pointer = e.getPoint();
+                    repaint();
+                    if (e.getButton() != MouseEvent.BUTTON1) return;
+                    Point pixel = imagePixelAt(pointer);
+                    if (pixel == null) return;
+                    int rgb = ImageHelper.buffer(image, BufferedImage.TYPE_INT_RGB)
+                            .getRGB(pixel.x, pixel.y);
+                    finishColorPicker();
+                    stripBorder(new Color(rgb));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    pointer = null;
+                    repaint();
+                }
+            };
+
+            addMouseListener(mouseHandler);
+            addMouseMotionListener(mouseHandler);
+            getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+                    .getKeyStroke("ESCAPE"), "cancelColorPicker");
+            getActionMap().put("cancelColorPicker", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    finishColorPicker();
+                }
+            });
+        }
+
+        private Point imagePixelAt(Point point) {
+            if (image == null) return null;
+
+            Insets insets = pictureBox.getInsets();
+            int areaWidth = pictureBox.getWidth() - insets.left - insets.right;
+            int areaHeight = pictureBox.getHeight() - insets.top - insets.bottom;
+
+            int imageWidth = image.getWidth(pictureBox);
+            int imageHeight = image.getHeight(pictureBox);
+            if (areaWidth <= 0 || areaHeight <= 0 || imageWidth <= 0 || imageHeight <= 0) return null;
+
+            double scale = Math.min((double) areaWidth / imageWidth, (double) areaHeight / imageHeight);
+            int drawnWidth = (int) (imageWidth * scale);
+            int drawnHeight = (int) (imageHeight * scale);
+            int left = insets.left + (areaWidth - drawnWidth) / 2;
+            int top = insets.top + (areaHeight - drawnHeight) / 2;
+            int x = point.x - left;
+            int y = point.y - top;
+            if (x < 0 || y < 0 || x >= drawnWidth || y >= drawnHeight) return null;
+
+            return new Point(x * imageWidth / drawnWidth, y * imageHeight / drawnHeight);
+        }
+
+        @Override
+        protected void paintComponent(Graphics graphics) {
+            super.paintComponent(graphics);
+            if (pointer == null) return;
+
+            int x = pointer.x;
+            int y = pointer.y;
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setStroke(new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g.setColor(Color.WHITE);
+            g.drawLine(x, y, x + 9, y - 9);
+            g.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g.setColor(Color.DARK_GRAY);
+            g.drawLine(x, y, x + 9, y - 9);
+            g.setColor(new Color(215, 215, 215));
+            g.fillRoundRect(x + 7, y - 13, 9, 6, 3, 3);
+            g.setColor(Color.DARK_GRAY);
+            g.drawRoundRect(x + 7, y - 13, 9, 6, 3, 3);
+            g.dispose();
         }
     }
 
