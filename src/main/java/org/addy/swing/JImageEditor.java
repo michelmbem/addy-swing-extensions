@@ -168,9 +168,9 @@ public class JImageEditor extends JPanel {
         tools.add(button("addBorder", "border", this::showBorderDialog));
         tools.add(button("stripBorder", "noBorder", this::showColorPicker));
         tools.addSeparator();
-        tools.add(button("rotate90", "rotate90", this::rotate90));
-        tools.add(button("rotate180", "rotate180", this::rotate180));
         tools.add(button("rotate270", "rotate270", this::rotate270));
+        tools.add(button("rotate180", "rotate180", this::rotate180));
+        tools.add(button("rotate90", "rotate90", this::rotate90));
         tools.addSeparator();
         tools.add(button("flipHorizontal", "flipH", this::flipHorizontal));
         tools.add(button("flipVertical", "flipV", this::flipVertical));
