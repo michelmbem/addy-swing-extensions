@@ -243,8 +243,8 @@ public class JImageEditor extends JPanel {
     }
 
     private void installCropKeyBindings() {
-        InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        ActionMap actionMap = getActionMap();
+        InputMap inputMap = cropOverlay.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap actionMap = cropOverlay.getActionMap();
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), "applyCrop");
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "cancelCrop");
         actionMap.put("applyCrop", new AbstractAction() {
@@ -376,6 +376,7 @@ public class JImageEditor extends JPanel {
         public CropOverlay() {
             setOpaque(false);
             setVisible(false);
+            setFocusable(true);
             setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 
             var mouseAdapter = new MouseAdapter() {
@@ -438,6 +439,7 @@ public class JImageEditor extends JPanel {
                     Math.max(1, imageArea.height - insetY * 2));
             selectionImageArea = new Rectangle(imageArea);
             setVisible(true);
+            requestFocusInWindow();
             repaint();
         }
 
