@@ -270,7 +270,7 @@ public class JImageEditor extends JPanel {
     }
 
     private void installCropKeyBindings() {
-        InputMap inputMap = cropOverlay.getInputMap(JComponent.WHEN_FOCUSED);
+        InputMap inputMap = cropOverlay.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = cropOverlay.getActionMap();
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), "applyCrop");
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "cancelCrop");
