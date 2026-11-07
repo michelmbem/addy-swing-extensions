@@ -19,18 +19,10 @@ import java.util.ResourceBundle;
 public class JImageEditor extends JPanel {
     @Serial
     private static final long serialVersionUID = 1L;
-    private static final ResourceBundle STRINGS =
-            ResourceBundle.getBundle(JImageEditor.class.getName());
+    private static final ResourceBundle STRINGS = ResourceBundle.getBundle(JImageEditor.class.getName());
 
-    private final JPictureBox pictureBox = new JPictureBox();
-    private final JLayeredPane previewLayer = new JLayeredPane() {
-        @Override
-        public void doLayout() {
-            for (Component component : getComponents())
-                component.setBounds(0, 0, getWidth(), getHeight());
-        }
-    };
-
+    private final JLayeredPane previewLayer;
+    private final JPictureBox pictureBox;
     private final CropOverlay cropOverlay;
     private final ColorPickerOverlay colorPickerOverlay;
     private final JPanel toolBarPanel;
@@ -48,19 +40,29 @@ public class JImageEditor extends JPanel {
     public JImageEditor(Image image) {
         super(new BorderLayout(0, 5));
         setBorder(new EmptyBorder(5, 5, 5, 5));
-        pictureBox.setSizeMode(SizeMode.CONTAIN);
-        pictureBox.setOpaque(false);
+
+        pictureBox = new JPictureBox(image, SizeMode.CONTAIN);
         cropOverlay = new CropOverlay();
         colorPickerOverlay = new ColorPickerOverlay();
+
+        previewLayer = new JLayeredPane() {
+            @Override
+            public void doLayout() {
+                for (Component component : getComponents())
+                    component.setBounds(0, 0, getWidth(), getHeight());
+            }
+        };
         previewLayer.add(pictureBox, JLayeredPane.DEFAULT_LAYER);
         previewLayer.add(cropOverlay, JLayeredPane.PALETTE_LAYER);
         previewLayer.add(colorPickerOverlay, JLayeredPane.MODAL_LAYER);
         add(previewLayer, BorderLayout.CENTER);
+
         standardToolBar = createToolBar();
         cropToolBar = createCropToolBar();
         toolBarPanel = new JPanel(new BorderLayout());
         toolBarPanel.add(standardToolBar, BorderLayout.CENTER);
         add(toolBarPanel, BorderLayout.PAGE_END);
+
         installCropKeyBindings();
         setImage(image);
     }
@@ -115,7 +117,7 @@ public class JImageEditor extends JPanel {
         int imageWidth = image.getWidth(null);
         int imageHeight = image.getHeight(null);
         if (frame.x < 0 || frame.y < 0 || frame.width <= 0 || frame.height <= 0 ||
-                frame.x + frame.width >= imageWidth || frame.y + frame.height >= imageHeight)
+                frame.x + frame.width > imageWidth || frame.y + frame.height > imageHeight)
             throw new IllegalArgumentException(STRINGS.getString("error.cropBounds"));
 
         apply(ImageHelper.crop(image, frame));
@@ -180,38 +182,6 @@ public class JImageEditor extends JPanel {
         return tools;
     }
 
-    private JButton button(String key, String iconName, Runnable action) {
-        JButton button = new JButton(loadIcon(iconName));
-        button.setToolTipText(STRINGS.getString("button." + key));
-        button.setFocusable(false);
-        button.addActionListener(e -> {
-            if (image == null) return;
-
-            try {
-                action.run();
-            } catch (RuntimeException exception) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        exception.getMessage(),
-                        STRINGS.getString("dialog.errorTitle"),
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        return button;
-    }
-
-    private void startCropSelection() {
-        if (image == null || editorMode != EditorMode.DEFAULT) return;
-        editorMode = EditorMode.CROP;
-        cropOverlay.beginSelection();
-        toolBarPanel.removeAll();
-        toolBarPanel.add(cropToolBar, BorderLayout.CENTER);
-        toolBarPanel.revalidate();
-        toolBarPanel.repaint();
-        previewLayer.repaint();
-    }
-
     private JToolBar createCropToolBar() {
         JButton squareButton = new JButton(loadIcon("square"));
         squareButton.setToolTipText(STRINGS.getString("button.squareCrop"));
@@ -234,6 +204,27 @@ public class JImageEditor extends JPanel {
         tools.add(applyButton);
         tools.add(cancelButton);
         return tools;
+    }
+
+    private JButton button(String key, String iconName, Runnable action) {
+        JButton button = new JButton(loadIcon(iconName));
+        button.setToolTipText(STRINGS.getString("button." + key));
+        button.setFocusable(false);
+        button.addActionListener(e -> {
+            if (image == null) return;
+
+            try {
+                action.run();
+            } catch (RuntimeException exception) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        exception.getMessage(),
+                        STRINGS.getString("dialog.errorTitle"),
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        return button;
     }
     
     private ImageIcon loadIcon(String iconName) {
@@ -259,6 +250,17 @@ public class JImageEditor extends JPanel {
                 if (editorMode == EditorMode.CROP) cancelCropSelection();
             }
         });
+    }
+
+    private void startCropSelection() {
+        if (image == null || editorMode != EditorMode.DEFAULT) return;
+        editorMode = EditorMode.CROP;
+        cropOverlay.beginSelection();
+        toolBarPanel.removeAll();
+        toolBarPanel.add(cropToolBar, BorderLayout.CENTER);
+        toolBarPanel.revalidate();
+        toolBarPanel.repaint();
+        previewLayer.repaint();
     }
 
     private void applyCropSelection() {
@@ -506,30 +508,6 @@ public class JImageEditor extends JPanel {
             g.dispose();
         }
 
-        private void paintHandles(Graphics2D g) {
-            int half = HANDLE_SIZE / 2;
-            int[][] points = {
-                    {selection.x, selection.y},
-                    {selection.x + selection.width / 2, selection.y},
-                    {selection.x + selection.width, selection.y},
-                    {selection.x, selection.y + selection.height / 2},
-                    {selection.x + selection.width, selection.y + selection.height / 2},
-                    {selection.x, selection.y + selection.height},
-                    {selection.x + selection.width / 2, selection.y + selection.height},
-                    {selection.x + selection.width, selection.y + selection.height}
-            };
-
-            g.setColor(Color.WHITE);
-            for (int[] point : points) {
-                g.fillRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
-            }
-
-            g.setColor(new Color(35, 105, 190));
-            for (int[] point : points) {
-                g.drawRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
-            }
-        }
-
         private void updateSelection(Point point) {
             if (dragStart == null) return;
 
@@ -595,6 +573,30 @@ public class JImageEditor extends JPanel {
             selection = new Rectangle(left, top, right - left, bottom - top);
         }
 
+        private void paintHandles(Graphics2D g) {
+            int half = HANDLE_SIZE / 2;
+            int[][] points = {
+                    {selection.x, selection.y},
+                    {selection.x + selection.width / 2, selection.y},
+                    {selection.x + selection.width, selection.y},
+                    {selection.x, selection.y + selection.height / 2},
+                    {selection.x + selection.width, selection.y + selection.height / 2},
+                    {selection.x, selection.y + selection.height},
+                    {selection.x + selection.width / 2, selection.y + selection.height},
+                    {selection.x + selection.width, selection.y + selection.height}
+            };
+
+            g.setColor(Color.WHITE);
+            for (int[] point : points) {
+                g.fillRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
+            }
+
+            g.setColor(new Color(35, 105, 190));
+            for (int[] point : points) {
+                g.drawRect(point[0] - half, point[1] - half, HANDLE_SIZE, HANDLE_SIZE);
+            }
+        }
+
         private void updateCursor(Point point) {
             DragMode mode = getDragMode(point);
             int cursor = switch (mode) {
@@ -615,8 +617,10 @@ public class JImageEditor extends JPanel {
             boolean nearRight = Math.abs(point.x - (selection.x + selection.width)) <= tolerance;
             boolean nearTop = Math.abs(point.y - selection.y) <= tolerance;
             boolean nearBottom = Math.abs(point.y - (selection.y + selection.height)) <= tolerance;
-            boolean acrossX = point.x >= selection.x - tolerance && point.x <= selection.x + selection.width + tolerance;
-            boolean acrossY = point.y >= selection.y - tolerance && point.y <= selection.y + selection.height + tolerance;
+            boolean acrossX = point.x >= selection.x - tolerance
+                    && point.x <= selection.x + selection.width + tolerance;
+            boolean acrossY = point.y >= selection.y - tolerance
+                    && point.y <= selection.y + selection.height + tolerance;
 
             if (nearTop && nearLeft) return DragMode.RESIZE_NW;
             if (nearTop && nearRight) return DragMode.RESIZE_NE;
@@ -629,20 +633,6 @@ public class JImageEditor extends JPanel {
             if (selection.contains(point)) return DragMode.MOVE;
 
             return DragMode.NONE;
-        }
-
-        private Rectangle rectangleBetween(Point a, Point b) {
-            return new Rectangle(
-                    Math.min(a.x, b.x),
-                    Math.min(a.y, b.y),
-                    Math.abs(b.x - a.x),
-                    Math.abs(b.y - a.y));
-        }
-
-        private Point clampToImageArea(Point point, Rectangle imageArea) {
-            return new Point(
-                    Math.max(imageArea.x, Math.min(imageArea.x + imageArea.width, point.x)),
-                    Math.max(imageArea.y, Math.min(imageArea.y + imageArea.height, point.y)));
         }
 
         private Rectangle getImageArea() {
@@ -666,6 +656,20 @@ public class JImageEditor extends JPanel {
             int y = insets.top + (availableHeight - height) / 2;
 
             return new Rectangle(x, y, width, height);
+        }
+
+        private Point clampToImageArea(Point point, Rectangle imageArea) {
+            return new Point(
+                    Math.max(imageArea.x, Math.min(imageArea.x + imageArea.width, point.x)),
+                    Math.max(imageArea.y, Math.min(imageArea.y + imageArea.height, point.y)));
+        }
+
+        private Rectangle rectangleBetween(Point a, Point b) {
+            return new Rectangle(
+                    Math.min(a.x, b.x),
+                    Math.min(a.y, b.y),
+                    Math.abs(b.x - a.x),
+                    Math.abs(b.y - a.y));
         }
     }
 
