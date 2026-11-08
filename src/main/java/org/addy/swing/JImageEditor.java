@@ -271,18 +271,19 @@ public class JImageEditor extends JPanel {
 
     private void installCropKeyBindings() {
         InputMap inputMap = cropOverlay.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = cropOverlay.getActionMap();
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), "applyCrop");
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "cancelCrop");
+
+        ActionMap actionMap = cropOverlay.getActionMap();
         actionMap.put("applyCrop", new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            public void actionPerformed(ActionEvent e) {
                 if (editorMode == EditorMode.CROP) applyCropSelection();
             }
         });
         actionMap.put("cancelCrop", new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            public void actionPerformed(ActionEvent e) {
                 if (editorMode == EditorMode.CROP) cancelCropSelection();
             }
         });
