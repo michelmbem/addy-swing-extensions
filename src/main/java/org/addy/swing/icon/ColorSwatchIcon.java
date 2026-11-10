@@ -1,5 +1,7 @@
 package org.addy.swing.icon;
 
+import org.addy.util.media.ColorUtil;
+
 import java.awt.*;
 import java.util.Objects;
 
@@ -26,14 +28,10 @@ public class ColorSwatchIcon extends DrawnIcon {
 
     @Override
     public void paintIcon(Component component, Graphics graphics, int x, int y) {
-        double luminance = (0.299 * color.getRed()
-                + 0.587 * color.getGreen()
-                + 0.114 * color.getBlue()) / 255.0;
-
         Graphics2D g = (Graphics2D) graphics.create();
         g.setColor(color);
         g.fillRect(x, y, width, height);
-        g.setColor(luminance < 0.5 ? Color.WHITE : Color.BLACK);
+        g.setColor(ColorUtil.isDark(color) ? Color.WHITE : Color.BLACK);
         g.drawRect(x, y, width, height);
         g.dispose();
     }

@@ -4,6 +4,7 @@ import org.addy.swing.icon.ArrowDirection;
 import org.addy.swing.icon.ArrowIcon;
 import org.addy.swing.icon.ColorSwatchIcon;
 import org.addy.swing.icon.TransparentIcon;
+import org.addy.util.media.ColorUtil;
 import org.addy.util.media.FlipAxis;
 import org.addy.util.media.ImageHelper;
 import org.addy.util.media.RotationAngle;
@@ -854,10 +855,11 @@ public class JImageEditor extends JPanel {
             backgroundColorButton.addActionListener(e -> chooseBackgroundColor());
             add(backgroundColorButton);
 
-            final Color transparent = new Color(0, 0, 0, 0);
-            transparentBackgroundButton = createCornerButton(new TransparentIcon(20, 20),
+            transparentBackgroundButton = createCornerButton(
+                    new TransparentIcon(20, 20),
                     STRINGS.getString("tooltip.rotationTransparentBackground"));
-            transparentBackgroundButton.addActionListener(e -> setBackgroundColor(transparent));
+            transparentBackgroundButton.addActionListener(
+                    e -> setBackgroundColor(ColorUtil.TRANSPARENT));
             add(transparentBackgroundButton);
 
             var mouseAdapter = new MouseAdapter() {
