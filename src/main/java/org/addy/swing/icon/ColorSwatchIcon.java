@@ -1,40 +1,35 @@
 package org.addy.swing.icon;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
-public final class ColorSwatchIcon implements Icon {
-    private final Color color;
-    private final int width;
-    private final int height;
+/** An icon that represents a rectangular color swatch. */
+public class ColorSwatchIcon extends DrawnIcon {
+    protected final Color color;
 
+    /**
+     * Initializes a new instance of ArrowIcon.
+     *
+     * @param color the icon color
+     * @param width the icon width in pixels
+     * @param height the icon height in pixels
+     */
     public ColorSwatchIcon(Color color, int width, int height) {
+        super(width, height);
         this.color = Objects.requireNonNull(color);
-        this.width = Math.max(width, 4);
-        this.height = Math.max(height, 4);
     }
 
+    /** Gets the icon color */
     public Color getColor() {
         return color;
     }
 
     @Override
-    public int getIconWidth() {
-        return width;
-    }
-
-    @Override
-    public int getIconHeight() {
-        return height;
-    }
-
-    @Override
     public void paintIcon(Component component, Graphics graphics, int x, int y) {
-        int red = color.getRed();
-        int green = color.getGreen();
-        int blue = color.getBlue();
-        double luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255.0;
+        double luminance = (0.299 * color.getRed()
+                + 0.587 * color.getGreen()
+                + 0.114 * color.getBlue()) / 255.0;
+
         Graphics2D g = (Graphics2D) graphics.create();
         g.setColor(color);
         g.fillRect(x, y, width, height);

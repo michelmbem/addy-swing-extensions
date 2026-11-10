@@ -2,26 +2,18 @@ package org.addy.swing.icon;
 
 import org.addy.swing.KnownColor;
 
-import javax.swing.*;
 import java.awt.*;
 
-public class TransparentIcon implements Icon {
-    private final int width;
-    private final int height;
+public class TransparentIcon extends DrawnIcon {
 
+    /**
+     * Initializes an instance of TransparentIcon
+     *
+     * @param width the icon width in pixels
+     * @param height the icon height in pixels
+     */
     public TransparentIcon(int width, int height) {
-        this.width = Math.max(width, 4);
-        this.height = Math.max(height, 4);
-    }
-
-    @Override
-    public int getIconWidth() {
-        return width;
-    }
-
-    @Override
-    public int getIconHeight() {
-        return height;
+        super(width, height);
     }
 
     @Override

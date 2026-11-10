@@ -1,50 +1,55 @@
 package org.addy.swing.icon;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 /** A filled triangular arrow icon. */
-public final class ArrowIcon implements Icon {
-    private final ArrowDirection direction;
-    private final Color color;
-    private final int width;
-    private final int height;
+public class ArrowIcon extends ColorSwatchIcon {
+    protected final ArrowDirection direction;
 
+    /**
+     * Initializes a new instance of ArrowIcon.
+     *
+     * @param direction the direction where the arrow points at
+     * @param color the icon color
+     * @param width the icon width in pixels
+     * @param height the icon height in pixels
+     */
     public ArrowIcon(ArrowDirection direction, Color color, int width, int height) {
+        super(color, width, height);
         this.direction = Objects.requireNonNull(direction, "direction");
-        this.color = Objects.requireNonNull(color, "color");
-        this.width = Math.max(width, 8);
-        this.height = Math.max(height, 8);
+    }
+
+    /** Gets the direction where the arrow points at */
+    public ArrowDirection getDirection() {
+        return direction;
     }
 
     @Override
     public void paintIcon(Component component, Graphics graphics, int x, int y) {
-        int minX = x;
-        int minY = y;
-        int maxX = x + width - 1;
-        int maxY = y + height - 1;
-        int midX = minX + (maxX - minX) / 2;
-        int midY = minY + (maxY - minY) / 2;
+        int maxX = x + width;
+        int maxY = y + height;
+        int midX = x + width / 2;
+        int midY = y + height / 2;
         int[] xPoints;
         int[] yPoints;
 
         switch (direction) {
             case LEFT -> {
-                xPoints = new int[]{minX, maxX, maxX};
-                yPoints = new int[]{midY, minY, maxY};
+                xPoints = new int[]{x, maxX, maxX};
+                yPoints = new int[]{midY, y, maxY};
             }
             case UP -> {
-                xPoints = new int[]{midX, maxX, minX};
-                yPoints = new int[]{minY, maxY, maxY};
+                xPoints = new int[]{midX, maxX, x};
+                yPoints = new int[]{y, maxY, maxY};
             }
             case RIGHT -> {
-                xPoints = new int[]{maxX, minX, minX};
-                yPoints = new int[]{midY, minY, maxY};
+                xPoints = new int[]{maxX, x, x};
+                yPoints = new int[]{midY, y, maxY};
             }
             case DOWN -> {
-                xPoints = new int[]{midX, maxX, minX};
-                yPoints = new int[]{maxY, minY, minY};
+                xPoints = new int[]{midX, maxX, x};
+                yPoints = new int[]{maxY, y, y};
             }
             default -> throw new AssertionError("Unsupported arrow direction: " + direction);
         }
@@ -53,15 +58,5 @@ public final class ArrowIcon implements Icon {
         g.setColor(color);
         g.fillPolygon(xPoints, yPoints, 3);
         g.dispose();
-    }
-
-    @Override
-    public int getIconWidth() {
-        return width;
-    }
-
-    @Override
-    public int getIconHeight() {
-        return height;
     }
 }
