@@ -13,13 +13,12 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 public final class UIHelper {
-    public static final String DOUBLE_CLICK_COMMAND = "DOUBLE CLICK";
+    public static final String DOUBLE_CLICK_COMMAND = "DOUBLE-CLICK";
 
     private UIHelper() {}
 
@@ -74,6 +73,7 @@ public final class UIHelper {
         }
 
         comboBox.setSelectedIndex(selectedIndex);
+        comboBox.repaint();
     }
 
     public static <V extends Serializable> void setSelectedValue(JComboBox<ListItem<V>> comboBox, V value) {
@@ -99,17 +99,6 @@ public final class UIHelper {
     public static <E> void setSelectedItem(JComboBox<E> comboBox, E selectedItem) {
         comboBox.setSelectedItem(selectedItem);
         comboBox.repaint();
-    }
-
-    public static LocalDate getDate(JCalendarCombo calendarCombo) {
-        return calendarCombo.isChecked() ? calendarCombo.getDate() : null;
-    }
-
-    public static void setDate(JCalendarCombo calendarCombo, LocalDate date) {
-        if (date == null)
-            calendarCombo.setChecked(false);
-        else
-            calendarCombo.setDate(date);
     }
 
     public static void addDoubleClickListener(Component component, ActionListener listener) {

@@ -59,14 +59,25 @@ public class JCalendarCombo
 	}
 
 	public void setDate(LocalDate date) {
-        if (Objects.equals(date, this.date)) return;
+		if (Objects.equals(date, this.date)) return;
 
         LocalDate oldDate = this.date;
-        this.date = date;
+        this.date = Objects.requireNonNull(date);
         firePropertyChange("date", oldDate, date);
         spinner.setValue(ValueConverter.toDate(date));
         setChecked(true);
     }
+
+	public LocalDate getSelectedDate() {
+		return checked ? date : null;
+	}
+
+	public void setSelectedDate(LocalDate selectedDate) {
+		if (selectedDate == null)
+			setChecked(false);
+		else
+			setDate(selectedDate);
+	}
 
 	public String getDateFormat() {
 		return dateFormat;
@@ -144,7 +155,7 @@ public class JCalendarCombo
 
 	public void showPopupMenu() {
 		allowPopupHide = false;
-		calendar.setActiveDate(date != null ? date : LocalDate.now(ZoneId.systemDefault()));
+		calendar.setActiveDate(date == null ? LocalDate.now(ZoneId.systemDefault()) : date);
 		calendar.setActiveView(CalendarView.MONTH);
 
 		Point pt = getPopupLocation();

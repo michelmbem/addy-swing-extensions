@@ -83,7 +83,7 @@ public class JCalendar extends JPanel {
 	}
 
 	public void setActiveDate(LocalDate activeDate) {
-        if (Objects.equals(activeDate, this.activeDate)) return;
+		if (Objects.equals(activeDate, this.activeDate)) return;
 
         LocalDate oldActiveDate = this.activeDate;
         this.activeDate = Objects.requireNonNull(activeDate);
@@ -101,7 +101,7 @@ public class JCalendar extends JPanel {
         LocalDate oldSelectedDate = this.selectedDate;
         this.selectedDate = selectedDate;
         firePropertyChange("selectedDate", oldSelectedDate, selectedDate);
-        setActiveDate(selectedDate != null ? selectedDate : LocalDate.now(ZoneId.systemDefault()));
+        setActiveDate(selectedDate == null ? LocalDate.now(ZoneId.systemDefault()) : selectedDate);
     }
 
 	public Color getViewSelectorBackground() {
