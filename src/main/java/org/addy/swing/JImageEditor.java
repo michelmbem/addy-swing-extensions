@@ -1,5 +1,9 @@
 package org.addy.swing;
 
+import org.addy.swing.icon.ArrowDirection;
+import org.addy.swing.icon.ArrowIcon;
+import org.addy.swing.icon.ColorSwatchIcon;
+import org.addy.swing.icon.TransparentIcon;
 import org.addy.util.media.FlipAxis;
 import org.addy.util.media.ImageHelper;
 import org.addy.util.media.RotationAngle;
@@ -24,10 +28,12 @@ public class JImageEditor extends JPanel {
     private final JLayeredPane previewLayer;
     private final JPictureBox pictureBox;
     private final CropOverlay cropOverlay;
+    private final RotationOverlay rotationOverlay;
     private final ColorPickerOverlay colorPickerOverlay;
     private final JPanel toolBarPanel;
     private final JToolBar standardToolBar;
     private final JToolBar cropToolBar;
+    private final JToolBar rotationToolBar;
 
     private Image image;
     private Image originalImage;
@@ -43,6 +49,7 @@ public class JImageEditor extends JPanel {
 
         pictureBox = new JPictureBox(image, SizeMode.CONTAIN);
         cropOverlay = new CropOverlay();
+        rotationOverlay = new RotationOverlay();
         colorPickerOverlay = new ColorPickerOverlay();
 
         previewLayer = new JLayeredPane() {
@@ -54,11 +61,13 @@ public class JImageEditor extends JPanel {
         };
         previewLayer.add(pictureBox, JLayeredPane.DEFAULT_LAYER);
         previewLayer.add(cropOverlay, JLayeredPane.PALETTE_LAYER);
+        previewLayer.add(rotationOverlay, JLayeredPane.POPUP_LAYER);
         previewLayer.add(colorPickerOverlay, JLayeredPane.MODAL_LAYER);
         add(previewLayer, BorderLayout.CENTER);
 
         standardToolBar = createToolBar();
         cropToolBar = createCropToolBar();
+        rotationToolBar = createRotationToolBar();
         toolBarPanel = new JPanel(new BorderLayout());
         toolBarPanel.add(standardToolBar, BorderLayout.CENTER);
         add(toolBarPanel, BorderLayout.PAGE_END);
@@ -76,6 +85,7 @@ public class JImageEditor extends JPanel {
     public void setImage(Image image) {
         switch (editorMode) {
             case CROP -> finishCropSelection();
+            case ROTATION -> finishRotation();
             case COLOR_PICKER -> finishColorPicker();
         }
 
@@ -171,6 +181,7 @@ public class JImageEditor extends JPanel {
         tools.add(button("rotate270", "rotate270", this::rotate270));
         tools.add(button("rotate180", "rotate180", this::rotate180));
         tools.add(button("rotate90", "rotate90", this::rotate90));
+        tools.add(button("rotate", "rotate", this::showAngleSelector));
         tools.addSeparator();
         tools.add(button("flipHorizontal", "flipH", this::flipHorizontal));
         tools.add(button("flipVertical", "flipV", this::flipVertical));
@@ -237,6 +248,24 @@ public class JImageEditor extends JPanel {
         tools.add(squareButton);
         tools.add(rectangleSplitButton);
         tools.addSeparator();
+        tools.add(applyButton);
+        tools.add(cancelButton);
+        return tools;
+    }
+
+    private JToolBar createRotationToolBar() {
+        JButton applyButton = new JButton(STRINGS.getString("button.applyRotation"));
+        applyButton.setIcon(loadIcon("accept"));
+        applyButton.setToolTipText(STRINGS.getString("tooltip.applyRotation"));
+        applyButton.addActionListener(e -> applyRotation());
+
+        JButton cancelButton = new JButton(STRINGS.getString("button.cancelRotation"));
+        cancelButton.setIcon(loadIcon("cancel"));
+        cancelButton.setToolTipText(STRINGS.getString("tooltip.cancelRotation"));
+        cancelButton.addActionListener(e -> cancelRotation());
+
+        JToolBar tools = new JToolBar();
+        tools.setFloatable(false);
         tools.add(applyButton);
         tools.add(cancelButton);
         return tools;
@@ -378,6 +407,40 @@ public class JImageEditor extends JPanel {
         previewLayer.repaint();
     }
 
+    private void showAngleSelector() {
+        if (image == null || editorMode != EditorMode.DEFAULT) return;
+        editorMode = EditorMode.ROTATION;
+        rotationOverlay.beginRotation();
+        toolBarPanel.removeAll();
+        toolBarPanel.add(rotationToolBar, BorderLayout.CENTER);
+        toolBarPanel.revalidate();
+        toolBarPanel.repaint();
+        previewLayer.repaint();
+    }
+
+    private void applyRotation() {
+        if (editorMode != EditorMode.ROTATION) return;
+        Image rotated = rotationOverlay.getRotatedImage();
+        finishRotation();
+        apply(rotated);
+    }
+
+    private void cancelRotation() {
+        if (editorMode == EditorMode.ROTATION) finishRotation();
+    }
+
+    private void finishRotation() {
+        Image base = rotationOverlay.getBaseImage();
+        editorMode = EditorMode.DEFAULT;
+        rotationOverlay.setVisible(false);
+        if (base != null) pictureBox.setImage(base);
+        toolBarPanel.removeAll();
+        toolBarPanel.add(standardToolBar, BorderLayout.CENTER);
+        toolBarPanel.revalidate();
+        toolBarPanel.repaint();
+        previewLayer.repaint();
+    }
+
     private static void setEnabled(Container container, boolean enabled) {
         container.setEnabled(enabled);
         for (Component component : container.getComponents()) {
@@ -388,17 +451,17 @@ public class JImageEditor extends JPanel {
         }
     }
 
-    private enum EditorMode { DEFAULT, CROP, COLOR_PICKER }
+    private enum EditorMode { DEFAULT, CROP, ROTATION, COLOR_PICKER }
 
     private enum DragMode {
         NONE, NEW, MOVE,
         RESIZE_N, RESIZE_S, RESIZE_E, RESIZE_W,
         RESIZE_NE, RESIZE_NW, RESIZE_SE, RESIZE_SW;
 
-        boolean hasNorth() { return this == RESIZE_N || this == RESIZE_NE || this == RESIZE_NW; }
-        boolean hasSouth() { return this == RESIZE_S || this == RESIZE_SE || this == RESIZE_SW; }
-        boolean hasEast() { return this == RESIZE_E || this == RESIZE_NE || this == RESIZE_SE; }
-        boolean hasWest() { return this == RESIZE_W || this == RESIZE_NW || this == RESIZE_SW; }
+        public boolean hasNorth() { return this == RESIZE_N || this == RESIZE_NE || this == RESIZE_NW; }
+        public boolean hasSouth() { return this == RESIZE_S || this == RESIZE_SE || this == RESIZE_SW; }
+        public boolean hasEast() { return this == RESIZE_E || this == RESIZE_NE || this == RESIZE_SE; }
+        public boolean hasWest() { return this == RESIZE_W || this == RESIZE_NW || this == RESIZE_SW; }
     }
 
     private record SizeRatio(int width, int height) {
@@ -765,6 +828,208 @@ public class JImageEditor extends JPanel {
         }
     }
 
+    private final class RotationOverlay extends JComponent {
+        @Serial
+        private static final long serialVersionUID = 1L;
+        private static final int HANDLE_RADIUS = 7;
+
+        private final JButton backgroundColorButton;
+        private final JButton transparentBackgroundButton;
+
+        private Image baseImage;
+        private double radians;
+        private double handleDistance;
+        private Color backgroundColor = Color.WHITE;
+        private boolean dragging;
+
+        public RotationOverlay() {
+            setOpaque(false);
+            setVisible(false);
+            setFocusable(true);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            backgroundColorButton = createCornerButton(
+                    new ColorSwatchIcon(backgroundColor, 20, 20),
+                    STRINGS.getString("tooltip.rotationBackgroundColor"));
+            backgroundColorButton.addActionListener(e -> chooseBackgroundColor());
+            add(backgroundColorButton);
+
+            final Color transparent = new Color(0, 0, 0, 0);
+            transparentBackgroundButton = createCornerButton(new TransparentIcon(20, 20),
+                    STRINGS.getString("tooltip.rotationTransparentBackground"));
+            transparentBackgroundButton.addActionListener(e -> setBackgroundColor(transparent));
+            add(transparentBackgroundButton);
+
+            var mouseAdapter = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (e.getButton() == MouseEvent.BUTTON1 && handleBounds().contains(e.getPoint())) {
+                        dragging = true;
+                        updateAngle(e.getPoint());
+                    }
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    if (dragging) updateAngle(e.getPoint());
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (dragging) updateAngle(e.getPoint());
+                    dragging = false;
+                }
+
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    setCursor(Cursor.getPredefinedCursor(handleBounds().contains(e.getPoint())
+                            ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+                }
+            };
+            addMouseListener(mouseAdapter);
+            addMouseMotionListener(mouseAdapter);
+
+            InputMap inputMap = getInputMap(WHEN_IN_FOCUSED_WINDOW);
+            inputMap.put(KeyStroke.getKeyStroke("ENTER"), "applyRotation");
+            inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "cancelRotation");
+
+            ActionMap actionMap = getActionMap();
+            actionMap.put("applyRotation", new AbstractAction() {
+                @Override public void actionPerformed(ActionEvent e) { applyRotation(); }
+            });
+            actionMap.put("cancelRotation", new AbstractAction() {
+                @Override public void actionPerformed(ActionEvent e) { cancelRotation(); }
+            });
+        }
+
+        public void beginRotation() {
+            baseImage = image;
+            radians = 0;
+            Rectangle area = imageArea();
+            handleDistance = Math.max(24, Math.min(area.width, area.height) * 0.32);
+            setVisible(true);
+            requestFocusInWindow();
+            repaint();
+        }
+
+        public Image getBaseImage() { return baseImage; }
+
+        public Image getRotatedImage() {
+            return ImageHelper.rotate(baseImage, radians, backgroundColor);
+        }
+
+        @Override
+        public void doLayout() {
+            final int buttonSize = 20;
+            final int margin = 8;
+            transparentBackgroundButton.setBounds(getWidth() - margin - buttonSize, margin,
+                    buttonSize, buttonSize);
+            backgroundColorButton.setBounds(getWidth() - margin - 2 * buttonSize - 4, margin,
+                    buttonSize, buttonSize);
+        }
+
+        private static JButton createCornerButton(Icon icon, String text) {
+            var button = new JButton(icon);
+            button.setFocusable(false);
+            button.setContentAreaFilled(false);
+            button.setToolTipText(text);
+            button.getAccessibleContext().setAccessibleName(text);
+            button.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+            return button;
+        }
+
+        private void chooseBackgroundColor() {
+            Color selectedColor = JColorChooser.showDialog(this,
+                    STRINGS.getString("dialog.rotationBackgroundTitle"), backgroundColor);
+            if (selectedColor != null) setBackgroundColor(selectedColor);
+        }
+
+        private void setBackgroundColor(Color color) {
+            backgroundColor = color;
+            updateBackgroundColorButton();
+            updatePreview();
+        }
+
+        private void updateBackgroundColorButton() {
+            backgroundColorButton.setIcon(new ColorSwatchIcon(backgroundColor, 20, 20));
+            backgroundColorButton.repaint();
+        }
+
+        private void updatePreview() {
+            if (baseImage != null && radians != 0) {
+                pictureBox.setImage(getRotatedImage());
+                previewLayer.doLayout();
+            }
+            repaint();
+        }
+
+        private Rectangle imageArea() { return cropOverlay.getImageArea(); }
+
+        private Point center() {
+            Rectangle area = imageArea();
+            return new Point(area.x + area.width / 2, area.y + area.height / 2);
+        }
+
+        private Point handle() {
+            Point center = center();
+            return new Point(center.x + (int) Math.round(Math.cos(radians) * handleDistance),
+                    center.y + (int) Math.round(Math.sin(radians) * handleDistance));
+        }
+
+        private Rectangle handleBounds() {
+            Point point = handle();
+            return new Rectangle(point.x - HANDLE_RADIUS - 3, point.y - HANDLE_RADIUS - 3,
+                    (HANDLE_RADIUS + 3) * 2, (HANDLE_RADIUS + 3) * 2);
+        }
+
+        private void updateAngle(Point point) {
+            Point center = center();
+            radians = Math.atan2(point.y - center.y, point.x - center.x);
+            pictureBox.setImage(getRotatedImage());
+            previewLayer.doLayout();
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics graphics) {
+            super.paintComponent(graphics);
+            if (!isVisible() || baseImage == null) return;
+
+            Rectangle area = imageArea();
+            if (area.isEmpty()) return;
+
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            Area shade = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
+            shade.subtract(new Area(area));
+            g.setColor(new Color(0, 0, 0, 80));
+            g.fill(shade);
+
+            g.setColor(new Color(255, 255, 255, 155));
+            g.setStroke(new BasicStroke(1.5f));
+            g.draw(area);
+
+            Point center = center();
+            Point handle = handle();
+            g.setStroke(new BasicStroke(2f));
+            g.setColor(Color.WHITE);
+            g.drawLine(center.x, center.y, handle.x, handle.y);
+            g.setColor(new Color(35, 105, 190));
+            g.fillOval(center.x - HANDLE_RADIUS, center.y - HANDLE_RADIUS,
+                    HANDLE_RADIUS * 2, HANDLE_RADIUS * 2);
+            g.setColor(Color.WHITE);
+            g.fillOval(handle.x - HANDLE_RADIUS, handle.y - HANDLE_RADIUS,
+                    HANDLE_RADIUS * 2, HANDLE_RADIUS * 2);
+            g.setColor(new Color(230, 90, 45));
+            g.setStroke(new BasicStroke(2f));
+            g.drawOval(handle.x - HANDLE_RADIUS, handle.y - HANDLE_RADIUS,
+                    HANDLE_RADIUS * 2, HANDLE_RADIUS * 2);
+
+            g.dispose();
+        }
+    }
+
     private final class ColorPickerOverlay extends JComponent {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -794,8 +1059,10 @@ public class JImageEditor extends JPanel {
                     pointer = e.getPoint();
                     repaint();
                     if (e.getButton() != MouseEvent.BUTTON1) return;
+
                     Point pixel = imagePixelAt(pointer);
                     if (pixel == null) return;
+
                     int rgb = ImageHelper.buffer(image, BufferedImage.TYPE_INT_RGB)
                             .getRGB(pixel.x, pixel.y);
                     finishColorPicker();

@@ -1,4 +1,4 @@
-package org.addy.swing;
+package org.addy.swing.icon;
 
 /** The four cardinal directions supported by {@link ArrowIcon}. */
 public enum ArrowDirection {

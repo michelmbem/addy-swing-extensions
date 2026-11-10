@@ -1,4 +1,4 @@
-package org.addy.swing;
+package org.addy.swing.icon;
 
 import javax.swing.*;
 import java.awt.*;

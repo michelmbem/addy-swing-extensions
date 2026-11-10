@@ -1,5 +1,7 @@
 package org.addy.swing;
 
+import org.addy.swing.icon.ArrowDirection;
+import org.addy.swing.icon.ArrowIcon;
 import org.addy.util.ValueConverter;
 import org.addy.util.media.InsetsFactory;
 
