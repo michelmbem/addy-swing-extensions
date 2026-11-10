@@ -221,7 +221,7 @@ public class JImageEditor extends JPanel {
         }
 
         JButton ratioMenuButton = new JButton();
-        ratioMenuButton.setIcon(new ArrowIcon(ArrowDirection.DOWN, Color.BLACK, 8, 8));
+        ratioMenuButton.setIcon(new ArrowIcon(ArrowDirection.DOWN, Color.BLACK, 9, 6));
         ratioMenuButton.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 4));
         ratioMenuButton.setToolTipText(STRINGS.getString("tooltip.rectangleCropOptions"));
         ratioMenuButton.addActionListener(e -> rectangleRatioMenu.show(

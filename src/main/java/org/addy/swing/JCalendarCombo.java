@@ -180,7 +180,7 @@ public class JCalendarCombo
 	}
 
 	private static ArrowIcon createArrowIcon(Color color) {
-		return new ArrowIcon(ArrowDirection.DOWN, color, 10, 10);
+		return new ArrowIcon(ArrowDirection.DOWN, color, 9, 6);
 	}
 
 	private void initGUI() {

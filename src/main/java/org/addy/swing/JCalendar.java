@@ -18,8 +18,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class JCalendar extends JPanel {
-	public static final int ARROW_WIDTH = 14;
-	public static final int ARROW_HEIGHT = 14;
+	public static final int ARROW_WIDTH = 15;
+	public static final int ARROW_HEIGHT = 12;
 	public static final Color ARROW_COLOR = Color.BLACK;
 	public static final Color ROLLOVER_ARROW_COLOR = Color.GRAY;
 	public static final Color PRESSED_ARROW_COLOR = Color.DARK_GRAY;
