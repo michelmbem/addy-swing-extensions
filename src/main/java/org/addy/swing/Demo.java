@@ -16,7 +16,7 @@ import static org.addy.swing.UIHelper.scale;
 public class Demo {
 	static final String CUSTOM = "<custom>";
 	static final String[] pictures =
-			{ "alicia", "ashanti", "jlo", "jlo-back", "mariah", "toni", CUSTOM};
+			{ "dad1", "daniel1", "jordan1", "dad2", "daniel2", "jordan2", CUSTOM};
 
     static Image customPicture = null;
     static Image selectedPicture;
